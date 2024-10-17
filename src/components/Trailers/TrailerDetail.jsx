@@ -8,15 +8,12 @@ import { varToDb, detailStateType } from "./trailerInfo";
 const URL = "http://localhost:3001/api/search_trailer/";
 
 const TrailerDetail = () => {
-  // console.log("detailStateType", detailStateType);
-  // console.log("varToDb", varToDb);
   const { id } = useParams();
   const [trailer, setTrailer] = useState(detailStateType);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   console.log(id);
 
-  // console.log("trailer", trailer);
 
   useEffect(() => {
     // fetch trailer details
@@ -77,25 +74,6 @@ const TrailerDetail = () => {
   return (
     <div className="engine-detail-page">
       <div className="engine-main-section">
-        {/* <div className="engine-image-gallery">
-          <img
-            src="../images/engine.jpg"
-            alt="Engine"
-            className="engine-main-image"
-          />
-          <div className="engine-thumbnails">
-            <img
-              src="../images/engine.jpg"
-              alt="Thumbnail 1"
-              className="thumbnail"
-            />
-            <img
-              src="../images/engine.jpg"
-              alt="Thumbnail 2"
-              className="thumbnail"
-            />
-          </div>
-        </div> */}
         <div>
           <Row>
             {Object.keys(trailer).map((key) => (
