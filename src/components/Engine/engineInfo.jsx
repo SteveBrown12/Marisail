@@ -1,4 +1,4 @@
-export const varToScreenEngine = {
+export const varToScreen = {
     // identification
     identification: "Identification",
     engineID: "Engine ID",
@@ -777,7 +777,7 @@ export const makeString = (str) => {
       }
     }
   
-    // ID, VAT, EU wagera ka hisab dekhna h
+    // ID, VAT, EU need to check 
   
     // console.log(newStr);
     return newStr;
