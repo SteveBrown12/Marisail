@@ -1,5 +1,5 @@
 import { Form, Container, Row, Col } from "react-bootstrap";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import DropdownWithRadio from "../DropdownWithRadio";
 import Loader from "../Loader";
 import SubmitButton from "../SubmitButton";
@@ -317,7 +317,7 @@ export default function BerthAdvert() {
           return Object.keys(errors).length === 0;
       };*/
 
-    const sections = {
+    const sections =  useMemo(() => ({
        
         connectivityAndTransportation,
         
@@ -344,9 +344,9 @@ export default function BerthAdvert() {
         siteDetails,
        
         communityAndSocial,
-    };
+    }), [accessibility, additionalFeatures, amenitiesAndServices, communityAndSocial, connectivityAndTransportation, environmentalConsiderations, familyFacilities, insuranceAndRegulations, legalAndCompliance, paymentTerms, pricingAndLeaseTerms, repairAndMaintenance, securityAndSafety, services, siteDetails, surroundingArea]) 
 
-    const setStateFunctions = {
+    const setStateFunctions = useMemo(() =>({
         siteDetails: setSiteDetails,
         // generalInformation: setGeneralInformation,
         amenitiesAndServices: setAmenitiesAndServices,
@@ -365,7 +365,7 @@ export default function BerthAdvert() {
         // financialInformation: setFinancialInformation,
         pricingAndLeaseTerms: setPricingAndLeaseTerms,
         paymentTerms: setPaymentTerms,
-    };
+    }), [])  
 
     const handleOptionSelect = (category, field, selectedOption) => {
         setAllSelectedOptions((prevState) => {

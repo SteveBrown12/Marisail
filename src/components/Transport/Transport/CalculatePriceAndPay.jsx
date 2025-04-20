@@ -32,7 +32,7 @@ export default function CalculatePriceAndPay({props, setProps}) {
             <label>Total Price:</label>
             <input type="text" name="totalPrice" onChange={handleChange("totalPrice")} value={props.totalPrice} />
         </div>
-
+    
       </form>
     </div>
   );

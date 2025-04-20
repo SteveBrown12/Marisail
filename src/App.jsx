@@ -18,6 +18,7 @@ import TrailerDetail from "./components/Trailers/TrailerDetail";
 import Auction from "./pages/Auction";
 import TransportDetail from "./components/Transport/TransportDetail";
 import CharterDetail from "./components/Charter/CharterDetails";
+import PaymentResult from "./pages/PaymentResult";
 
 function App() {
   const navbarRef = useRef();
@@ -88,6 +89,8 @@ function App() {
         <Route path="/berth/:id" element={<TrailerDetail />} />
         <Route path="/transport/:id" element={<TransportDetail />} />
         <Route path="/charter/:id" element={<CharterDetail />} />
+        <Route path="/payment-success" element={<PaymentResult  message={'payment success'} />} />
+        <Route path="/payment-error" element={<PaymentResult  message={'payment error '} />} />
       </Routes>
     </BrowserRouter>
   );

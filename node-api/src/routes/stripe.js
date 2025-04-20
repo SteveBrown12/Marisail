@@ -4,26 +4,34 @@ import dotenv from "dotenv";
 dotenv.config();
 const stripeRouter = Router();
 
-stripeRouter.get("/checkout-session", async (req, res) => {
+stripeRouter.post("/checkout-session", async (req, res) => {
 try {
     
-
+ console.log("in")
   if(!process.env.STRIPE_KEY){
     throw Error("No Stripe API Key")
   }  
  const session = await stripe(process.env.STRIPE_KEY).checkout.sessions.create({
    line_items : [{
-    price:'price_1RDWDiQ3qAEn3pjxWEA3AFby',
-  
-    quantity:1
+     price_data : {
+      currency : 'usd',
+      product_data : {
+        name : 'Test Product'
+      },
+      unit_amount : 1000
+     },
+     quantity : 1
    }], 
     payment_method_types:["card"],
     mode : 'payment',
-    success_url : 'http://localhost:5173/'
+    success_url : 'http://localhost:5173/payment-success',
+    cancel_url :'http://localhost:5173/payment-error',
 
  })
- 
-  return res.send(session)
+ console.log(session)
+  // return res.send({ clientSecret : session.id})
+  // res.json(session)
+  res.send({url : session.url})
 } 
   catch (err) {
     return res.json({error : err})
