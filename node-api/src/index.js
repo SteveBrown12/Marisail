@@ -14,7 +14,7 @@ import advertTransportRouter from "./routes/advert_transport.js";
 import advertChandleryRouter from "./routes/advert_shop.js";
 import advertAuctionRouter from "./routes/advert_auction.js";
 import handler from "./routes/upload-media.js";
-
+import stripeRouter from "./routes/stripe.js"
 const router = Router();
 
 // Use the homeRouter for requests to /api/home
@@ -48,5 +48,7 @@ router.use("/advert_auction", advertAuctionRouter);
 
 router.use("/upload-media", handler); // upload-media upload
 
+//stripe impl
+router.use("/stripe", stripeRouter);
 // Export the router
 export default router;

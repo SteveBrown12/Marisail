@@ -17,7 +17,8 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
-    "mysql2": "^3.11.0"
+    "mysql2": "^3.11.0",
+    "stripe": "^18.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"

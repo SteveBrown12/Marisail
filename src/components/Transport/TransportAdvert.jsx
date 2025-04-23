@@ -12,6 +12,7 @@ import {
 import DatePickerComponent from "../DatePickerComponent";
 import InputComponentDual from "../InputComponentDual";
 import FormFieldCard from "../../services/FormFieldCard";
+import StripeBtn from "./StripeBtn";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -619,8 +620,10 @@ export default function TransportAdvert() {
             name="advert_transport_submit"
             onClick={handleSubmit}
           />
+         
         </Form>
       )}
+       <StripeBtn></StripeBtn>
     </Container>
   );
 }
