@@ -8,10 +8,10 @@ stripeRouter.post("/checkout-session", async (req, res) => {
 try {
     
  console.log("in")
-  if(!process.env.STRIPE_KEY){
+  if(!process.env.STRIPE_TEST_KEY){
     throw Error("No Stripe API Key")
   }  
- const session = await stripe(process.env.STRIPE_KEY).checkout.sessions.create({
+ const session = await stripe(process.env.STRIPE_TEST_KEY).checkout.sessions.create({
    line_items : [{
      price_data : {
       currency : 'usd',
