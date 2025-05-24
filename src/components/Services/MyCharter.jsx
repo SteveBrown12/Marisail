@@ -4,7 +4,7 @@ import DropdownWithRadio from "../DropdownWithRadio";
 import Loader from "../Loader";
 import InputComponentDynamic from "../InputComponentDynamic";
 import SubmitButton from "../SubmitButton";
-import { keyToExpectedValueMap, typeDef } from "../Charter/CharterAdvertInfo";
+import { keyToExpectedValueMap, typeDef } from "../Charter/Charter_Advert_Info";
 import { makeString } from "../../services/common_functions";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 

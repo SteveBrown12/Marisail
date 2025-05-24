@@ -1,21 +1,22 @@
 import { Form, Container, Row, Col } from "react-bootstrap";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import DropdownWithRadio from "../DropdownWithRadio";
 import Loader from "../Loader";
 import InputComponentDynamic from "../InputComponentDynamic";
 import SubmitButton from "../SubmitButton";
-import { keyToExpectedValueMap, typeDef } from "../Trailers/Trailer_Advert_Info";
-import { makeString } from "../../services/common_functions";
+import { keyToExpectedValueMap, typeDef } from "./Trailer_Advert_Info";
+import {
+  makeString,
+  convertUnitsInFormData,
+} from "../../services/common_functions";
+import InputComponentDual from "../InputComponentDual";
+import FormFieldCard from "../../services/FormFieldCard";
+
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
-export default function MyTrailer() {
-  const storedUser = localStorage.getItem("user");
-  const formData = localStorage.getItem("TrailerData");
-  let trailerData;
-  if (storedUser && formData) {
-    trailerData = JSON.parse(formData);
-  }
-  
+export default function TrailersAdvert() {
+  const navigate = useNavigate();
   const [error, setError] = useState({});
   const hasFetched = useRef(false);
   const [trailers, setTrailers] = useState("");
@@ -29,8 +30,6 @@ export default function MyTrailer() {
     model: "",
     year: "",
     askingPrice: "",
-  });
-  const [basics, setBasics] = useState({
     type: "",
     grossVehicleWeightRating: "",
     loadCapacity: "",
@@ -39,6 +38,9 @@ export default function MyTrailer() {
     totalHeight: "",
     axleHeightFromGround: "",
   });
+  // const [basics, setBasics] = useState({
+  
+  // });
   const [constructionMaterials, setConstructionMaterials] = useState({
     frameMaterial: "",
     frameCoating: "",
@@ -50,17 +52,15 @@ export default function MyTrailer() {
     roofMaterial: "",
   });
   const [maintenanceFeatures, setMaintenanceFeatures] = useState({
-    greasePoints: "", //
+    greasePoints: "", 
     bearingType: "",
-    maintenanceSchedule: "", //
+    maintenanceSchedule: "",
+    corrosionProtection: "",
+    rustInhibitors: "", 
   });
-  const [userFeatures, setUserFeatures] = useState({
-    storage: "",
-    tieDownPoints: "",
-    toolBox: "",
-    bumperType: "",
-    userFeatures: "",
-  });
+  // const [userFeatures, setUserFeatures] = useState({
+   
+  // });
   const [specialFeatures, setSpecialFeatures] = useState({
     hydraulicTilt: "", //
     extendableTongue: "", //
@@ -158,23 +158,7 @@ export default function MyTrailer() {
       rollerMaterial: "",
       rollerAxleDiameter: "",
     });
-  const [securityFeatures, setSecurityFeatures] = useState({
-    wheelLocks: "",
-    lockType: "",
-    alarmSystem: "",
-    gps_TrackingDevice: "",
-  });
-  const [
-    environmentalAndCorrosionResistance,
-    setEnvironmentalAndCorrosionResistance,
-  ] = useState({
-    corrosionProtection: "",
-    rustInhibitors: "",
-  });
-  const [performanceAndHandling, setPerformanceAndHandling] = useState({
-    maximumSpeedRating: "",
-    turningRadius: "",
-  });
+
   const [tongue, setTongue] = useState({
     tongueMaterial: "",
     tongueShape: "",
@@ -186,6 +170,17 @@ export default function MyTrailer() {
   const [documentation, setDocumentation] = useState({
     ownerManual: "",
     warranty: "",
+    storage: "",
+    tieDownPoints: "",
+    toolBox: "",
+    bumperType: "",
+    userFeatures: "",
+    wheelLocks: "",
+    lockType: "",
+    alarmSystem: "",
+    gps_TrackingDevice: "",
+    maximumSpeedRating: "",
+    turningRadius: "",
   });
   const [regulatoryCompliance, setRegulatoryCompliance] = useState({
     dot_Compliance: "",
@@ -210,71 +205,48 @@ export default function MyTrailer() {
     uploadPhotos: "",
     uploadVideos: "",
   });
-
-  const checkRequired = () => {
-    const errors = {};
-    Object.keys(typeDef).forEach((sectionKey) => {
-      const section = typeDef[sectionKey];
-      const sectionData = sections[sectionKey];
-      Object.keys(section).forEach((fieldKey) => {
-        const field = section[fieldKey];
-        if (field.mandatory) {
-          const fieldValue = sectionData[fieldKey];
-          if (field.type === "radio") {
-            // if(field.value){
-            //   console.log("001 field value--",field);
-            // }
-            if (!field.value || String(field.value).trim() === "") {
-              errors[`${fieldKey}`] = true;
-            }
-          } else if (field.type === "number") {
-            if (
-              fieldValue === undefined ||
-              fieldValue === "" ||
-              isNaN(fieldValue)
-            ) {
-              errors[`${fieldKey}`] = true;
-            }
-          }
-        }
-      });
-    });
-
-    setError(errors);
-    return Object.keys(errors).length === 0;
+  const handleDualInputChange = (title, fieldKey, inputValue, radioValue) => {
+    setAllSelectedOptions((prevState) => ({
+      ...prevState,
+      [title]: {
+        ...prevState[title],
+        [fieldKey]: { value: inputValue, unit: radioValue },
+      },
+    }));
   };
 
+ 
   const sections = {
     identification,
+    winchAndWrinchAccessories,
     specialFeatures,
-    constructionMaterials,
-    basics,
-    userFeatures,
-    securityFeatures,
+    maintenanceFeatures,
+   
     additionalAccessories,
     customizationOptions,
     axlesAndSuspension,
     loadingAndTransportFeatures,
-    brakes,
-    winchAndWrinchAccessories,
-    lightingAndElectrical,
+   
     acessories,
-    performanceAndHandling,
+    lightingAndElectrical,
+    brakes,
+    // performanceAndHandling,
     documentation,
     tyresAndWheels,
     tongue,
-    regulatoryCompliance,
-    maintenanceFeatures,
+   
+    constructionMaterials,
     paymentTerms,
-    environmentalAndCorrosionResistance,
+    regulatoryCompliance,
+    // environmentalAndCorrosionResistance,
   };
 
   const setStateFunctions = {
     identification: setIdentification,
-    basics: setBasics,
+    // basics: setBasics,
     constructionMaterials: setConstructionMaterials,
     maintenanceFeatures: setMaintenanceFeatures,
-    userFeatures: setUserFeatures,
+    // userFeatures: setUserFeatures,
     specialFeatures: setSpecialFeatures,
     additionalAccessories: setAdditionalAccessories,
     customizationOptions: setCustomizationOptions,
@@ -285,9 +257,6 @@ export default function MyTrailer() {
     lightingAndElectrical: setLightingAndElectrical,
     acessories: setAcessories,
     loadingAndTransportFeatures: setLoadingAndTransportFeatures,
-    securityFeatures: setSecurityFeatures,
-    environmentalAndCorrosionResistance: setEnvironmentalAndCorrosionResistance,
-    performanceAndHandling: setPerformanceAndHandling,
     tongue: setTongue,
     documentation: setDocumentation,
     regulatoryCompliance: setRegulatoryCompliance,
@@ -320,59 +289,74 @@ export default function MyTrailer() {
       fetchIdentificationSectionOptions(category, selectedOption, field);
     }
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      if (checkRequired()) {
-        console.log("001 Form is valid, submitting...");
-        // localStorage.setItem("advertise_engine", JSON.stringify(form));
-      } else {
-        console.warn(error);
-      }
+      convertUnitsInFormData(allSelectedOptions);
+      // if (checkRequired()) {
+      console.log("001 Form is valid, submitting...");
+      localStorage.setItem("TrailerData", JSON.stringify(allSelectedOptions));
+      navigate("/view-trailer");
+      // localStorage.setItem("advertise_engine", JSON.stringify(form));
+      // } else {
+      //     console.warn(error);
+      // }
     } catch (error) {
       console.error(error);
     }
   };
-  function setPageData(key, newData) {
-    const setStateFunction = setStateFunctions[key];
-    if (setStateFunction) {
-      setStateFunction((prevState) => ({
-        ...prevState,
-        ...newData,
-      }));
-    } else {
-      console.error(`No setState function found for key: ${key}`);
-    }
-  }
+  const setPageData = useCallback(
+    (key, newData) => {
+      const setStateFunction = setStateFunctions[key];
+      if (setStateFunction) {
+        setStateFunction((prevState) => ({
+          ...prevState,
+          ...newData,
+        }));
+      } else {
+        console.error(`No setState function found for key: ${key}`);
+      }
+    },
+    [setStateFunctions]
+  );
 
   const cacheKey = "trailersFilterData";
-  const URL = apiUrl +"/trailers/";
+  const URL = apiUrl + "/trailers/";
 
-  const fetchDistinctData = async () => {
-    try {
-      setLoading(true);
-      const promises = Object.keys(sections).map(async (key) => {
+  const fetchDistinctData = useCallback(
+    async (sectionKey, fieldKey) => {
+      try {
+        setLoading(true);
+
+        // Prepare request payload based on the opened section & field
+        const requestBody = {
+          sectionKey: sectionKey, // The section (e.g., "amenitiesAndServices")
+          fieldKey: fieldKey, // The specific field/column (e.g., "wifiAvailability")
+        };
+
+        // Call API for only the relevant section & field
         const response = await fetch(`${URL}trailers`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(sections[key]),
+          body: JSON.stringify(requestBody),
         });
+
         const data = await response.json();
-        return { key, data: data.res };
-      });
-      const results = await Promise.all(promises);
-      results.forEach(({ key, data }) => {
-        setPageData(key, data);
-      });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        console.log("data :>> ", data);
+
+        // Update state only for the specific field
+        setPageData(sectionKey, data.res);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [URL, sections, setPageData]
+  );
+
   const fetchRelevantOptions = async (trailerId, manufacturer, make, model) => {
     try {
       setLoading(true);
@@ -407,7 +391,7 @@ export default function MyTrailer() {
                 if (sections[sectionKey][fieldKey] !== undefined) {
                   const fieldValue =
                     Array.isArray(result[fieldKey]) &&
-                      result[fieldKey].length > 0
+                    result[fieldKey].length > 0
                       ? result[fieldKey]?.[0]
                       : sections[sectionKey][fieldKey];
 
@@ -482,17 +466,7 @@ export default function MyTrailer() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
-      setPageData(JSON.parse(cachedData));
-    } else {
-      if (!hasFetched.current) {
-        fetchDistinctData();
-        hasFetched.current = true;
-      }
-    }
-  }, [setPageData]);
+
 
   const handleInputChange = (title, fieldKey, newValue) => {
     setTrailers((prevTrailers) => ({
@@ -510,6 +484,18 @@ export default function MyTrailer() {
         {fieldName} field is required
       </div>
     );
+  };
+
+  const handleDropdownOpen = (sectionKey, fieldKey) => {
+    setOpenKey(fieldKey);
+
+    // Fetch data only if not already loaded
+    if (
+      !sections[sectionKey][fieldKey] ||
+      sections[sectionKey][fieldKey].length === 0
+    ) {
+      fetchDistinctData(sectionKey, fieldKey);
+    }
   };
 
   return (
@@ -542,7 +528,7 @@ export default function MyTrailer() {
                             title={makeString(fieldKey, keyToExpectedValueMap)}
                             options={sections[title][fieldKey]}
                             selectedOption={
-                              allSelectedOptions[title]?.[fieldKey] || trailerData[title]?.[fieldKey]  || ""
+                              allSelectedOptions[title]?.[fieldKey] || ""
                             }
                             setSelectedOption={(selectedOption) =>
                               handleOptionSelect(
@@ -552,7 +538,9 @@ export default function MyTrailer() {
                               )
                             }
                             isMandatory={field.mandatory}
-                            setOpenKey={setOpenKey}
+                            setOpenKey={() =>
+                              handleDropdownOpen(title, fieldKey)
+                            }
                             openKey={openKey}
                           />
                           {error[`${fieldKey}`] && (
@@ -593,11 +581,52 @@ export default function MyTrailer() {
                         )}
                       </Col>
                     );
+                  } else if (field && field.type === "dual") {
+                    return (
+                      <Col
+                        md={12}
+                        className="mr-3"
+                        key={fieldKey}
+                        style={{ width: 480 }}
+                      >
+                        <InputComponentDual
+                          label={makeString(fieldKey, keyToExpectedValueMap)}
+                          value={trailers[title]?.[fieldKey] || ""}
+                          setValue={(e) =>
+                            handleInputChange(title, fieldKey, e.target.value)
+                          }
+                          formType="number"
+                          setOpenKey={setOpenKey}
+                          openKey={openKey || ""}
+                          isMandatory={field.mandatory}
+                          radioOptions={field?.radioOptions}
+                          selectedOption={
+                            allSelectedOptions[title]?.[fieldKey]?.unit || ""
+                          }
+                          setSelectedOption={(inputValue, radioValue) =>
+                            handleDualInputChange(
+                              title,
+                              fieldKey,
+                              inputValue,
+                              radioValue
+                            )
+                          }
+                        />
+                        {error[`${fieldKey}`] && (
+                          <div>
+                            {errorDisplay(
+                              makeString(fieldKey, keyToExpectedValueMap)
+                            )}
+                          </div>
+                        )}
+                      </Col>
+                    );
                   }
                   return null;
                 })}
               </Col>
             ))}
+            <FormFieldCard countryVisible={true} />
           </Row>
           <SubmitButton
             text="Submit"

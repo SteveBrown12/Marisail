@@ -1,15 +1,15 @@
 import { Router } from "express";
 import homeRouter from "./routes/home.js";
-import advertBerthRouter from "./routes/advert_berth.js";
-import advertEngineRouter from "./routes/advert_engine.js";
-import advertTrailerRouter from "./routes/advert_trailer.js";
-import searchEngineRouter from "./routes/search_engine.js";
-import searchTrailerRouter from "./routes/search_trailer.js";
-import searchBerthRouter from "./routes/search_berth.js";
-import searchCharterRouter from "./routes/search_charter.js";
-import searchTransportRouter from "./routes/search_transport.js";
-import advertCharterRouter from "./routes/advert_charter.js";
-import advertTransportRouter from "./routes/advert_transport.js";
+import advertBerthRouter from "./routes/Berth_Advert.js";
+import advertEngineRouter from "./routes/Engine_Advert.js";
+import advertTrailerRouter from "./routes/Trailer_Advert.js";
+import searchEngineRouter from "./routes/Engine_Search.js";
+import searchTrailerRouter from "./routes/Trailer_Search.js";
+import searchBerthRouter from "./routes/Berth_Search.js";
+import searchCharterRouter from "./routes/Charter_Search.js";
+import searchTransportRouter from "./routes/Transport_Search.js";
+import advertCharterRouter from "./routes/Charter_Advert.js";
+import advertTransportRouter from "./routes/Transport_Advert.js";
 import handler from "./routes/upload-media.js";
 import authRouter from "./routes/auth.js";
 

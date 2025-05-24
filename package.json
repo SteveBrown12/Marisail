@@ -2,7 +2,7 @@
   "name": "marisail",
   "private": true,
   "version": "0.0.0",
-  "proxy": "https://api.test.marisail.com",
+  "proxy": "https://marisail.com",
   "homepage": "/test",
   "scripts": {
     "conn": "concurrently \"npm run dev\" \"cd node-api && npm run start\" ",
