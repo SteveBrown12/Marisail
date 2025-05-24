@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import DropdownWithCheckBoxes from "../DropdownWithCheckBoxes2";
 import Loader from "../Loader";
 import ResetBar from "../ResetBar";
-import { varToDb, varToScreen } from "./Charter_Info";
+import { varToDb, varToScreen } from "./Charter_Search_Info";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import RangeInput from "../RangeInput";
 import CharterCard from "../CharterCard";

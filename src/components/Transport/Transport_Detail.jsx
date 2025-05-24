@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import TrailerDetailsPanel from "../Trailers/Trailer_Details_Panel";
-import { detailStateType } from "../Trailers/Trailer_Info";
+import { detailStateType } from "../Trailers/Trailer_Search_Info";
 import Loader from "../Loader";
-import { varToDb } from "./Transport_Info";
+import { varToDb } from "./Transport_Search_Info";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const URL = apiUrl + "/search_transport/";

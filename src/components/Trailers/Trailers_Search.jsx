@@ -4,7 +4,7 @@ import DropdownWithCheckBoxes from "../DropdownWithCheckBoxes2";
 import Loader from "../Loader";
 import TrailerCard from "../TrailerCard";
 import ResetBar from "../ResetBar";
-import { varToDb, varToScreen } from "./Trailer_Info";
+import { varToDb, varToScreen } from "./Trailer_Search_Info";
 import RangeInput from "../RangeInput";
 import { v4 as uuidv4 } from "uuid";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;

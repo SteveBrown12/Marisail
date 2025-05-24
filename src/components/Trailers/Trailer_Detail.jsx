@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import TrailerDetailsPanel from "./Trailer_Details_Panel";
 import Loader from "../Loader";
 import { Row, Col } from "react-bootstrap";
-import { varToDb, detailStateType } from "./Trailer_Info";
+import { varToDb, detailStateType } from "./Trailer_Search_Info";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const URL = apiUrl + "/search_trailer/";
