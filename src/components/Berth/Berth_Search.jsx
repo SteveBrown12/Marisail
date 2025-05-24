@@ -5,7 +5,7 @@ import RangeInput from "../RangeInput";
 import Loader from "../Loader";
 import BerthCard from "../BerthCard";
 import ResetBar from "../ResetBar";
-import { varToDb, varToScreen } from "./Berth_Info";
+import { varToDb, varToScreen } from "./Berth_Search_Info";
 import { v4 as uuidv4 } from "uuid";
 import { setAllFilters, getAllFilters } from "../../store/filtersSlice";
 import { useSelector, useDispatch } from "react-redux";

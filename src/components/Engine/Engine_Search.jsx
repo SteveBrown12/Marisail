@@ -9,7 +9,7 @@ const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import "./Engine_Search.scss";
 import Loader from "../Loader";
 import ResetBar from "../ResetBar";
-import { varToDb, varToScreen } from "./Engine_Info";
+import { varToDb, varToScreen } from "./Engine_Search_Info";
 const Engines = () => {
   const [fetching, setFetching] = useState(true);
   const [loading, setLoading] = useState(true);

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import Loader from "../Loader";
-import { detailStateType, varToDb } from "./Charter_Info";
+import { detailStateType, varToDb } from "./Charter_Search_Info";
 import CharterDetailPanel from "./Charter_Detail_Panel";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 

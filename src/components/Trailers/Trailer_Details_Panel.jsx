@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { varToScreen } from "./Trailer_Info";
+import { varToScreen } from "./Trailer_Search_Info";
 
 const TrailerDetailsPanel = ({ title, details }) => {
   console.log("title :>> ", title);
