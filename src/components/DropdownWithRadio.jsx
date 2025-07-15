@@ -55,11 +55,11 @@ const DropdownWithRadio = ({
                   <Form.Check
                     type="radio"
                     name={`radio-options-${heading}`}
-                    label={`${item[0]}`}
+                    label={`${item}`}
                     checked={
-                      convertNonArrayOrObject(selectedOption) === item[0]
+                      convertNonArrayOrObject(selectedOption) === item
                     }
-                    onChange={() => handleOptionChange(item[0])}
+                    onChange={() => handleOptionChange(item)}
                   />
                 </div>
               ))

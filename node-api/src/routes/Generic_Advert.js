@@ -1,6 +1,6 @@
 import { Router } from "express";
 import db_connection from "../config/dbConfig.js";
-import { SERVICES } from "../Config/All_Services_Config.js";
+import { SERVICES,SERVICE_MAPPINGS } from "../Config/All_Services_Config.js";
 
 const advert_router = Router();
 
@@ -8,7 +8,7 @@ const advert_router = Router();
 // CORE UTILITIES
 // ========================
 const load_service_config = (service_name) => {
-  const config = SERVICES[service_name.toLowerCase()];
+  const config = SERVICE_MAPPINGS[service_name.toLowerCase()];
   if (!config) throw new Error(`Invalid service '${service_name}'`);
   return config;
 };
@@ -37,14 +37,202 @@ const validate_schema = async (connection, config) => {
   if (errors.length) throw new Error(errors.join('\n'));
 };
 
+// const  checkEqualObjects = (obj1, obj2)=> {
+//   const sortedStringify = (obj) => {
+//     return JSON.stringify(obj, Object.keys(obj).sort());
+//   };
+//   return sortedStringify(obj1) === sortedStringify(obj2);
+// }
+
+function checkEqualObjects(obj1, obj2) {
+  const obj1Keys = Object.keys(obj1);
+  console.log("obj1Keys :",obj1Keys);
+  console.log("obj2Keys :",Object.keys(obj2));
+  return obj1Keys.every(key => key in obj2);
+}
+
+
+async function getColumnValues(columnDefinitions, connection) {
+  const results = {};
+  
+  // Group columns by table to optimize queries
+  const columnsByTable = {};
+  Object.entries(columnDefinitions).forEach(([fieldKey, columnInfo]) => {
+    if (!columnsByTable[columnInfo.tableName]) {
+      columnsByTable[columnInfo.tableName] = [];
+    }
+    columnsByTable[columnInfo.tableName].push({
+      fieldKey,
+      columnName: columnInfo.column_Name,
+      type: columnInfo.type
+    });
+  });
+
+  // Process each table's columns
+  for (const [tableName, columns] of Object.entries(columnsByTable)) {
+    // First verify all columns exist in the table
+    const columnCheck = await connection.query(
+      `SELECT column_name 
+       FROM information_schema.columns 
+       WHERE table_name = ? 
+       AND table_schema = 'marisail'
+       AND column_name IN (?)`,
+      [tableName, columns.map(c => c.columnName)]
+    );
+
+    const existingColumns = columnCheck[0].map(row => row.column_name);
+    const validColumns = columns.filter(c => existingColumns.includes(c.columnName));
+
+    if (validColumns.length === 0) continue;
+
+    const selectClause = validColumns.map(c => 
+      `${c.columnName} as ${c.columnName}` 
+    ).join(', ');
+
+    const whereClause = validColumns.map(c => 
+      `${c.columnName} IS NOT NULL`
+    ).join(' OR ');
+
+    try {
+      await Promise.all(
+      validColumns.map(async ({fieldKey, columnName}) => {
+        const [rows] = await connection.query(`
+          SELECT DISTINCT ${columnName} as value
+          FROM ${tableName}
+          WHERE ${columnName} IS NOT NULL
+        `);
+        results[fieldKey] = rows.map(row => row.value);
+      })
+    );
+    } catch (error) {
+      console.error(`Error fetching data from ${tableName}:`, error);
+      // Continue with next table even if one fails
+    }
+  }
+
+  // console.log("Final results :",results);
+
+  return results;
+}
+
+async function getColumnValuesNew(columnDefinitions, connection) {
+  const results = {};
+  
+  // Group columns by table to optimize queries
+  const columnsByTable = {};
+  Object.entries(columnDefinitions).forEach(([fieldKey, columnInfo]) => {
+    if (!columnsByTable[columnInfo.tableName]) {
+      columnsByTable[columnInfo.tableName] = [];
+    }
+    columnsByTable[columnInfo.tableName].push({
+      fieldKey,
+      columnName: columnInfo.column_Name
+    });
+  });
+
+  // Process each table's columns
+  for (const [tableName, columns] of Object.entries(columnsByTable)) {
+    // First verify all columns exist in the table
+    const columnCheck = await connection.query(
+      `SELECT column_name 
+       FROM information_schema.columns 
+       WHERE table_name = ? 
+       AND table_schema = 'marisail'
+       AND column_name IN (?)`,
+      [tableName, columns.map(c => c.columnName)]
+    );
+
+    const existingColumns = columnCheck[0].map(row => row.column_name);
+    const validColumns = columns.filter(c => existingColumns.includes(c.columnName));
+
+    if (validColumns.length === 0) continue;
+
+    try {
+      await Promise.all(
+        validColumns.map(async ({fieldKey, columnName}) => {
+          const [rows] = await connection.query(
+            `SELECT DISTINCT ${columnName} as value
+             FROM ${tableName}
+             WHERE ${columnName} IS NOT NULL
+             GROUP BY ${columnName}`
+          );
+          // Format to match your /berths endpoint response
+          results[fieldKey] = rows.map(row => Object.values(row)[0]);
+        })
+      );
+    } catch (error) {
+      console.error(`Error fetching data from ${tableName}:`, error);
+    }
+  }
+
+  return results;
+}
+
+
+function mapPayloadToSchema(payload, dbConfig) {
+  // Get all possible schema keys from all tables
+  const allSchemaKeys = dbConfig.tables.flatMap(table => 
+    Object.keys(table.columns)
+  );
+
+  // Filter payload keys to only those that exist in schema
+  const validPayloadKeys = Object.keys(payload).filter(key => 
+    allSchemaKeys.includes(key)
+  );
+
+  // Find which tables contain the valid payload keys
+  const relevantTables = dbConfig.tables.filter(table => {
+    const tableKeys = Object.keys(table.columns);
+    return validPayloadKeys.some(key => tableKeys.includes(key));
+  });
+
+  // Get full column definitions for matched keys
+  const columnDefinitions = {};
+  const matchedKeys = [];
+  
+  relevantTables.forEach(table => {
+    validPayloadKeys.forEach(key => {
+      if (table.columns[key]) {
+        columnDefinitions[key] = {
+          ...table.columns[key],
+          tableName: table.table_Name,
+          sectionHeading: table.section_Heading
+        };
+        matchedKeys.push(key);
+      }
+    });
+  });
+
+  // Calculate match percentage (optional)
+  const matchPercentage = (matchedKeys.length / allSchemaKeys.length * 100).toFixed(1);
+
+  return {
+    matchedKeys,
+    matchPercentage: `${matchPercentage}%`,
+    tables: relevantTables,
+    columnDefinitions,
+    primaryKey: dbConfig.primary_key,
+    schemaName: dbConfig.schema_name,
+    payloadKeysCount: Object.keys(payload).length,
+    matchedKeysCount: matchedKeys.length
+  };
+}
+
+
+
 // ========================
 // MIDDLEWARE
 // ========================
 const init_service = async (req, res, next) => {
   try {
     const config = load_service_config(req.params.service_name);
-    await validate_schema(db_connection, config);
+    await validate_schema(db_connection, config.dbConfig);
+   
+    const mainTableDetails = config.dbConfig.tables.find((item) => item.table_Name === config.dbConfig.main_table);
+   
+
     req.service_config = config;
+    req.body.schemaInfo = mapPayloadToSchema(req.body, config.dbConfig);
     next();
   } catch (err) {
     handle_error_response(res, err.message, 400);
@@ -52,7 +240,7 @@ const init_service = async (req, res, next) => {
 };
 
 const validate_fields = (req, res, next) => {
-  const missing = Object.entries(req.service_config.fields)
+  const missing = Object.entries(req.service_config.dbConfig.fields)
     .filter(([_, f]) => f.mandatory && !req.body[f.column_name])
     .map(([name]) => name);
   if (missing.length) handle_error_response(res, `Missing fields: ${missing.join(', ')}`, 400);
@@ -78,23 +266,19 @@ const execute_with_retry = async (operation, max_attempts = 3) => {
 // ========================
 // ROUTES
 // ========================
-advert_router.get("/:service_name/options/:field", init_service, async (req, res) => {
+advert_router.post("/:service_name/options", init_service, async (req, res) => {
   try {
-    const { field } = req.params;
-    const { fields, main_table } = req.service_config;
-    const field_config = fields[field];
-    
-    if (!field_config) throw new Error(`Field '${field}' not configured`);
+    const {schemaInfo} = req.body;
+    const columnValues = await getColumnValues(schemaInfo.columnDefinitions, db_connection);
+    // await db_connection.end();
 
-    const [options] = await db_connection.query(
-      `SELECT DISTINCT ${field_config.column_name} AS value 
-       FROM ${field_config.table_name || main_table} 
-       WHERE ${field_config.column_name} IS NOT NULL`
-    );
-
-    res.json({ 
+    return res.status(200).json({ 
       ok: true, 
-      options: options.map(o => o.value) 
+      res: columnValues,
+      metadata: {
+        matchedKeys: schemaInfo.matchedKeys,
+        matchPercentage: schemaInfo.matchPercentage
+      }
     });
   } catch (err) {
     handle_error_response(res, `Options fetch failed: ${err.message}`);

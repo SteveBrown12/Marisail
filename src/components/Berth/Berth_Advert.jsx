@@ -23,11 +23,11 @@ export default function BerthAdvert() {
     const [loading, setLoading] = useState(false);
     const [allSelectedOptions, setAllSelectedOptions] = useState({});
     const [siteDetails, setSiteDetails] = useState({
-        marisailBerthId: "",
+        berthId: "",
         siteDetails: "",
         termsAndConditions: "",
         type: "",
-        marinaPortHarborName: "",
+        marinaName: "",
         location: "",
         ownership: "",
         yearEstablished: "",
@@ -281,7 +281,7 @@ export default function BerthAdvert() {
         currency: "",
         preferredPaymentMethods: "",
         invoiceAndReceiptProcedures: "",
-        calculatePriceAndPay: "",
+        // calculatePriceAndPay: "",
         priceLabel: "",
         priceDrop: "",
         vat: "",
@@ -405,13 +405,15 @@ export default function BerthAdvert() {
     );
 
     const cacheKey = "berthsFilterData";
-    const URL = apiUrl + "/advert_berth/";
+    // const URL = apiUrl + "/advert_berth/";
+    const URL = apiUrl+ "/generic_advert/";
 
     const fetchDistinctData = useCallback(async () => {
         try {
             setLoading(true);
             const promises = Object.keys(sections).map(async (key) => {
-                const response = await fetch(`${URL}berths`, {
+                // const response = await fetch(`${URL}berths`, {
+                const response = await fetch(`${URL}berth/options`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -604,6 +606,7 @@ export default function BerthAdvert() {
                 <Form onSubmit={handleSubmit}>
                     <Row>
                         {Object.keys(sections).map((title) => (
+                            console.log("001 title--", title),
                             <Col md={6} key={title} className="mt-2">
                                 <legend className="fieldset-legend">
                                     <h6 style={{ padding: "15px 10px 0px 10px" }}>

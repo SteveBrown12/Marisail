@@ -1,6 +1,6 @@
 import { Router } from "express";
 import db_connection from "../config/dbConfig.js";
-import { SERVICES } from "../Config/All_Services_Config.js";
+import { SERVICES,SERVICE_MAPPINGS } from "../Config/All_Services_Config.js";
 
 const search_router = Router();
 
@@ -8,7 +8,9 @@ const search_router = Router();
 // CORE UTILITIES
 // ========================
 const load_service_config = (service_name) => {
-  const config = SERVICES[service_name.toLowerCase()];
+  // const config = SERVICES[service_name.toLowerCase()];
+  const config = SERVICE_MAPPINGS[service_name.toLowerCase()];
+  
   if (!config) throw new Error(`Invalid service '${service_name}'`);
   return config;
 };
@@ -25,7 +27,7 @@ const validate_schema = async (connection, config) => {
     `SHOW TABLES LIKE '${config.main_table}'`
   );
   if (!main_table.length) errors.push(`Main table '${config.main_table}' missing`);
-  
+  console.log(`Validating schema for service: ${config.main_table}`);
   // Join tables check
   for (const table of config.join_tables) {
     const [join_table] = await connection.query(
@@ -43,10 +45,11 @@ const validate_schema = async (connection, config) => {
 const init_service = async (req, res, next) => {
   try {
     const config = load_service_config(req.params.service_name);
-    await validate_schema(db_connection, config);
+    await validate_schema(db_connection, config.dbConfig);
     req.service_config = config;
     next();
   } catch (err) {
+    console.log("Error 1")
     handle_error_response(res, err.message, 400);
   }
 };
@@ -88,23 +91,32 @@ const build_range_facets = (column, bucket_size) => {
 // ========================
 // ROUTES
 // ========================
-search_router.get("/:service_name/search", init_service, async (req, res) => {
+search_router.post("/:service_name/search", init_service, async (req, res) => {
   try {
-    const { main_table, primary_key, var_to_column } = req.service_config;
+    const {page} = req.body;
+    const { main_table , primary_key} = req.service_config.dbConfig
+    const { Var_To_Column } = req.service_config;
     const query = `
       SELECT ${main_table}.* 
       FROM ${main_table}
-      ${build_joins(req.service_config)}
-      ${req.query.filters ? `WHERE ${build_where(req.query.filters, var_to_column)}` : ''}
+      ${build_joins(req.service_config.dbConfig)}
+      ${req.body.filters ? `WHERE ${build_where(req.body.filters, Var_To_Column)}` : ''}
       ORDER BY ${main_table}.${primary_key} DESC
-      LIMIT ${req.query.limit || 50}
-      OFFSET ${req.query.offset || 0}
+      LIMIT 60 OFFSET ${page * 30};
     `;
+    // console.log(`Executing search query: ${query}`);
 
     const [results] = await db_connection.query(query);
-    res.json({ ok: true, data: results });
+    res.json({ ok: true, res: results });
   } catch (err) {
+    console.log("Error 2")
     handle_error_response(res, `Search failed: ${err.message}`);
+  } finally {
+     if (db_connection) {
+      // db_connection.release();
+      console.log("Database connection released.");
+    }
+    // if (db_connection) db_connection.release();
   }
 });
 

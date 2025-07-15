@@ -1,6 +1,6 @@
 export const varToColumn = {
     // Site Details
-    marisailBerthId: "Marisail_Berth_ID",
+    marisailBerthId: "Berth_ID",
     dataSource: "Data Source",
     siteDetails: "Site_Details",
     termsAndConditions: "Terms_Conditions",

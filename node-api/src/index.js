@@ -12,6 +12,8 @@ import advertCharterRouter from "./routes/Charter_Advert.js";
 import advertTransportRouter from "./routes/Transport_Advert.js";
 import handler from "./routes/upload-media.js";
 import authRouter from "./routes/auth.js";
+import genericSearchRouter from "./routes/Generic_Search.js";
+import genericAdvertRouter from "./routes/Generic_Advert.js";
 
 const router = Router();
 
@@ -41,8 +43,10 @@ router.use("/advert_charter", advertCharterRouter);
 
 router.use("/advert_transport", advertTransportRouter);
 
-
 router.use("/upload-media", handler); // upload-media upload
+
+router.use("/generic_search", genericSearchRouter);
+router.use("/generic_advert", genericAdvertRouter);
 
 // Export the router
 export default router;

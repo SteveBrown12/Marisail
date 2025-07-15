@@ -222,7 +222,8 @@ export default function BerthSearch() {
     }
   };
 
-  const URL = apiUrl + "/search_berth/";
+  // const URL = apiUrl + "/search_berth/";
+  const URL = apiUrl;
 
   const fetchDropdownData = async (tableKey, columnKey, search, offSet) => {
     if (varToScreen[columnKey]?.type === "range" || tableKey === "notDefined")
@@ -295,7 +296,18 @@ export default function BerthSearch() {
     const fetchBerthData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${URL}berthsData`, {
+        // const response = await fetch(`${URL}berthsData`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     selectedOptions: allSelectedOptions, // Only names are sent here
+        //     page: page,
+        //   }),
+        // });
+
+        const response = await fetch(`${URL}/generic_search/berth/search`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -305,29 +317,32 @@ export default function BerthSearch() {
             page: page,
           }),
         });
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        if (data?.ok && Array.isArray(data?.res?.[0])) {
-          setBerths(data.res[0]);
+        if (data?.ok && typeof data?.res?.[0] === 'object') {
+          setBerths(data.res);
+          setLoading(false);
         } else {
           console.error("Invalid berth data format:", data);
           setBerths([]);
+          setLoading(false);
         }
       } catch (err) {
         console.error("Error fetching berth data:", err);
         setBerths([]);
+        setLoading(false);
       } finally {
+        console.error("Error fetching berth data:", err);
         setLoading(false);
       }
     };
 
     fetchBerthData();
   }, [allSelectedOptions, page, URL]);
-
+  console.log("berths data:", berths);
   return (
     <Container>
       <Row>
