@@ -2,21 +2,6 @@
 
 // Aggregate object to map SERVICE names to SERVICE Configs
 
-// Helper to generate mappings for a service config
-// function generateMappings(config) {
-//   const Var_To_Column = {};
-//   const Var_To_Table = {};
-//   config.tables.forEach(table => {
-//     console.log(`Processing columns: ${table.columns}`);
-//     Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
-//       console.log(`Var_To_Column ${Var_To_Column[var_Name]} to Var_To_Table[var_Name] ${Var_To_Table[var_Name]}`);
-//       Var_To_Column[var_Name] = col_Info.column_Name;
-//       Var_To_Table[var_Name] = table.table_Name;
-//     });
-//   });
-//   const Unique_Table = [...new Set(config.tables.map(table => table.table_Name))];
-//   return { Var_To_Column, Var_To_Table, Unique_Table };
-// }
 
 function generateMappings(config) {
   const Var_To_Column = {};

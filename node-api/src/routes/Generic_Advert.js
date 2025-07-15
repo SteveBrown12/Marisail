@@ -37,13 +37,6 @@ const validate_schema = async (connection, config) => {
   if (errors.length) throw new Error(errors.join('\n'));
 };
 
-// const  checkEqualObjects = (obj1, obj2)=> {
-//   const sortedStringify = (obj) => {
-//     return JSON.stringify(obj, Object.keys(obj).sort());
-//   };
-//   return sortedStringify(obj1) === sortedStringify(obj2);
-// }
-
 function checkEqualObjects(obj1, obj2) {
   const obj1Keys = Object.keys(obj1);
   console.log("obj1Keys :",obj1Keys);
@@ -111,59 +104,6 @@ async function getColumnValues(columnDefinitions, connection) {
   }
 
   // console.log("Final results :",results);
-
-  return results;
-}
-
-async function getColumnValuesNew(columnDefinitions, connection) {
-  const results = {};
-  
-  // Group columns by table to optimize queries
-  const columnsByTable = {};
-  Object.entries(columnDefinitions).forEach(([fieldKey, columnInfo]) => {
-    if (!columnsByTable[columnInfo.tableName]) {
-      columnsByTable[columnInfo.tableName] = [];
-    }
-    columnsByTable[columnInfo.tableName].push({
-      fieldKey,
-      columnName: columnInfo.column_Name
-    });
-  });
-
-  // Process each table's columns
-  for (const [tableName, columns] of Object.entries(columnsByTable)) {
-    // First verify all columns exist in the table
-    const columnCheck = await connection.query(
-      `SELECT column_name 
-       FROM information_schema.columns 
-       WHERE table_name = ? 
-       AND table_schema = 'marisail'
-       AND column_name IN (?)`,
-      [tableName, columns.map(c => c.columnName)]
-    );
-
-    const existingColumns = columnCheck[0].map(row => row.column_name);
-    const validColumns = columns.filter(c => existingColumns.includes(c.columnName));
-
-    if (validColumns.length === 0) continue;
-
-    try {
-      await Promise.all(
-        validColumns.map(async ({fieldKey, columnName}) => {
-          const [rows] = await connection.query(
-            `SELECT DISTINCT ${columnName} as value
-             FROM ${tableName}
-             WHERE ${columnName} IS NOT NULL
-             GROUP BY ${columnName}`
-          );
-          // Format to match your /berths endpoint response
-          results[fieldKey] = rows.map(row => Object.values(row)[0]);
-        })
-      );
-    } catch (error) {
-      console.error(`Error fetching data from ${tableName}:`, error);
-    }
-  }
 
   return results;
 }
