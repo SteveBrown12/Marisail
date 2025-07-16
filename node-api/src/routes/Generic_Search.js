@@ -1,6 +1,6 @@
 import { Router } from "express";
 import db_connection from "../config/dbConfig.js";
-import { SERVICES,SERVICE_MAPPINGS } from "../Config/All_Services_Config.js";
+import { SERVICES } from "../Config/All_Services_Config.js";
 
 const search_router = Router();
 
@@ -8,9 +8,7 @@ const search_router = Router();
 // CORE UTILITIES
 // ========================
 const load_service_config = (service_name) => {
-  // const config = SERVICES[service_name.toLowerCase()];
-  const config = SERVICE_MAPPINGS[service_name.toLowerCase()];
-  
+  const config = SERVICES[service_name.toLowerCase()];
   if (!config) throw new Error(`Invalid service '${service_name}'`);
   return config;
 };
@@ -26,17 +24,16 @@ const validate_schema = async (connection, config) => {
   const [main_table] = await connection.query(
     `SHOW TABLES LIKE '${config.main_table}'`
   );
-  if (!main_table.length) errors.push(`Main table '${config.main_table}' missing`);
-  console.log(`Validating schema for service: ${config.main_table}`);
+  if (!main_table.length)
+    errors.push(`Main table '${config.main_table}' missing`);
+
   // Join tables check
   for (const table of config.join_tables) {
-    const [join_table] = await connection.query(
-      `SHOW TABLES LIKE '${table}'`
-    );
+    const [join_table] = await connection.query(`SHOW TABLES LIKE '${table}'`);
     if (!join_table.length) errors.push(`Join table '${table}' missing`);
   }
-  
-  if (errors.length) throw new Error(errors.join('\n'));
+
+  if (errors.length) throw new Error(errors.join("\n"));
 };
 
 // ========================
@@ -45,11 +42,10 @@ const validate_schema = async (connection, config) => {
 const init_service = async (req, res, next) => {
   try {
     const config = load_service_config(req.params.service_name);
-    await validate_schema(db_connection, config.dbConfig);
+    await validate_schema(db_connection, config);
     req.service_config = config;
     next();
   } catch (err) {
-    console.log("Error 1")
     handle_error_response(res, err.message, 400);
   }
 };
@@ -57,21 +53,24 @@ const init_service = async (req, res, next) => {
 // ========================
 // QUERY BUILDERS
 // ========================
-const build_joins = (config) => 
-  config.join_tables.map(t => 
-    `LEFT JOIN ${t} ON ${config.main_table}.${config.primary_key} = ${t}.${config.primary_key}`
-  ).join('\n');
+const build_joins = (config) =>
+  config.join_tables
+    .map(
+      (tbl) =>
+        `LEFT JOIN ${tbl} ON ${config.main_table}.${config.primary_key} = ${tbl}.${config.primary_key}`
+    )
+    .join("\n");
 
 const build_where = (filters, var_to_column) => {
   const conditions = [];
   Object.entries(filters).forEach(([key, values]) => {
     if (values && values.length > 0) {
       conditions.push(
-        `${var_to_column[key]} IN (${values.map(v => `'${v}'`).join(',')})`
+        `${var_to_column[key]} IN (${values.map((val) => `'${val}'`).join(",")})`
       );
     }
   });
-  return conditions.join(' AND ');
+  return conditions.join(" AND ");
 };
 
 const build_range_facets = (column, bucket_size) => {
@@ -91,32 +90,31 @@ const build_range_facets = (column, bucket_size) => {
 // ========================
 // ROUTES
 // ========================
-search_router.post("/:service_name/search", init_service, async (req, res) => {
+search_router.get("/:service_name/search", init_service, async (req, res) => {
   try {
-    const {page} = req.body;
-    const { main_table , primary_key} = req.service_config.dbConfig
-    const { Var_To_Column } = req.service_config;
-    const query = `
-      SELECT ${main_table}.* 
-      FROM ${main_table}
-      ${build_joins(req.service_config.dbConfig)}
-      ${req.body.filters ? `WHERE ${build_where(req.body.filters, Var_To_Column)}` : ''}
-      ORDER BY ${main_table}.${primary_key} DESC
-      LIMIT 60 OFFSET ${page * 30};
-    `;
-    // console.log(`Executing search query: ${query}`);
+    const { main_table, primary_key, Var_To_Table } = req.service_config;
+    const { selectedOptions = {}, page = 0, limit = 50 } = req.query || {};
+    const offset = page * limit;
 
-    const [results] = await db_connection.query(query);
+    // Build WHERE clause from selectedOptions
+    const whereClause = Object.keys(selectedOptions).length
+      ? `WHERE ${build_where(selectedOptions, Var_To_Table)}`
+      : "";
+
+    const query = `
+      SELECT ${main_table}.*
+      FROM ${main_table}
+      ${build_joins(req.service_config)}
+      ${whereClause}
+      ORDER BY ${main_table}.${primary_key} DESC
+      LIMIT ?
+      OFFSET ?
+    `;
+
+    const [results] = await db_connection.query(query, [limit, offset]);
     res.json({ ok: true, res: results });
   } catch (err) {
-    console.log("Error 2")
     handle_error_response(res, `Search failed: ${err.message}`);
-  } finally {
-     if (db_connection) {
-      // db_connection.release();
-      console.log("Database connection released.");
-    }
-    // if (db_connection) db_connection.release();
   }
 });
 
@@ -149,48 +147,57 @@ search_router.get("/:service_name/counts", init_service, async (req, res) => {
   }
 });
 
-search_router.get("/:service_name/facets/:field", init_service, async (req, res) => {
-  try {
-    const { field } = req.params;
-    const { var_to_column, main_table } = req.service_config;
-    
-    if (req.query.range) {
-      const [ranges] = await db_connection.query(
-        build_range_facets(var_to_column[field], parseInt(req.query.range))
-      );
-      res.json({ ok: true, facets: ranges });
-    } else {
-      const [values] = await db_connection.query(
-        `SELECT DISTINCT ${var_to_column[field]} AS value
+search_router.get(
+  "/:service_name/facets/:field",
+  init_service,
+  async (req, res) => {
+    try {
+      const { field } = req.params;
+      const { var_to_column, main_table } = req.service_config;
+
+      if (req.query.range) {
+        const [ranges] = await db_connection.query(
+          build_range_facets(var_to_column[field], parseInt(req.query.range))
+        );
+        res.json({ ok: true, facets: ranges });
+      } else {
+        const [values] = await db_connection.query(
+          `SELECT DISTINCT ${var_to_column[field]} AS value
          FROM ${main_table}
          WHERE ${var_to_column[field]} IS NOT NULL
          ORDER BY value`
-      );
-      res.json({ ok: true, facets: values.map(v => v.value) });
+        );
+        res.json({ ok: true, facets: values.map((val) => val.value) });
+      }
+    } catch (err) {
+      handle_error_response(res, `Facets failed: ${err.message}`);
     }
-  } catch (err) {
-    handle_error_response(res, `Facets failed: ${err.message}`);
   }
-});
+);
 
-search_router.get("/:service_name/details/:id", init_service, async (req, res) => {
-  try {
-    const { main_table, primary_key } = req.service_config;
-    const query = `
-      SELECT ${main_table}.*, ${req.service_config.join_tables.map(t => 
-        `${t}.*`).join(', ')}
+search_router.get(
+  "/:service_name/details/:id",
+  init_service,
+  async (req, res) => {
+    try {
+      const { main_table, primary_key } = req.service_config;
+      const query = `
+      SELECT ${main_table}.*, ${req.service_config.join_tables
+        .map((tbl) => `${tbl}.*`)
+        .join(", ")}
       FROM ${main_table}
       ${build_joins(req.service_config)}
       WHERE ${main_table}.${primary_key} = ?
     `;
 
-    const [results] = await db_connection.query(query, [req.params.id]);
-    if (results.length === 0) throw new Error('Record not found');
-    
-    res.json({ ok: true, data: results[0] });
-  } catch (err) {
-    handle_error_response(res, `Details failed: ${err.message}`);
+      const [results] = await db_connection.query(query, [req.params.id]);
+      if (results.length === 0) throw new Error("Record not found");
+
+      res.json({ ok: true, data: results[0] });
+    } catch (err) {
+      handle_error_response(res, `Details failed: ${err.message}`);
+    }
   }
-});
+);
 
 export default search_router;
