@@ -123,8 +123,8 @@ InputComponentDual.propTypes = {
   value: PropTypes.string.isRequired,
   formType: PropTypes.string.isRequired,
   isMandatory: PropTypes.bool,
-  openKey: PropTypes.string.isRequired,
-  setOpenKey: PropTypes.func.isRequired,
+  openKey: PropTypes.string,
+  setOpenKey: PropTypes.func,
   radioOptions: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string.isRequired,

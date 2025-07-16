@@ -7,6 +7,8 @@ import authRoutes from "./index.js";
 import uploadRouter from "./routes/upload-media.js"; // Import your upload route
 import path from "path";
 import { fileURLToPath } from "url";
+import advertRouter from "./routes/advertRouter.js";
+import searchRouter from "./routes/searchRouter.js"
 
 var server = express();
 const allowOrigins = ['https://test.marisail.com', 'http://localhost:5173', 'http://37.148.203.193:4173']
@@ -23,6 +25,10 @@ server.use(urlencoded({ extended: false }));
 server.use(cookieParser());
 server.use("/api", authRoutes);
 server.use("/api", uploadRouter);
+server.use("/api/berthRoutes", advertRouter);
+server.use("/api/berthRoutes", searchRouter);
+server.use("/api/transportRoutes", searchRouter);
+server.use("/api/transportRoutes", advertRouter);
 
 // catch 404 and forward to error handler
 server.get("/", (req, res) => {
@@ -47,7 +53,7 @@ server.use((req, res, next) => {
   next();
 });
 // usin .env PORT value or the pm2 its ok
-var port = process.env.PORT || "3000";
+var port = process.env.PORT || "3007";
 
 server.listen(port, () => {
   console.log(`Running on port ` + port);

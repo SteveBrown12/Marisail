@@ -56,12 +56,12 @@ const VideoUploader = () => {
   const removeFile = (filePath) => {
     setFiles(files.filter((file) => file.path !== filePath));
   };
+const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  onDrop,
+  accept: { 'video/*': [] }, // ✅ FIXED
+  multiple: true
+});
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: ["video/*"],
-    multiple: true
-  });
 
   return (
     <div className="photo-uploader-container">

@@ -2,91 +2,75 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import TrailerDetailsPanel from "../Trailers/Trailer_Details_Panel";
-import { detailStateType } from "../Trailers/Trailer_Search_Info";
 import Loader from "../Loader";
-import { varToDb } from "./Transport_Search_Info";
-const apiUrl = import.meta.env.VITE_BACKEND_URL;
+import { Transport_Config } from "../../../node-api/src/config/Transport_Config";
 
-const URL = apiUrl + "/search_transport/";
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+const URL = `${apiUrl}/search_transport/`;
+
+const getEmptyDetailsState = () => {
+  const state = {};
+  Transport_Config.tables.forEach(({ key, columns }) => {
+    state[key] = {};
+    Object.keys(columns).forEach((fieldKey) => {
+      state[key][fieldKey] = "";
+    });
+  });
+  return state;
+};
 
 const TransportDetail = () => {
-  // console.log("detailStateType", detailStateType);
-  // console.log("varToDb", varToDb);
   const { id } = useParams();
-  const [trailer, setTrailer] = useState(detailStateType);
+  const [transportDetails, setTransportDetails] = useState(getEmptyDetailsState());
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  console.log(id);
-
-  // console.log("trailer", trailer);
 
   useEffect(() => {
-    const fetchEngineDetails = async (id) => {
+    const fetchTransportDetails = async () => {
       try {
         const response = await fetch(`${URL}transport-detail/${id}`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
+        if (!response.ok) throw new Error("Failed to fetch details");
 
-        Object.keys(trailer).map((key) => {
-          Object.keys(trailer[key]).map((key2) => {
-            // console.log("key2", key2);
-            var name = varToDb[key2];
-            // console.log("size", data.res[0].length);
-            // console.log("name", name);
-            // console.log("data[name] ooutside", data.res[0][0][name]);
-            if (data.res[0][0][name] !== undefined)
-              // console.log("data[name] inside", data.res[0][0][name]);
-              setTrailer((prevState) => ({
-                ...prevState,
-                [key]: {
-                  ...prevState[key],
-                  [key2]: data.res[0][0][name],
-                },
-              }));
-            // trailer[key][key2] = data[name];
+        const data = await response.json();
+        const fetched = data.res?.[0]?.[0];
+
+        if (!fetched) throw new Error("No data found");
+
+        const updated = {};
+        Transport_Config.tables.forEach(({ key, columns }) => {
+          updated[key] = {};
+          Object.keys(columns).forEach((fieldKey) => {
+            const dbFieldName = columns[fieldKey].columnName || fieldKey;
+            updated[key][fieldKey] = fetched[dbFieldName] ?? "";
           });
         });
 
-        // console.log("trailer", trailer);
-        // console.log("data[name] trailer", data.res[0]["Trailer_ID"]);
-        setLoading(false);
-        // console.log("trailer", trailer);
-      } catch (error) {
-        setError(error.message);
-        setLoading(false);
+        setTransportDetails(updated);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchEngineDetails(id);
-    } else {
-      setLoading(false);
-    }
+    if (id) fetchTransportDetails();
+    else setLoading(false);
   }, [id]);
 
   if (loading) return <Loader />;
   if (error) return <p>Error: {error}</p>;
-  if (!trailer) return <p>No trailer details available.</p>;
-
-  console.log("trailer :>> ", trailer);
+  if (!transportDetails) return <p>No transport details available.</p>;
 
   return (
     <div className="engine-detail-page">
       <div className="engine-main-section">
-        
-        <div>
-          <Row>
-            {Object.keys(trailer).map((key) => (
-              <Col key={key} md={6}>
-                <TrailerDetailsPanel title={key} details={trailer[key]} />
-              </Col>
-            ))}
-          </Row>
-        </div>
+        <Row>
+          {Object.keys(transportDetails).map((section) => (
+            <Col key={section} md={6}>
+              <TrailerDetailsPanel title={section} details={transportDetails[section]} />
+            </Col>
+          ))}
+        </Row>
       </div>
     </div>
   );

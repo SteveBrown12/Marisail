@@ -4,13 +4,13 @@ import PropTypes from "prop-types";
 
 const BerthCard = ({
   //   image,
-  Marisail_Berth_ID,
+  Berth_ID,
   Location,
   Type,
   year = "",
 }) => {
   return (
-    <Link to={`/berth/${Marisail_Berth_ID}`} className="custom-card-link">
+    <Link to={`/berth/${Berth_ID}`} className="custom-card-link">
       <div className="custom-card" style={{ marginBottom: "30px" }}>
         <div className="card-content">
           <div className="card-header">
@@ -18,7 +18,7 @@ const BerthCard = ({
             <h3 className="title">{Type}</h3>
             <p className="price">£ 249,950 Tax Paid</p>
             <p className="price">{Location}</p>
-            {/* <p className="price">{Marisail_Berth_ID}</p> */}
+            {/* <p className="price">{Berth_ID}</p> */}
           </div>
           <div className="card-description">{/* <p>{description}</p> */}</div>
         </div>
@@ -28,7 +28,7 @@ const BerthCard = ({
 };
 
 BerthCard.propTypes = {
-  Marisail_Berth_ID: PropTypes.number.isRequired,
+  Berth_ID: PropTypes.number.isRequired,
   Location: PropTypes.string.isRequired,
   Type: PropTypes.string.isRequired,
   year: PropTypes.string,
