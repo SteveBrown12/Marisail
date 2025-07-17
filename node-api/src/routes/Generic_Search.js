@@ -2,98 +2,21 @@ import { Router } from "express";
 import db_connection from "../config/dbConfig.js";
 import { SERVICES } from "../Config/All_Services_Config.js";
 
+import {get_service_config_by_name,
+send_error_response,
+initialize_service_middleware,
+build_range_facets,
+build_joins
+} from "../utils/utils.js"
 const search_router = Router();
-
-// ========================
-// CORE UTILITIES
-// ========================
-const load_service_config = (service_name) => {
-  const config = SERVICES[service_name.toLowerCase()];
-  if (!config) throw new Error(`Invalid service '${service_name}'`);
-  return config;
-};
-
-const handle_error_response = (res, message, status = 500) => {
-  console.error(`[Search Error] ${message}`);
-  res.status(status).json({ ok: false, message });
-};
-
-const validate_schema = async (connection, config) => {
-  const errors = [];
-  // Main table check
-  const [main_table] = await connection.query(
-    `SHOW TABLES LIKE '${config.main_table}'`
-  );
-  if (!main_table.length)
-    errors.push(`Main table '${config.main_table}' missing`);
-
-  // Join tables check
-  for (const table of config.join_tables) {
-    const [join_table] = await connection.query(`SHOW TABLES LIKE '${table}'`);
-    if (!join_table.length) errors.push(`Join table '${table}' missing`);
-  }
-
-  if (errors.length) throw new Error(errors.join("\n"));
-};
-
-// ========================
-// MIDDLEWARE
-// ========================
-const init_service = async (req, res, next) => {
-  try {
-    const config = load_service_config(req.params.service_name);
-    await validate_schema(db_connection, config);
-    req.service_config = config;
-    next();
-  } catch (err) {
-    handle_error_response(res, err.message, 400);
-  }
-};
-
-// ========================
-// QUERY BUILDERS
-// ========================
-const build_joins = (config) =>
-  config.join_tables
-    .map(
-      (tbl) =>
-        `LEFT JOIN ${tbl} ON ${config.main_table}.${config.primary_key} = ${tbl}.${config.primary_key}`
-    )
-    .join("\n");
-
-const build_where = (filters, var_to_column) => {
-  const conditions = [];
-  Object.entries(filters).forEach(([key, values]) => {
-    if (values && values.length > 0) {
-      conditions.push(
-        `${var_to_column[key]} IN (${values.map((val) => `'${val}'`).join(",")})`
-      );
-    }
-  });
-  return conditions.join(" AND ");
-};
-
-const build_range_facets = (column, bucket_size) => {
-  return `
-    SELECT 
-      CONCAT(
-        FLOOR(${column}/${bucket_size})*${bucket_size}, 
-        '-', 
-        FLOOR(${column}/${bucket_size})*${bucket_size} + ${bucket_size}
-      ) AS range,
-      COUNT(*) AS count
-    FROM ${table}
-    GROUP BY FLOOR(${column}/${bucket_size})
-  `;
-};
 
 // ========================
 // ROUTES
 // ========================
-search_router.get("/:service_name/search", init_service, async (req, res) => {
+search_router.get("/:service_name/search", initialize_service_middleware, async (request, callback) => {
   try {
-    const { main_table, primary_key, Var_To_Table } = req.service_config;
-    const { selectedOptions = {}, page = 0, limit = 50 } = req.query || {};
+    const { main_table, primary_key, Var_To_Table } = request.service_config;
+    const { selectedOptions = {}, page = 0, limit = 50 } = request.query || {};
     const offset = page * limit;
 
     // Build WHERE clause from selectedOptions
@@ -104,7 +27,7 @@ search_router.get("/:service_name/search", init_service, async (req, res) => {
     const query = `
       SELECT ${main_table}.*
       FROM ${main_table}
-      ${build_joins(req.service_config)}
+      ${build_joins(request.service_config)}
       ${whereClause}
       ORDER BY ${main_table}.${primary_key} DESC
       LIMIT ?
@@ -112,19 +35,19 @@ search_router.get("/:service_name/search", init_service, async (req, res) => {
     `;
 
     const [results] = await db_connection.query(query, [limit, offset]);
-    res.json({ ok: true, res: results });
+    callback.json({ ok: true, res: results });
   } catch (err) {
-    handle_error_response(res, `Search failed: ${err.message}`);
+    send_error_response(callback, `Search failed: ${err.message}`);
   }
 });
 
-search_router.get("/:service_name/counts", init_service, async (req, res) => {
+search_router.get("/:service_name/counts", initialize_service_middleware, async (request, callback) => {
   try {
-    const { main_table, var_to_column } = req.service_config;
+    const { main_table, var_to_column } = request.service_config;
     const counts = {};
 
     await Promise.all(
-      Object.entries(req.query.filters || {}).map(async ([field, values]) => {
+      Object.entries(request.query.filters || {}).map(async ([field, values]) => {
         if (values && values.length > 0) {
           const [result] = await db_connection.query(
             `SELECT ${var_to_column[field]} AS value, COUNT(*) AS count
@@ -141,25 +64,25 @@ search_router.get("/:service_name/counts", init_service, async (req, res) => {
       })
     );
 
-    res.json({ ok: true, counts });
+    callback.json({ ok: true, counts });
   } catch (err) {
-    handle_error_response(res, `Counts failed: ${err.message}`);
+    send_error_response(callback, `Counts failed: ${err.message}`);
   }
 });
 
 search_router.get(
   "/:service_name/facets/:field",
-  init_service,
-  async (req, res) => {
+  initialize_service_middleware,
+  async (request, callback) => {
     try {
-      const { field } = req.params;
-      const { var_to_column, main_table } = req.service_config;
+      const { field } = request.params;
+      const { var_to_column, main_table } = request.service_config;
 
-      if (req.query.range) {
+      if (request.query.range) {
         const [ranges] = await db_connection.query(
-          build_range_facets(var_to_column[field], parseInt(req.query.range))
+          build_range_facets(var_to_column[field], parseInt(request.query.range))
         );
-        res.json({ ok: true, facets: ranges });
+        callback.json({ ok: true, facets: ranges });
       } else {
         const [values] = await db_connection.query(
           `SELECT DISTINCT ${var_to_column[field]} AS value
@@ -167,35 +90,34 @@ search_router.get(
          WHERE ${var_to_column[field]} IS NOT NULL
          ORDER BY value`
         );
-        res.json({ ok: true, facets: values.map((val) => val.value) });
+        callback.json({ ok: true, facets: values.map((val) => val.value) });
       }
     } catch (err) {
-      handle_error_response(res, `Facets failed: ${err.message}`);
+      send_error_response(callback, `Facets failed: ${err.message}`);
     }
   }
 );
 
 search_router.get(
   "/:service_name/details/:id",
-  init_service,
-  async (req, res) => {
+  initialize_service_middleware,
+  async (request, callback) => {
     try {
-      const { main_table, primary_key } = req.service_config;
+      const { main_table, primary_key } = request.service_config;
       const query = `
-      SELECT ${main_table}.*, ${req.service_config.join_tables
+      SELECT ${main_table}.*, ${request.service_config.join_tables
         .map((tbl) => `${tbl}.*`)
         .join(", ")}
       FROM ${main_table}
-      ${build_joins(req.service_config)}
+      ${build_joins(request.service_config)}
       WHERE ${main_table}.${primary_key} = ?
     `;
-
-      const [results] = await db_connection.query(query, [req.params.id]);
+    const [results] = await db_connection.query(query, [request.params.id]);
       if (results.length === 0) throw new Error("Record not found");
 
-      res.json({ ok: true, data: results[0] });
+      callback.json({ ok: true, res: results });
     } catch (err) {
-      handle_error_response(res, `Details failed: ${err.message}`);
+      send_error_response(callback, `Details failed: ${err.message}`);
     }
   }
 );

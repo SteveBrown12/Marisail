@@ -1,30 +1,5 @@
 // Aggregate object to map SERVICE names to SERVICE Configs
 
-function generateMappings(config) {
-  const Var_To_Column = {};
-  const Var_To_Table = {};
-
-  config.tables.forEach((table) => {
-    const tableName = table.table_Name;
-    const columns = table.columns;
-
-    Object.entries(columns).forEach(([varName, colInfo]) => {
-      Var_To_Column[varName] = colInfo.column_Name;
-      Var_To_Table[varName] = tableName;
-    });
-  });
-
-  const Unique_Table = [
-    ...new Set(config.tables.map((table) => table.table_Name)),
-  ];
-
-  return {
-    Var_To_Column,
-    Var_To_Table,
-    Unique_Table,
-  };
-}
-
 // Individual Service Configs (keep your existing definitions here)
 
 export const radioOptions = [
@@ -4654,26 +4629,86 @@ export const SERVICES = {
   transport: Transport_Config,
 };
 
-export const SERVICE_MAPPINGS = {
-  berth: generateMappings(Berth_Config),
-  charter: generateMappings(Charter_Config),
-  trailer: generateMappings(Trailer_Config),
-  transport: generateMappings(Transport_Config),
-};
 
-// For backward compatibility, also export individual mappings
-export const berth_Var_To_Column = SERVICE_MAPPINGS.berth.Var_To_Column;
-export const berth_Var_To_Table = SERVICE_MAPPINGS.berth.Var_To_Table;
-export const berth_Unique_Table = SERVICE_MAPPINGS.berth.Unique_Table;
 
-export const charter_Var_To_Column = SERVICE_MAPPINGS.charter.Var_To_Column;
-export const charter_Var_To_Table = SERVICE_MAPPINGS.charter.Var_To_Table;
-export const charter_Unique_Table = SERVICE_MAPPINGS.charter.Unique_Table;
+// const berth_Var_To_Column = {};
+// Berth_Config.tables.forEach((table) => {
+//   Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+//     berth_Var_To_Column[var_Name] = col_Info.column_Name;
+//   });
+// });
 
-export const trailer_Var_To_Column = SERVICE_MAPPINGS.trailer.Var_To_Column;
-export const trailer_Var_To_Table = SERVICE_MAPPINGS.trailer.Var_To_Table;
-export const trailer_Unique_Table = SERVICE_MAPPINGS.trailer.Unique_Table;
+// const berth_Var_To_Table = {};
+// Berth_Config.tables.forEach((table) => {
+//   Object.keys(table.columns).forEach((var_Name) => {
+//     berth_Var_To_Table[var_Name] = table.table_Name;
+//   });
+// });
 
-export const transport_Var_To_Column = SERVICE_MAPPINGS.transport.Var_To_Column;
-export const transport_Var_To_Table = SERVICE_MAPPINGS.transport.Var_To_Table;
-export const transport_Unique_Table = SERVICE_MAPPINGS.transport.Unique_Table;
+// const berth_Unique_Table = [
+//   ...new Set(Berth_Config.tables.map((table) => table.table_Name)),
+// ];
+// export { berth_Var_To_Column, berth_Var_To_Table, berth_Unique_Table };
+
+// const charter_Var_To_Column = {};
+// Charter_Config.tables.forEach((table) => {
+//   Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+//     charter_Var_To_Column[var_Name] = col_Info.column_Name;
+//   });
+// });
+
+// const charter_Var_To_Table = {};
+// Charter_Config.tables.forEach((table) => {
+//   Object.keys(table.columns).forEach((var_Name) => {
+//     charter_Var_To_Table[var_Name] = table.table_Name;
+//   });
+// });
+
+// const charter_Unique_Table = [
+//   ...new Set(Charter_Config.tables.map((table) => table.table_Name)),
+// ];
+// export { charter_Var_To_Column, charter_Var_To_Table, charter_Unique_Table };
+
+// const trailer_Var_To_Column = {};
+// Trailer_Config.tables.forEach((table) => {
+//   Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+//     trailer_Var_To_Column[var_Name] = col_Info.column_Name;
+//   });
+// });
+
+// const trailer_Var_To_Table = {};
+// Trailer_Config.tables.forEach((table) => {
+//   Object.keys(table.columns).forEach((var_Name) => {
+//     trailer_Var_To_Table[var_Name] = table.table_Name;
+//   });
+// });
+
+// const trailer_Unique_Table = [
+//   ...new Set(Trailer_Config.tables.map((table) => table.table_Name)),
+// ];
+// export { trailer_Var_To_Column, trailer_Var_To_Table, trailer_Unique_Table };
+
+// const transport_Var_To_Column = {};
+// Transport_Config.tables.forEach((table) => {
+//   Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+//     transport_Var_To_Column[var_Name] = col_Info.column_Name;
+//   });
+// });
+
+// const transport_Var_To_Table = {};
+// Transport_Config.tables.forEach((table) => {
+//   Object.keys(table.columns).forEach((var_Name) => {
+//     transport_Var_To_Table[var_Name] = table.table_Name;
+//   });
+// });
+
+// const transport_Unique_Table = [
+//   ...new Set(Transport_Config.tables.map((table) => table.table_Name)),
+// ];
+// export {
+//   transport_Var_To_Column,
+//   transport_Var_To_Table,
+//   transport_Unique_Table,
+// };
+
+
