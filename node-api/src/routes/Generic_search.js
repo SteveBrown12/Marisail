@@ -17,24 +17,7 @@ search_router.get("/:service_name/search-options", initialize_service, (req, res
     res.json({ ok: true, data: req.service_config.searchable_fields || [] });
 });
 
-// The main search route, using the imported builders.
-// search_router.get("/:service_name/search", initialize_service, async (req, res) => {
-//     try {
-//         const { service_config } = req;
-//         const query = `
-//             SELECT ${service_config.main_table}.*
-//             FROM ${service_config.main_table}
-//             ${build_joins(service_config)}
-//             ${build_where_clause(req.query.filters || {}, service_config.mappings)}
-//             ORDER BY ${service_config.main_table}.${service_config.primary_key} DESC
-//             LIMIT 50 OFFSET 0
-//         `;
-//         const [results] = await db_connection.query(query);
-//         res.json({ ok: true, data: results });
-//     } catch (err) {
-//         handle_error_response(res, `Search failed: ${err.message}`);
-//     }
-// });
+
 
 search_router.get("/:service_name/search", initialize_service, async (req, res) => {
     try {
@@ -129,7 +112,7 @@ search_router.get("/:service_name/facets/:field", initialize_service, async (req
                 WHERE ${column_name} IS NOT NULL ORDER BY value ASC LIMIT 200
             `;
             const [values] = await db_connection.query(query);
-            return res.json({ ok: true, facets: values.map(v => v.value) });
+            return res.json({ ok: true, facets: values.map(v => v.value) });//check
         }
     } catch (err) {
         handle_error_response(res, `Facets failed for field '${req.params.field}': ${err.message}`);

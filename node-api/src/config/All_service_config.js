@@ -56,10 +56,7 @@ export const dual_Range = {
   ]
 };
 
-// =================================================================
-// BERTH CONFIGURATION (Now referencing the client's  object)
-// =================================================================
-// In All_Services_Config.js
+
 
 // =================================================================
 // BERTH CONFIGURATION (Minimal, Corrected, and Stable)
@@ -430,150 +427,6 @@ export const Berth_Config = {
 };
 
 
-
-// =================================================================
-// CHARTER CONFIGURATION (Using our final, stable object structure)
-// =================================================================
-export const Charter_Config = {
-    // METADATA
-    schema_name: "marisail",
-    main_table: "Accomodation",
-    primary_key: "Charter_ID",
-    join_tables: [
-        "Charter_Costs", "Charter_Date", "Charter_Food", "Charter_Insurance",
-        "Charter_Location", "Charter_Payment", "Charter_Policy", "Charter_Requirements",
-        "Charter_Safety", "Costs", "Crew", "Charter_Dates", "Food", "Policy",
-        "Requirements", "Sales"
-    ],
-    
-    // TABLES ARRAY
-    tables: [
-        {
-            table_Name: "Accomodation",
-            section_Heading: "General Information",
-            columns: {
-                vesselID: { column_Name: "Vessel_ID", displayText: "Vessel ID", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                charterID: { column_Name: "Charter_ID", displayText: "Charter ID", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                guestCapacity: { column_Name: "Guest_Capacity", displayText: "Guest Capacity", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                bedroomConfiguration: { column_Name: "Bedroom_Configuration", displayText: "Bedroom Configuration", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                bathroomConfiguration: { column_Name: "Bathroom_Configuration", displayText: "Bathroom Configuration", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                crewAccommodations: { column_Name: "Crew_Accommodation", displayText: "Crew Accommodation", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                accessibilityInformation: { column_Name: "Accessibility_Information", displayText: "Accessibility Information", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                cleaningAndMaintenanceProcedures: { column_Name: "Maintenance_Procedures", displayText: "Maintenance Procedures", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                vesselDecorAndSetupRequests: { column_Name: "Yacht_Decor", displayText: "Vessel Decor", type: "radio", mandatory: true, searchable: false, radioOptions: null }
-            }
-        },
-        {
-            table_Name: "Charter_Location",
-            section_Heading: "Charter Logistics",
-            columns: {
-                boardingPortArrivalTime: { column_Name: "Arrival_Time", displayText: "Boarding Arrival Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null },
-                boardingPortDepartureTime: { column_Name: "Departure_Time", displayText: "Boarding Departure Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null },
-                summerCruisingAreas: { column_Name: "Summer_Cruising_Area", displayText: "Summer Cruising Areas", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                boardingPort: { column_Name: "Boarding_Port", displayText: "Boarding Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                winterCruisingAreas: { column_Name: "Winter_Cruising_Area", displayText: "Winter Cruising Areas", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                disembarkationPort: { column_Name: "Disembarkation_Port", displayText: "Disembarkation Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                embarkationAndDisembarkationLogistics: { column_Name: "Logistics", displayText: "Embarkation & Disembarkation", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                disembarkationPortArrivalTime: { column_Name: "Disembarkation_Arrival_Time", displayText: "Disembarkation Arrival Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null },
-                dockingAndMooringInstructions: { column_Name: "Mooring_Instructions", displayText: "Mooring Instructions", type: "radio", mandatory: true, searchable: true, radioOptions: null }
-            }
-        },
-        {
-            table_Name: "Requirements",
-            section_Heading: "Customer Requirements",
-            columns: {
-                skipperIncluded: { column_Name: "Captain_Included", displayText: "Captain Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
-                crewIncluded: { column_Name: "Crew_Included", displayText: "Crew Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
-                crewUniformPreferences: { column_Name: "Crew_Uniform", displayText: "Crew Uniform Preferences", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                localCuisinePreferences: { column_Name: "Cuisine_Preferences", displayText: "Cuisine Preferences", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                cateringRequired: { column_Name: "Catering_Required", displayText: "Catering Required?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
-                carParkingAvailable: { column_Name: "Car_Parking", displayText: "Car Parking Available?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
-                specialRequirementsRequests: { column_Name: "Special_Requirements", displayText: "Special Requirements", type: "radio", mandatory: true, searchable: false, radioOptions: null }
-            }
-        },
-        {
-            table_Name: "Policy",
-            section_Heading: "Policy Information",
-            columns: {
-                smokingPolicy: { column_Name: "Smoking_Policy", displayText: "Smoking Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                petFriendlyPolicy: { column_Name: "Pet_Policy", displayText: "Pet Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                localRegulationsAndRestrictions: { column_Name: "Local_Regulations", displayText: "Local Regulations", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                charterAgreementTermsAndConditions: { column_Name: "Charter_TCs", displayText: "Charter T&Cs", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                environmentalPolicies: { column_Name: "Environmental_Policies", displayText: "Environmental Policies", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                waterConservationMeasures: { column_Name: "Water_Conservation", displayText: "Water Conservation Measures", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                wasteManagementProtocols: { column_Name: "Waste_Management", displayText: "Waste Management Protocols", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                alcoholPolicy: { column_Name: "Alcohol", displayText: "Alcohol Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                photographyPolicy: { column_Name: "Photography_Policies", displayText: "Photography Policies", type: "radio", mandatory: true, searchable: true, radioOptions: null }
-            }
-        },
-        {
-            table_Name: "Charter_Safety",
-            section_Heading: "Safety & Security",
-            columns: {
-                weatherContingencyPlans: { column_Name: "Weather_Contingency", displayText: "Weather Contingency Plans", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                emergencyProcedures: { column_Name: "Emergency_Procedures", displayText: "Emergency Procedures", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                medicalFacilitiesOnboard: { column_Name: "Medical_Facilities", displayText: "Medical Facilities Onboard", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                emergencyContacts: { column_Name: "Emergency_Contacts", displayText: "Emergency Contacts", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                weatherForecastServices: { column_Name: "Weather_Forecast", displayText: "Weather Forecast Services", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                securityMeasures: { column_Name: "Security_Measures", displayText: "Security Measures", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                guestOrientationAndSafetyBriefing: { column_Name: "Safety_Briefing", displayText: "Guest Safety Briefing", type: "radio", mandatory: true, searchable: true, radioOptions: null }
-            }
-        },
-        {
-            table_Name: "Charter_Costs",
-            section_Heading: "Cost Details",
-            columns: {
-                summerRatePerWeek: { column_Name: "Summerrate_Per_Week", displayText: "Summer Rate Per Week", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                summerRatePerNight: { column_Name: "Summerrate_Per_Night", displayText: "Summer Rate Per Night", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                winterRatePerWeek: { column_Name: "Winterrate_Per_week", displayText: "Winter Rate Per week", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                winterRatePerNight: { column_Name: "Winterrate_Per_Night", displayText: "Winter Rate Per Night", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                securityDepositAmount: { column_Name: "Deposit_Amount", displayText: "Deposit Amount", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                totalPrice: { column_Name: "Total_Price", displayText: "Total Price", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                refundableDeposit: { column_Name: "Refundable_Deposit", displayText: "Refundable Deposit?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
-                additionalFuelCosts: { column_Name: "Additional_Fuel", displayText: "Additional Fuel Costs?", type: "radio", mandatory: true, searchable: false, radioOptions: ["Yes", "No"] },
-                additionalFees: { column_Name: "Additional_Fees", displayText: "Additional Fees", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                fuelIncluded: { column_Name: "Fuel_Included", displayText: "Fuel Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
-                lateCheckInCheckOutFees: { column_Name: "Late_Fees", displayText: "Late Fees", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                insuranceForGuestsPersonalBelongings: { column_Name: "Guest_Insurance", displayText: "Guest Insurance Available", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                insuranceCoverageDetails: { column_Name: "Insurance_Coverage", displayText: "Insurance Coverage", type: "radio", mandatory: true, searchable: true, radioOptions: null }
-            }
-        },
-        {
-            table_Name: "Charter_Dates",
-            section_Heading: "Charter Dates",
-            columns: {
-                minimumNightsPolicy: { column_Name: "Minimum_Nights", displayText: "Minimum Nights Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                datesAvailable: { column_Name: "Dates_Available", displayText: "Dates Available", type: "date", mandatory: true, searchable: true, radioOptions: null },
-                cancellationPolicy: { column_Name: "Cancellation_Policy", displayText: "Cancellation Policy", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                startDate: { column_Name: "Start_Date", displayText: "Start Date", type: "date", mandatory: true, searchable: true, radioOptions: null },
-                endDate: { column_Name: "End_Date", displayText: "End Date", type: "date", mandatory: true, searchable: true, radioOptions: null },
-                numberNights: { column_Name: "Number_Nights", displayText: "Number Nights", type: "radio", mandatory: true, searchable: true, radioOptions: null }
-            }
-        },
-        {
-            table_Name: "Charter_Payment",
-            section_Heading: "Payment Information",
-            columns: {
-                paymentTerms: { column_Name: "Payment_Terms", displayText: "Payment Terms", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                paymentCurrency: { column_Name: "Currency", displayText: "Payment Currency", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                preferredPaymentMethods: { column_Name: "Preferred_Payment", displayText: "Preferred Payment Method", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                invoiceReceiptProcedures: { column_Name: "Invoice_Receipt", displayText: "Invoice Receipting Procedures", type: "radio", mandatory: true, searchable: false, radioOptions: null }
-            }
-        },
-        {
-            table_Name: "Sales",
-            section_Heading: "Sales Information",
-            columns: {
-                priceLabel: { column_Name: "Price_Label", displayText: "Price Label", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                priceDrop: { column_Name: "Price_Drop", displayText: "Price Drop", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                salesCurrency: { column_Name: "Currency", displayText: "Currency", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                vat: { column_Name: "VAT", displayText: "VAT", type: "radio", mandatory: false, searchable: false, radioOptions: null }
-            }
-        }
-    ]
-};
-
-
 // =================================================================
 // TRAILER CONFIGURATION (New Service)
 // =================================================================
@@ -875,6 +728,151 @@ export const Trailer_Config = {
 
     ]
 };
+// =================================================================
+// CHARTER CONFIGURATION (Using our final, stable object structure)
+// =================================================================
+export const Charter_Config = {
+    // METADATA
+    schema_name: "marisail",
+    main_table: "Accomodation",
+    primary_key: "Charter_ID",
+    join_tables: [
+        "Charter_Costs", "Charter_Date", "Charter_Food", "Charter_Insurance",
+        "Charter_Location", "Charter_Payment", "Charter_Policy", "Charter_Requirements",
+        "Charter_Safety", "Costs", "Crew", "Charter_Dates", "Food", "Policy",
+        "Requirements", "Sales"
+    ],
+    
+    // TABLES ARRAY
+    tables: [
+        {
+            table_Name: "Accomodation",
+            section_Heading: "General Information",
+            columns: {
+                vesselID: { column_Name: "Vessel_ID", displayText: "Vessel ID", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                charterID: { column_Name: "Charter_ID", displayText: "Charter ID", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                guestCapacity: { column_Name: "Guest_Capacity", displayText: "Guest Capacity", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                bedroomConfiguration: { column_Name: "Bedroom_Configuration", displayText: "Bedroom Configuration", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                bathroomConfiguration: { column_Name: "Bathroom_Configuration", displayText: "Bathroom Configuration", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                crewAccommodations: { column_Name: "Crew_Accommodation", displayText: "Crew Accommodation", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                accessibilityInformation: { column_Name: "Accessibility_Information", displayText: "Accessibility Information", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                cleaningAndMaintenanceProcedures: { column_Name: "Maintenance_Procedures", displayText: "Maintenance Procedures", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                vesselDecorAndSetupRequests: { column_Name: "Yacht_Decor", displayText: "Vessel Decor", type: "radio", mandatory: true, searchable: false, radioOptions: null }
+            }
+        },
+        {
+            table_Name: "Charter_Location",
+            section_Heading: "Charter Logistics",
+            columns: {
+                boardingPortArrivalTime: { column_Name: "Arrival_Time", displayText: "Boarding Arrival Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null },
+                boardingPortDepartureTime: { column_Name: "Departure_Time", displayText: "Boarding Departure Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null },
+                summerCruisingAreas: { column_Name: "Summer_Cruising_Area", displayText: "Summer Cruising Areas", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                boardingPort: { column_Name: "Boarding_Port", displayText: "Boarding Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                winterCruisingAreas: { column_Name: "Winter_Cruising_Area", displayText: "Winter Cruising Areas", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                disembarkationPort: { column_Name: "Disembarkation_Port", displayText: "Disembarkation Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                embarkationAndDisembarkationLogistics: { column_Name: "Logistics", displayText: "Embarkation & Disembarkation", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                disembarkationPortArrivalTime: { column_Name: "Disembarkation_Arrival_Time", displayText: "Disembarkation Arrival Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null },
+                dockingAndMooringInstructions: { column_Name: "Mooring_Instructions", displayText: "Mooring Instructions", type: "radio", mandatory: true, searchable: true, radioOptions: null }
+            }
+        },
+        {
+            table_Name: "Requirements",
+            section_Heading: "Customer Requirements",
+            columns: {
+                skipperIncluded: { column_Name: "Captain_Included", displayText: "Captain Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
+                crewIncluded: { column_Name: "Crew_Included", displayText: "Crew Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
+                crewUniformPreferences: { column_Name: "Crew_Uniform", displayText: "Crew Uniform Preferences", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                localCuisinePreferences: { column_Name: "Cuisine_Preferences", displayText: "Cuisine Preferences", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                cateringRequired: { column_Name: "Catering_Required", displayText: "Catering Required?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
+                carParkingAvailable: { column_Name: "Car_Parking", displayText: "Car Parking Available?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
+                specialRequirementsRequests: { column_Name: "Special_Requirements", displayText: "Special Requirements", type: "radio", mandatory: true, searchable: false, radioOptions: null }
+            }
+        },
+        {
+            table_Name: "Policy",
+            section_Heading: "Policy Information",
+            columns: {
+                smokingPolicy: { column_Name: "Smoking_Policy", displayText: "Smoking Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                petFriendlyPolicy: { column_Name: "Pet_Policy", displayText: "Pet Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                localRegulationsAndRestrictions: { column_Name: "Local_Regulations", displayText: "Local Regulations", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                charterAgreementTermsAndConditions: { column_Name: "Charter_TCs", displayText: "Charter T&Cs", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                environmentalPolicies: { column_Name: "Environmental_Policies", displayText: "Environmental Policies", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                waterConservationMeasures: { column_Name: "Water_Conservation", displayText: "Water Conservation Measures", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                wasteManagementProtocols: { column_Name: "Waste_Management", displayText: "Waste Management Protocols", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                alcoholPolicy: { column_Name: "Alcohol", displayText: "Alcohol Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                photographyPolicy: { column_Name: "Photography_Policies", displayText: "Photography Policies", type: "radio", mandatory: true, searchable: true, radioOptions: null }
+            }
+        },
+        {
+            table_Name: "Charter_Safety",
+            section_Heading: "Safety & Security",
+            columns: {
+                weatherContingencyPlans: { column_Name: "Weather_Contingency", displayText: "Weather Contingency Plans", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                emergencyProcedures: { column_Name: "Emergency_Procedures", displayText: "Emergency Procedures", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                medicalFacilitiesOnboard: { column_Name: "Medical_Facilities", displayText: "Medical Facilities Onboard", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                emergencyContacts: { column_Name: "Emergency_Contacts", displayText: "Emergency Contacts", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                weatherForecastServices: { column_Name: "Weather_Forecast", displayText: "Weather Forecast Services", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                securityMeasures: { column_Name: "Security_Measures", displayText: "Security Measures", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                guestOrientationAndSafetyBriefing: { column_Name: "Safety_Briefing", displayText: "Guest Safety Briefing", type: "radio", mandatory: true, searchable: true, radioOptions: null }
+            }
+        },
+        {
+            table_Name: "Charter_Costs",
+            section_Heading: "Cost Details",
+            columns: {
+                summerRatePerWeek: { column_Name: "Summerrate_Per_Week", displayText: "Summer Rate Per Week", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                summerRatePerNight: { column_Name: "Summerrate_Per_Night", displayText: "Summer Rate Per Night", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                winterRatePerWeek: { column_Name: "Winterrate_Per_week", displayText: "Winter Rate Per week", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                winterRatePerNight: { column_Name: "Winterrate_Per_Night", displayText: "Winter Rate Per Night", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                securityDepositAmount: { column_Name: "Deposit_Amount", displayText: "Deposit Amount", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                totalPrice: { column_Name: "Total_Price", displayText: "Total Price", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                refundableDeposit: { column_Name: "Refundable_Deposit", displayText: "Refundable Deposit?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
+                additionalFuelCosts: { column_Name: "Additional_Fuel", displayText: "Additional Fuel Costs?", type: "radio", mandatory: true, searchable: false, radioOptions: ["Yes", "No"] },
+                additionalFees: { column_Name: "Additional_Fees", displayText: "Additional Fees", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                fuelIncluded: { column_Name: "Fuel_Included", displayText: "Fuel Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
+                lateCheckInCheckOutFees: { column_Name: "Late_Fees", displayText: "Late Fees", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                insuranceForGuestsPersonalBelongings: { column_Name: "Guest_Insurance", displayText: "Guest Insurance Available", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                insuranceCoverageDetails: { column_Name: "Insurance_Coverage", displayText: "Insurance Coverage", type: "radio", mandatory: true, searchable: true, radioOptions: null }
+            }
+        },
+        {
+            table_Name: "Charter_Dates",
+            section_Heading: "Charter Dates",
+            columns: {
+                minimumNightsPolicy: { column_Name: "Minimum_Nights", displayText: "Minimum Nights Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                datesAvailable: { column_Name: "Dates_Available", displayText: "Dates Available", type: "date", mandatory: true, searchable: true, radioOptions: null },
+                cancellationPolicy: { column_Name: "Cancellation_Policy", displayText: "Cancellation Policy", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                startDate: { column_Name: "Start_Date", displayText: "Start Date", type: "date", mandatory: true, searchable: true, radioOptions: null },
+                endDate: { column_Name: "End_Date", displayText: "End Date", type: "date", mandatory: true, searchable: true, radioOptions: null },
+                numberNights: { column_Name: "Number_Nights", displayText: "Number Nights", type: "radio", mandatory: true, searchable: true, radioOptions: null }
+            }
+        },
+        {
+            table_Name: "Charter_Payment",
+            section_Heading: "Payment Information",
+            columns: {
+                paymentTerms: { column_Name: "Payment_Terms", displayText: "Payment Terms", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                paymentCurrency: { column_Name: "Currency", displayText: "Payment Currency", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                preferredPaymentMethods: { column_Name: "Preferred_Payment", displayText: "Preferred Payment Method", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                invoiceReceiptProcedures: { column_Name: "Invoice_Receipt", displayText: "Invoice Receipting Procedures", type: "radio", mandatory: true, searchable: false, radioOptions: null }
+            }
+        },
+        {
+            table_Name: "Sales",
+            section_Heading: "Sales Information",
+            columns: {
+                priceLabel: { column_Name: "Price_Label", displayText: "Price Label", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                priceDrop: { column_Name: "Price_Drop", displayText: "Price Drop", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                salesCurrency: { column_Name: "Currency", displayText: "Currency", type: "radio", mandatory: true, searchable: false, radioOptions: null },
+                vat: { column_Name: "VAT", displayText: "VAT", type: "radio", mandatory: false, searchable: false, radioOptions: null }
+            }
+        }
+    ]
+};
+
+
+
+
 export const Transport_Config = [
         {
             schema_name: 'marisail',
