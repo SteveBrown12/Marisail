@@ -49,7 +49,11 @@ export const dual_Range = {
     mcr: [{ label: "MCR", value: "MCR", id: "mcr" }],
     degree: [{ label: "degrees", value: "degrees", id: "degrees" }],
     rpm: [{ label: "RpM", value: "RpM", id: "rpm" }],
-    db: [{ label: "dB", value: "dB", id: "db" }]
+    db: [{ label: "dB", value: "dB", id: "db" }],
+    kg_ton: [
+         { label: "Kg", value: "Kg", id: 1 },
+        { label: "Ton", value: "Ton", id: 2 }
+  ]
 };
 
 // =================================================================
@@ -569,17 +573,13 @@ export const Charter_Config = {
     ]
 };
 
-// In All_Services_Config.js
-
-// First, add the new unit type to our shared dual_Range object
-
 
 // =================================================================
 // TRAILER CONFIGURATION (New Service)
 // =================================================================
 export const Trailer_Config = {
     // METADATA
-    schema_name: "Trailer",
+    schema_name: "marisail",
     main_table: "Trailer_ID",
     primary_key: "Trailer_ID",
     join_tables: [
@@ -650,10 +650,435 @@ export const Trailer_Config = {
                 lightingPackage: { column_Name: "Lighting_Package", displayText: "Lighting Package", type: "radio", mandatory: false, searchable: false, radioOptions: null },
                 suspensionUpgrade: { column_Name: "Suspension_Upgrade", displayText: "Suspension Upgrade", type: "radio", mandatory: false, searchable: false, radioOptions: null }
             }
+        },
+        // Axles Table - compact single line object style
+        {
+         table_Name: 'Axles', section_Heading: 'Axles & Suspension',
+            columns: {
+            axle: { column_Name: 'Axle', displayText: 'Axle Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            axleCapacity: { column_Name: 'Axle_Capacity', displayText: 'Axle Capacity', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.ton_lbs_kg },
+            axleHub: { column_Name: 'Axle_Hub', displayText: 'Axle Hub Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
+            axlePosition: { column_Name: 'Axle_Position', displayText: 'Axle Position', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            suspension: { column_Name: 'Suspension', displayText: 'Suspension Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            suspensionCapacity: { column_Name: 'Suspension_Capacity', displayText: 'Suspension Capacity', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.ton_lbs_kg },
+            axleSeal: { column_Name: 'Axle_Seal', displayText: 'Axle Seal Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            dropAxleOption: { column_Name: 'Drop_Axle_Option', displayText: 'Drop Axle Option', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            suspensionAdjustment: { column_Name: 'Suspension_Adjustment', displayText: 'Suspension Adjustment', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
         }
-        // ... all other Charter table objects will go here
+        },
+
+// Tyres_Brakes Table - compact single line object style
+        {
+        table_Name: 'Tyres_Brakes',
+        section_Heading: 'Tyres, Wheels, Brakes & Safety',
+        columns: {
+            tyreSize: { column_Name: 'Tyre_Size', displayText: 'Tyre Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
+            tyreLoadRange: { column_Name: 'Tyre_Load_Range', displayText: 'Tyre Load Range', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            tyreType: { column_Name: 'Tyre_Type', displayText: 'Tyre Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            wheelType: { column_Name: 'Wheel_Type', displayText: 'Wheel Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            wheelBolt: { column_Name: 'Wheel_Bolt', displayText: 'Wheel Bolt Pattern', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            hubLubrication: { column_Name: 'Hub_Lubrication', displayText: 'Hub Lubrication System', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            brakeType: { column_Name: 'Brake_Type', displayText: 'Brake Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            brakeActuator: { column_Name: 'Brake_Actuator', displayText: 'Brake Actuator', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            brakeLine: { column_Name: 'Brake_Line', displayText: 'Brake Line Material', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            brakeDrum: { column_Name: 'Brake_Drum', displayText: 'Brake Drum Diameter', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            brakeFluid: { column_Name: 'Brake_Fluid', displayText: 'Brake Fluid Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            brakes: { column_Name: 'Brakes', displayText: 'Brakes', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            couplerSize: { column_Name: 'Coupler_Size', displayText: 'Coupler Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
+            couplerType: { column_Name: 'Coupler_Type', displayText: 'Coupler Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            couplerLock: { column_Name: 'Coupler_Lock', displayText: 'Coupler Lock Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            hitchClass: { column_Name: 'Hitch_Class', displayText: 'Hitch Class', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            hitchReceiver: { column_Name: 'Hitch_Receiver', displayText: 'Hitch Receiver Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
+            safetyChains: { column_Name: 'Safety_Chains', displayText: 'Safety Chains', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            breakaway: { column_Name: 'Breakaway', displayText: 'Breakaway System', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+        }
+        },
+// Winches_Lighting - Winch & Winch Accessories (11 fields)
+            {
+            table_Name: 'Winches_Lighting', section_Heading: 'Winch & Winch Accessories',
+            columns: {
+                winch: { column_Name: 'Winch_Type', displayText: 'Winch Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+                winchCapacity: { column_Name: 'Winch_Capacity', displayText: 'Winch Capacity', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.lbs_kg },
+                winchRopeLength: { column_Name: 'Winch_Rope_Length', displayText: 'Winch Rope Length', type: 'dual', mandatory: true, searchable: false, radioOptions: dual_Range.ft_mtrs },
+                winchDrumMaterial: { column_Name: 'Winch_Drum_Material', displayText: 'Winch Drum Material', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                winchGearRatio: { column_Name: 'Winch_Gear_Ratio', displayText: 'Winch Gear Ratio', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                winchRemoteControl: { column_Name: 'Winch_Remote_Control', displayText: 'Winch Remote Control', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                winchBrake: { column_Name: 'Winch_Brake', displayText: 'Winch Brake Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                winchCable: { column_Name: 'Winch_Cable', displayText: 'Winch Cable Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                winchStrapLength: { column_Name: 'Winch_Strap_Length', displayText: 'Winch Strap Length', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                winchHandleLength: { column_Name: 'Winch_Handle_Length', displayText: 'Winch Handle Length', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                winchMounting: { column_Name: 'Winch_Mounting', displayText: 'Winch Mounting', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            },
+
+// Winches_Lighting - Lighting & Electrical (7 fields)
+            {
+            table_Name: 'Winches_Lighting', section_Heading: 'Lighting & Electrical',
+            columns: {
+                lighting: { column_Name: 'Lighting', displayText: 'Lighting', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+                lightMountingPosition: { column_Name: 'Light_Mounting_Position', displayText: 'Light Mounting Position', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                light: { column_Name: 'Light_Type', displayText: 'Light Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+                electricalConnector: { column_Name: 'Electrical_Connector', displayText: 'Electrical Connector Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+                electricalWiring: { column_Name: 'Electrical_Wiring', displayText: 'Electrical Wiring Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+                battery: { column_Name: 'Battery_Type', displayText: 'Battery Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+                batteryCharger: { column_Name: 'Battery_Charger', displayText: 'Battery Charger Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null }
+            }
+            },
+
+// Accessories (7 fields)
+            {
+            table_Name: 'Accessories', section_Heading: 'Accessories',
+            columns: {
+                spareTyreCarrier: { column_Name: 'Spare_Tyre_Carrier', displayText: 'Spare Tyre Carrier', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+                spareTyre: { column_Name: 'Spare_Tyre_Size', displayText: 'Spare Tyre Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
+                spareTyreLocation: { column_Name: 'Spare_Tyre_Mounting_Location', displayText: 'Spare Tyre Mounting Location', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                jack: { column_Name: 'Jack_Type', displayText: 'Jack Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                jackWheel: { column_Name: 'Jack_Wheel', displayText: 'Jack Wheel Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                jackCapacity: { column_Name: 'Jack_Capacity', displayText: 'Jack Capacity', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.lbs_kg },
+                jackLiftHeight: { column_Name: 'Jack_Lift_Height', displayText: 'Jack Lift Height', type: 'radio', mandatory: false, searchable: true, radioOptions: null }
+            }
+            },
+
+// Loading_Transport_Features (9 fields)
+            {
+            table_Name: 'Loading_Transport_Features', section_Heading: 'Loading & Transport Features',
+            columns: {
+                loading: { column_Name: 'Loading_System', displayText: 'Loading System', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.ft_mtrs },
+                bunks: { column_Name: 'Bunks', displayText: 'Bunks', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                bunkMaterial: { column_Name: 'Bunk_Material', displayText: 'Bunk Material', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                bunkWidth: { column_Name: 'Bunk_Width', displayText: 'Bunk Width', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                bunkHeightAdjustment: { column_Name: 'Bunk_Height_Adjustment', displayText: 'Bunk Height Adjustment', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                bunkMountingBracket: { column_Name: 'Bunk_Mounting_Bracket_Material', displayText: 'Bunk Mounting Bracket Material', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                rollers: { column_Name: 'Rollers', displayText: 'Rollers', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                rollerMaterial: { column_Name: 'Roller_Material', displayText: 'Roller Material', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                rollerAxleDiameter: { column_Name: 'Roller_Axle_Diameter', displayText: 'Roller Axle Diameter', type: 'dual', mandatory: false, searchable: false, radioOptions: dual_Range.cm_mm }
+            }
+            },
+
+// Security_Features (4 fields)
+            {
+            table_Name: 'Security_Features', section_Heading: 'Security Features',
+            columns: {
+                wheelLocks: { column_Name: 'Wheel_Locks', displayText: 'Wheel Locks', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+                lock: { column_Name: 'Security_Lock', displayText: 'Security Lock', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+                alarm: { column_Name: 'Alarm', displayText: 'Alarm System', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+                gpsTrackingDevice: { column_Name: 'GPS_Tracking_Device', displayText: 'GPS Tracking Device', type: 'radio', mandatory: true, searchable: true, radioOptions: null }
+            }
+            },
+
+// Corrosion_Resistance (2 fields)
+            {
+            table_Name: 'Corrosion_Resistance', section_Heading: 'Environmental & Corrosion Resistance',
+            columns: {
+                corrosionProtection: { column_Name: 'Corrosion_Protection', displayText: 'Corrosion Protection', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+                rustInhibitors: { column_Name: 'Rust_Inhibitors', displayText: 'Rust Inhibitors', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            },
+
+// Performance_Handling (2 fields)
+            {
+            table_Name: 'Performance_Handling', section_Heading: 'Performance & Handling',
+            columns: {
+                maximumSpeedRating: { column_Name: 'Maximum_Speed_Rating', displayText: 'Maximum Speed Rating', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+                turningRadius: { column_Name: 'Turning_Radius', displayText: 'Turning Radius', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.ft_mtrs }
+            }
+            },
+
+// Tongue (6 fields)
+            {
+            table_Name: 'Tongue', section_Heading: 'Tongue',
+            columns: {
+                tongueMaterial: { column_Name: 'Tongue_Material', displayText: 'Tongue Material', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                tongueShape: { column_Name: 'Tongue_Shape', displayText: 'Tongue Shape', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                jackWheel: { column_Name: 'Jack_Wheel', displayText: 'Tongue Jack Wheel Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
+                jackType: { column_Name: 'Jack_Type', displayText: 'Tongue Jack Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                tongueWeight: { column_Name: 'Tongue_Weight', displayText: 'Tongue Weight', type: 'dual', mandatory: true, searchable: true, radioOptions: [{ label: 'Kg', value: 'Kg', id: 1 }, { label: 'Ton', value: 'Ton', id: 2 }] },
+                tongueWeightRatio: { column_Name: 'Tongue_Weight_Ratio', displayText: 'Tongue Weight Ratio', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            },
+
+// Documentation (2 fields)
+            {
+            table_Name: 'Documentation', section_Heading: 'Documentation',
+            columns: {
+                ownersManual: { column_Name: 'Owners_Manual', displayText: "Owner's Manual", type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                warranty: { column_Name: 'Warranty', displayText: 'Warranty', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            },
+
+// Regulatory (4 fields)
+            {
+            table_Name: 'Regulatory', section_Heading: 'Regulatory Compliance',
+            columns: {
+                dotCompliance: { column_Name: 'DOT_Compliance', displayText: 'DOT Compliance', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                natmCertification: { column_Name: 'NATM_Certification', displayText: 'NATM Certification', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                euApproval: { column_Name: 'EU_Approval', displayText: 'EU Type Approval', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                adrCompliance: { column_Name: 'ADR_Compliance', displayText: 'ADR Compliance', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            },
+// Tongue (6 fields)
+            {
+            table_Name: 'Tongue', section_Heading: 'Tongue',
+            columns: {
+                tongueMaterial: { column_Name: 'Tongue_Material', displayText: 'Tongue Material', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                tongueShape: { column_Name: 'Tongue_Shape', displayText: 'Tongue Shape', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                jackWheel: { column_Name: 'Jack_Wheel', displayText: 'Tongue Jack Wheel Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
+                jackType: { column_Name: 'Jack_Type', displayText: 'Tongue Jack Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                tongueWeight: { column_Name: 'Tongue_Weight', displayText: 'Tongue Weight', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.lbs_kgs },
+                tongueWeightRatio: { column_Name: 'Tongue_Weight_Ratio', displayText: 'Tongue Weight Ratio', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            },
+
+            // Documentation (2 fields)
+            {
+            table_Name: 'Documentation', section_Heading: 'Documentation',
+            columns: {
+                ownersManual: { column_Name: 'Owners_Manual', displayText: "Owner's Manual", type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                warranty: { column_Name: 'Warranty', displayText: 'Warranty', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            },
+
+// Regulatory (4 fields)
+            {
+            table_Name: 'Regulatory', section_Heading: 'Regulatory Compliance',
+            columns: {
+                dotCompliance: { column_Name: 'DOT_Compliance', displayText: 'DOT Compliance', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                natmCertification: { column_Name: 'NATM_Certification', displayText: 'NATM Certification', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                euApproval: { column_Name: 'EU_Approval', displayText: 'EU Type Approval', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                adrCompliance: { column_Name: 'ADR_Compliance', displayText: 'ADR Compliance', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            },
+
+// Trailer_Payment (4 fields)
+            {
+            table_Name: 'Trailer_Payment', section_Heading: 'Payment Terms',
+            columns: {
+                paymentTerms: { column_Name: 'Payment_Terms', displayText: 'Payment Terms', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+                currency: { column_Name: 'Currency', displayText: 'Currency', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+                preferredPayment: { column_Name: 'Preferred_Payment', displayText: 'Preferred Payment Methods', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+                invoiceReceipt: { column_Name: 'Invoice_Receipt', displayText: 'Invoice & Receipt Procedures', type: 'radio', mandatory: true, searchable: false, radioOptions: null }
+            }
+            },
+
+// Trailer_Sales (4 fields)
+            {
+            table_Name: 'Trailer_Sales', section_Heading: 'Trailer_Sales',
+            columns: {
+                priceLabel: { column_Name: 'Price_Label', displayText: 'Price Label', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                priceDrop: { column_Name: 'Price_Drop', displayText: 'Price Drop', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                currency: { column_Name: 'Currency', displayText: 'Currency', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                vat: { column_Name: 'VAT', displayText: 'VAT', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+            }
+            }
+
+
+
     ]
 };
+export const Transport_Config = [
+        {
+            schema_name: 'marisail',
+            main_table: 'Job',
+            primary_key: 'Transport_ID',
+            join_tables: ['Compliance','Haulage','Haulier','Questions','Reviews', 'Transportation_Contacts','Transportation_Payment','Transportation_Quotes','Transportation_Sales',
+            ],
+        },
+
+  // Table: Job Fields: 23
+        {
+            table_Name: 'Job',
+            section_Heading: 'Job Description',
+            columns: {
+            transport_Id: { column_Name: 'Transport_ID', displayText: 'Transport Item ID', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            category: { column_Name: 'Category', displayText: 'Category', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            title: { column_Name: 'Title', displayText: 'Title', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            description: { column_Name: 'Description', displayText: 'Description', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            deadlineDate: { column_Name: 'Deadline_Date', displayText: 'Deadline Date', type: 'date', mandatory: true, searchable: true, radioOptions: null },
+            timescale: { column_Name: 'Timescale', displayText: 'Timescale', type: 'date', mandatory: true, searchable: true, radioOptions: null },
+            preferredDate: { column_Name: 'Preferred_Date', displayText: 'Preferred Date', type: 'date', mandatory: true, searchable: true, radioOptions: null },
+            international: { column_Name: 'International', displayText: 'International', type: 'radio', mandatory: true, searchable: true, radioOptions: ['Yes', 'No'] },
+            ferryRequired: { column_Name: 'Ferry_Required', displayText: 'Ferry Required', type: 'radio', mandatory: true, searchable: true, radioOptions: ['Yes', 'No'] },
+            specialHandlingRequirements: { column_Name: 'Special_Handling', displayText: 'Special Handling', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            departureLoadingEquipmentNeeded: { column_Name: 'Loading_Equipment', displayText: 'Loading Equipment Required?', type: 'radio', mandatory: true, searchable: true, radioOptions: ['Yes', 'No'] },
+            destinationUnloadingEquipmentNeeded: { column_Name: 'Unloading_Equipment', displayText: 'Unloading Equipment Required?', type: 'radio', mandatory: true, searchable: true, radioOptions: ['Yes', 'No'] },
+            overweightPermitNeeded: { column_Name: 'Overweight_Permit', displayText: 'Overweight Permit Required?', type: 'radio', mandatory: true, searchable: true, radioOptions: ['Yes', 'No'] },
+            oversizePermitNeeded: { column_Name: 'Oversize_Permit', displayText: 'Oversize Permit Required?', type: 'radio', mandatory: true, searchable: true, radioOptions: ['Yes', 'No'] },
+            postedDate: { column_Name: 'Posted_Date', displayText: 'Posted Date', type: 'date', mandatory: false, searchable: true, radioOptions: null },
+            haulierToDepartureDistance: { column_Name: 'Collection_Delivery_Distance', displayText: 'Collection Delivery Distance', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            departureToDestinationDistance: { column_Name: 'Departure_Destination', displayText: 'Departure Destination', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            returnJourney: { column_Name: 'Return_Journey', displayText: 'Return Journey', type: 'radio', mandatory: false, searchable: true, radioOptions: ['Yes', 'No'] },
+            roundTripDistance: { column_Name: 'Round_Trip_Distance', displayText: 'Round Trip Distance', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            freightClass: { column_Name: 'Freight_Class', displayText: 'Freight Class', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            numberQuotes: { column_Name: 'Number_Quotes', displayText: 'Number Quotes', type: 'number', mandatory: false, searchable: true, radioOptions: null },
+            jobDoneHaulier: { column_Name: 'Job_Done_Haulier', displayText: 'Job Done Date', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            jobDoneDate: { column_Name: 'Job_Done_Date_Haulier', displayText: 'Job Done Date', type: 'date', mandatory: false, searchable: true, radioOptions: null },
+            },
+        },
+
+  // Table: Vessel_Details Fields: 8
+        {
+            table_Name: 'Vessel_Details',
+            section_Heading: 'Vessel Details',
+            columns: {
+            itemNumber: { column_Name: 'Item_Number', displayText: 'Item Number', type: 'number', mandatory: true, searchable: true, radioOptions: null },
+            totalNumberItems: { column_Name: 'Total_Number_Items', displayText: 'Total Number Items', type: 'number', mandatory: true, searchable: true, radioOptions: null },
+            previousInsuranceClaims: { column_Name: 'Insurance_Claims', displayText: 'Previous Insurance Claims', type: 'radio', mandatory: true, searchable: true, radioOptions: ['Yes', 'No'] },
+            existingDamage: { column_Name: 'Existing_Damage', displayText: 'Existing Damage', type: 'radio', mandatory: true, searchable: true, radioOptions: ['Yes', 'No'] },
+            damageDescription: { column_Name: 'Damage_Description', displayText: 'Damage Description', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            vesselInsuranceType: { column_Name: 'Vessel_Insurance_Type', displayText: 'Vessel Insurance Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            vesselInsuranceNotes: { column_Name: 'Vessel_Insurance_Notes', displayText: 'Vessel Insurance Notes', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            },
+        },
+
+  // Table: Transportation_Contacts Fields: 12
+        {
+            table_Name: 'Transportation_Contacts',
+            section_Heading: 'Contact Details',
+            columns: {
+            customerType: { column_Name: 'Customer_Type', displayText: 'Customer Type', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            customerID: { column_Name: 'Customer_ID', displayText: 'Customer ID', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            customerName: { column_Name: 'Customer_Name', displayText: 'Customer Name', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            customerCompanyName: { column_Name: 'Customer_Company_Name', displayText: 'Customer Company Name', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            collectionDepartureNamedContact: { column_Name: 'Collection_Contact', displayText: 'Collection Contact', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            collectionDepartureMobile: { column_Name: 'Collection_Mobile', displayText: 'Collection Mobile', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            deliveryDestinationNamedContact: { column_Name: 'Delivery_Contact', displayText: 'Delivery Contact', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            collectionDepartureAddress: { column_Name: 'Collection_Address', displayText: 'Collection Address', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            deliveryDestinationMobile: { column_Name: 'Delivery_Mobile', displayText: 'Delivery Mobile', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            deliveryDestinationAddress: { column_Name: 'Delivery_Address', displayText: 'Delivery Address', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            emergencyContactInformation: { column_Name: 'Emergency_Contacts', displayText: 'Emergency Contacts', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            preferredCommunicationMethod: { column_Name: 'Preferred_Communication', displayText: 'Preferred Communication', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            },
+        },
+
+  // Table: Transportation_Quotes Fields: 6
+        {
+            table_Name: 'Transportation_Quotes',
+            section_Heading: 'Quote Details',
+            columns: {
+            quote: { column_Name: 'Quote_Value', displayText: 'Quote Value', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            quoteDescription: { column_Name: 'Quote_Description', displayText: 'Quote Description', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            quoteDate: { column_Name: 'Quote_Date', displayText: 'Quote Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
+            declineDate: { column_Name: 'Decline_Date', displayText: 'Decline Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
+            withdrawDate: { column_Name: 'Withdraw_Date', displayText: 'Withdraw Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
+            quoteStatus: { column_Name: 'Quote_Status', displayText: 'Quote Status', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            },
+        },
+
+  // Table: Questions Fields: 6
+        {
+            table_Name: 'Questions',
+            section_Heading: 'Customer Questions',
+            columns: {
+            questionDate: { column_Name: 'Question_Date', displayText: 'Question Date', type: 'date', mandatory: true, searchable: false, radioOptions: null },
+            answerDate: { column_Name: 'Answer_Date', displayText: 'Answer Date', type: 'date', mandatory: true, searchable: false, radioOptions: null },
+            transportProviderQuestions: { column_Name: 'Transport_Provider_Questions', displayText: 'Transport Provider Questions', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            customerAnswers: { column_Name: 'Customer_Answers', displayText: 'Customer Answers', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            },
+        },
+        // Table: Reviews (11 fields)
+        {
+        table_Name: 'Reviews',
+        section_Heading: 'Customer Reviews',
+        columns: {
+            customerFeedbackNotes: { column_Name: 'Customer_Feedback_Notes', displayText: 'Customer Feedback Notes', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            customerFeedbackScore: { column_Name: 'Customer_Feedback_Score', displayText: 'Customer Feedback Score', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            positive: { column_Name: 'Positive', displayText: 'Positive', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            neutral: { column_Name: 'Neutral', displayText: 'Neutral', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            negative: { column_Name: 'Negative', displayText: 'Negative', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            reviews: { column_Name: 'Reviews', displayText: 'Reviews', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            rating: { column_Name: 'Rating', displayText: 'Rating', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            itemTitle: { column_Name: 'Item_Title', displayText: 'Item Title', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            leftBy: { column_Name: 'Left_By', displayText: 'Left By', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            comments: { column_Name: 'Comments', displayText: 'Comments', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            date: { column_Name: 'Date', displayText: 'Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
+            jobDoneCustomer: { column_Name: 'Job_Done_Customer', displayText: 'Job Done Date', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            jobDoneDate: { column_Name: 'Job_Done_Date_Customer', displayText: 'Job Done Date', type: 'date', mandatory: false, searchable: true, radioOptions: null }
+        }
+        },
+
+// Table: Haulier (18 fields)
+        {
+        table_Name: 'Haulier',
+        section_Heading: 'Haulier (Transport Provider) Details',
+        columns: {
+            haulierID: { column_Name: 'Haulier_ID', displayText: 'Haulier ID', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            haulierName: { column_Name: 'Haulier_Name', displayText: 'Haulier Name', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            haulierAddress: { column_Name: 'Haulier_Address', displayText: 'Haulier Address', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            haulierNumberJobs: { column_Name: 'Haulier_Number_Jobs', displayText: 'Haulier Number Jobs', type: 'number', mandatory: true, searchable: false, radioOptions: null },
+            registeredSince: { column_Name: 'Registered_Since', displayText: 'Registered Since', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            numberVehicles: { column_Name: 'Number_Vehicles', displayText: 'Number Vehicles', type: 'number', mandatory: true, searchable: false, radioOptions: null },
+            numberDrivers: { column_Name: 'Number_Drivers', displayText: 'Number Drivers', type: 'number', mandatory: true, searchable: false, radioOptions: null },
+            verified: { column_Name: 'Verified', displayText: 'Verified', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            haulierTotalCustomerScore: { column_Name: 'Haulier_Total_Customer_Score', displayText: 'Total Customer Score', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            realTimeTracking: { column_Name: 'Real_Time_Tracking', displayText: 'Real Time Tracking', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            electronicProofOfDelivery: { column_Name: 'Electronic_POD', displayText: 'Electronic Proof of Delivery', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            automatedAlertsAndNotifications: { column_Name: 'Automated_Alerts_Notifications', displayText: 'Automated Alerts And Notifications', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            vehicleType: { column_Name: 'Vehicle_Type', displayText: 'Vehicle Type', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            vehicleCapacity: { column_Name: 'Vehicle_Capacity', displayText: 'Vehicle Capacity', type: 'dual', mandatory: false, searchable: false, radioOptions: [{ label: 'Kg', value: 'Kg', id: 1 }, { label: 'Ton', value: 'Ton', id: 2 }] },
+            customerServiceContactInformation: { column_Name: 'Customer_Service_Contactinfo', displayText: 'Customer Service', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            trackingSystem: { column_Name: 'Tracking_System', displayText: 'Tracking System', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            deliveryWindow: { column_Name: 'Delivery_Window', displayText: 'Delivery Window', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            deliveryConfirmation: { column_Name: 'Delivery_Confirmation', displayText: 'Delivery Confirmation', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+        }
+        },
+
+// Table: Compliance (12 fields)
+        {
+        table_Name: 'Compliance',
+        section_Heading: 'Safety & Regulatory Compliance',
+        columns: {
+            safetyCertifications: { column_Name: 'Safety_Certifications', displayText: 'Safety Certifications', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            environmentalRegulationsCompliance: { column_Name: 'Environmental_Regulations', displayText: 'Environmental Regulation Compliance', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            hazardousMaterialsHandling: { column_Name: 'Hazardous_Materials', displayText: 'Hazardous Material Handling', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            safetyTrainingPrograms: { column_Name: 'Safety_Training', displayText: 'Safety Training', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            accidentReportingProcedures: { column_Name: 'Accident_Reporting', displayText: 'Accident Reporting Procedures', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            healthAndSafetyPolicies: { column_Name: 'Health_Safety', displayText: 'Health & Safety Policies', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            safetyAudits: { column_Name: 'Safety_Audits', displayText: 'Safety Audits', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            riskAssessments: { column_Name: 'Risk_Assessments', displayText: 'Risk Assessments', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            incidentManagement: { column_Name: 'Incident_Management', displayText: 'Incident Management', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            complianceRecords: { column_Name: 'Compliance_Records', displayText: 'Compliance Records', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            permitsAndLicenses: { column_Name: 'Permits', displayText: 'Permits', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            transportRegulationsCompliance: { column_Name: 'Transport_Regulations', displayText: 'Transport Regulations Compliance', type: 'radio', mandatory: true, searchable: false, radioOptions: null }
+        }
+        },
+
+// Table: Transportation_Payment (15 fields)
+        {
+        table_Name: 'Transportation_Payment',
+        section_Heading: 'Payment Details',
+        columns: {
+            paymentTerms: { column_Name: 'Payment_Terms', displayText: 'Payment Terms', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            acceptedPaymentMethods: { column_Name: 'Payment_Methods', displayText: 'Accepted Payment Methods', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            cancellationPolicy: { column_Name: 'Cancellation_Policy', displayText: 'Cancellation Policy', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            invoiceTime: { column_Name: 'Invoice_Time', displayText: 'Invoice Time', type: 'date', mandatory: true, searchable: true, radioOptions: null },
+            latePaymentFees: { column_Name: 'Late_Fees', displayText: 'Late Payment Fees', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            disputeResolutionTerms: { column_Name: 'Dispute_Resolution_Terms', displayText: 'Dispute Resolution Terms', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            liabilityCoverage: { column_Name: 'Liability_Coverage', displayText: 'Liability Coverage', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            insurancePolicy: { column_Name: 'Insurance_Policy', displayText: 'Insurance Policy', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            insuranceCoverage: { column_Name: 'Insurance_Coverage', displayText: 'Insurance Coverage', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            insuranceProvider: { column_Name: 'Insurance_Provider', displayText: 'Insurance Provider', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            insuranceClaimProcess: { column_Name: 'Claim_Process', displayText: 'Insurance Claim Process', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
+            preferredPaymentMethods: { column_Name: 'Preferred_Payment', displayText: 'Preferred Payment Method', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            invoiceAndReceiptProcedures: { column_Name: 'Invoice_Receipt', displayText: 'Invoice & Receipting Procedures', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
+            serviceLevelAgreement: { column_Name: 'SLA', displayText: 'Service Level Agreement (SLA)', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+            billingContactInformation: { column_Name: 'Billing_Contact', displayText: 'Billing Contact Information', type: 'radio', mandatory: false, searchable: true, radioOptions: null }
+        }
+        },
+
+// Table: Transportation_Sales (4 fields)
+        {
+        table_Name: 'Transportation_Sales',
+        section_Heading: 'Price Details',
+        columns: {
+            priceLabel: { column_Name: 'Price_Label', displayText: 'Price Label', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            priceDrop: { column_Name: 'Price_Drop', displayText: 'Price Drop', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            currency: { column_Name: 'Currency', displayText: 'Currency', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            vat: { column_Name: 'VAT', displayText: 'VAT', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
+        }
+        }
+
+];
+
 
 
 // =================================================================
@@ -677,71 +1102,79 @@ Berth_Config.tables.forEach(table => {
 const berth_Unique_Table = [...new Set(Berth_Config.tables.map(table => table.table_Name).filter(Boolean))];
 export { berth_Var_To_Column, berth_Var_To_Table, berth_Unique_Table };
 
-// // =================================================================
-// // CHARTER MAPPINGS (WITHOUT SAFETY CHECKS)
-// // =================================================================
-// const charter_Var_To_Column = {};
-// Charter_Config.forEach(table => {
-//     Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
-//         charter_Var_To_Column[var_Name] = col_Info.column_Name;
-//     });
-// });
+const charter_Var_To_Column = {};
+Charter_Config.tables.forEach(table => {
+  Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+    charter_Var_To_Column[var_Name] = col_Info.column_Name;
+  });
+});
 
-// const charter_Var_To_Table = {};
-// Charter_Config.forEach(table => {
-//     Object.keys(table.columns).forEach(var_Name => {
-//         charter_Var_To_Table[var_Name] = table.table_Name;
-//     });
-// });
+const charter_Var_To_Table = {};
+Charter_Config.tables.forEach(table => {
+  Object.keys(table.columns).forEach(var_Name => {
+    charter_Var_To_Table[var_Name] = table.table_Name;
+  });
+});
 
-// const charter_Unique_Table = [...new Set(Charter_Config.map(table => table.table_Name))];
-// export  { charter_Var_To_Column,charter_Var_To_Table, charter_Unique_Table };
-// // =================================================================
-// // TRAILER MAPPINGS (WITHOUT SAFETY CHECKS)
-// // =================================================================
-// const trailer_Var_To_Column = {};
-// Trailer_Config.forEach(table => {
-//     Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
-//         trailer_Var_To_Column[var_Name] = col_Info.column_Name;
-//     });
-// });
+const charter_Unique_Table = [...new Set(Charter_Config.tables.map(table => table.table_Name).filter(Boolean))];
 
-// const trailer_Var_To_Table = {};
-// Trailer_Config.forEach(table => {
-//     Object.keys(table.columns).forEach(var_Name => {
-//         trailer_Var_To_Table[var_Name] = table.table_Name;
-//     });
-// });
+export { charter_Var_To_Column, charter_Var_To_Table, charter_Unique_Table };
 
-// const trailer_Unique_Table = [...new Set(Trailer_Config.map(table => table.table_Name))];
-// export { trailer_Var_To_Column, trailer_Var_To_Table, trailer_Unique_Table };
+// For Trailer_Config
 
-// // =================================================================
-// // TRANSPORT MAPPINGS (WITHOUT SAFETY CHECKS)
-// // =================================================================
-// const transport_Var_To_Column = {};
-// Transport_Config.forEach(table => {
-//     Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
-//         transport_Var_To_Column[var_Name] = col_Info.column_Name;
-//     });
-// });
+// Trailer_Config mappings
+const trailer_Var_To_Column = {};
+Trailer_Config.tables.forEach(table => {
+  Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+    trailer_Var_To_Column[var_Name] = col_Info.column_Name;
+  });
+});
 
-// const transport_Var_To_Table = {};
-// Transport_Config.forEach(table => {
-//     Object.keys(table.columns).forEach(var_Name => {
-//         transport_Var_To_Table[var_Name] = table.table_Name;
-//     });
-// });
+const trailer_Var_To_Table = {};
+Trailer_Config.tables.forEach(table => {
+  Object.keys(table.columns).forEach(var_Name => {
+    trailer_Var_To_Table[var_Name] = table.table_Name;
+  });
+});
 
-// const transport_Unique_Table = [...new Set(Transport_Config.map(table => table.table_Name))];
-// export { transport_Var_To_Column, transport_Var_To_Table, transport_Unique_Table };
+const trailer_Unique_Table = [...new Set(Trailer_Config.tables.map(table => table.table_Name).filter(Boolean))];
+
+export { trailer_Var_To_Column, trailer_Var_To_Table, trailer_Unique_Table };
+
+
+// Transport_Config mappings
+const transport_Var_To_Column = {};
+Transport_Config.forEach(table => {
+  if (table.columns) {
+    Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+      transport_Var_To_Column[var_Name] = col_Info.column_Name;
+    });
+  }
+});
+
+const transport_Var_To_Table = {};
+Transport_Config.forEach(table => {
+  if (table.columns) {
+    Object.keys(table.columns).forEach(var_Name => {
+      transport_Var_To_Table[var_Name] = table.table_Name;
+    });
+  }
+});
+
+const transport_Unique_Table = [
+  ...new Set(Transport_Config.map(table => table.table_Name).filter(Boolean))
+];
+
+export { transport_Var_To_Column, transport_Var_To_Table, transport_Unique_Table };
+// Export the mappings
+
 
 // // =================================================================
 // MAIN SERVICES EXPORT (UNCHANGED)
 // =================================================================
 export const SERVICES = {
     berth: Berth_Config,
-    // trailer: Trailer_Config,
-    // charter: Charter_Config,
-    // transport: Transport_Config,
+    trailer: Trailer_Config,
+    charter: Charter_Config,
+    transport: Transport_Config,
 };
