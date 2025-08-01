@@ -37,36 +37,12 @@ search_router.get("/:service_name/search", initialize_service, async (req, res) 
         
         const [results] = await db_connection.query(query);
         res.json({ ok: true, data: results });
-    } catch (err) {
-        handle_error_response(res, `Search failed: ${err.message}`);
+    } catch (error) {
+        handle_error_response(res, `Search failed: ${error.message}`);
     }
 });
 
 
-// search_router.get("/:service_name/search", initialize_service, async (req, res) => {
-//     try {
-//         console.log("=== DEBUGGING SEARCH ROUTE ===");
-//         console.log("req.main_table_info:", req.main_table_info);
-//         console.log("req.service_mappings:", !!req.service_mappings);
-//         console.log("req.service_config_array:", !!req.service_config_array);
-        
-//         // If you're using build_joins, check this:
-//         if (req.main_table_info?.join_tables) {
-//             console.log("About to call build_joins with join_tables:",join_tables);
-//         }
-        
-//         // Check if filters are being processed
-//         console.log("Filters from query:", req.query.filters);
-        
-//         // ... rest of your search logic
-        
-//     } catch (err) {
-//         console.error("Error in search route:", err);
-//         handle_error_response(res, `Search failed: ${err.message}`);
-//     }
-// });
-
-// The details route, now fully implemented and using the imported builder.
 search_router.get("/:service_name/details/:id", initialize_service, async (req, res) => {
     try {
         const { service_config } = req;
@@ -84,8 +60,8 @@ search_router.get("/:service_name/details/:id", initialize_service, async (req, 
             return handle_error_response(res, 'Record not found', 404);
         }
         res.json({ ok: true, data: results[0] });
-    } catch (err) {
-        handle_error_response(res, `Details fetch failed: ${err.message}`);
+    } catch (error) {
+        handle_error_response(res, `Details fetch failed: ${error.message}`);
     }
 });
 
@@ -112,10 +88,10 @@ search_router.get("/:service_name/facets/:field", initialize_service, async (req
                 WHERE ${column_name} IS NOT NULL ORDER BY value ASC LIMIT 200
             `;
             const [values] = await db_connection.query(query);
-            return res.json({ ok: true, facets: values.map(v => v.value) });//check
+            return res.json({ ok: true, facets: values.map(value => value.value) });//check
         }
-    } catch (err) {
-        handle_error_response(res, `Facets failed for field '${req.params.field}': ${err.message}`);
+    } catch (error) {
+        handle_error_response(res, `Facets failed for field '${req.params.field}': ${error.message}`);
     }
 });
 
