@@ -82,7 +82,6 @@ export const initialize_service = async (req, res, next) => {
             return handle_error_response(res, `Service '${service_name}' not found. Check SERVICES export.`, 404);
         }
         
-        // --- THIS IS THE NEW, CRITICAL LINE ---
         // We validate the loaded config against the database before proceeding.
         await validate_Schema(service_config);
         
@@ -101,14 +100,8 @@ export const handle_error_response = (res, message, status = 500) => {
 };
 
 // ========================
-// SHARED QUERY BUILDERS (Updated for new structure)
+// SHARED QUERY BUILDERS 
 // ========================
-
-// export const build_joins = (main_table_info) => {
-//     return main_table_info.join_tables
-//         .map(table => `LEFT JOIN ${table} ON ${main_table_info.main_table}.${main_table_info.primary_key} = ${table}.${main_table_info.primary_key}`)
-//         .join('\n');
-// };
 export const build_joins = (main_table_info) => {
   console.log('=== DEBUGGING build_joins ===');
   console.log('main_table_info:', main_table_info);
@@ -134,14 +127,7 @@ export const build_joins = (main_table_info) => {
 export const build_where_clause = (filters, mappings) => {
   // This object maps our simple URL operators to real SQL operators.
   const OPERATOR_MAP = {
-    eq: '=',
-    neq: '!=',
-    gt: '>',
-    gte: '>=',
-    lt: '<',
-    lte: '<=',
-    in: 'IN',
-    nin: 'NOT IN',
+    eq: '=',  neq: '!=', gt: '>', gte: '>=', lt: '<', lte: '<=', in: 'IN', nin: 'NOT IN',
   };
 
   const conditions = Object.entries(filters || {})
@@ -170,7 +156,7 @@ export const build_where_clause = (filters, mappings) => {
           )}`;
         }
       } else {
-        // OLD LOGIC: Fallback to a LIKE search for simple key=value filters
+       
         const escaped_value = db_connection.escape(`%${value}%`);
         return `\`${column_name}\` LIKE ${escaped_value}`;
       }

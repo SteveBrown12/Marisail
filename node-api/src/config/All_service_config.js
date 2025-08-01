@@ -739,10 +739,12 @@ export const Charter_Config = {
     join_tables: [
         "Charter_Costs", "Charter_Date", "Charter_Food", "Charter_Insurance",
         "Charter_Location", "Charter_Payment", "Charter_Policy", "Charter_Requirements",
-        "Charter_Safety", "Costs", "Crew", "Charter_Dates", "Food", "Policy",
+        "Charter_Safety", "Costs", "Crew",  "Food", "Policy",
         "Requirements", "Sales"
     ],
-    
+//     [Error] Service initialization failed: Configuration error: The join table 'Charter_Dates' does not exist in the database.
+// GET /api/charter/search 500 3574.492 ms - 139
+
     // TABLES ARRAY
     tables: [
         {
@@ -1079,27 +1081,130 @@ export const Transport_Config = [
 
 
 
-// =================================================================
-// BERTH MAPPINGS (WITHOUT SAFETY CHECKS)
-// =================================================================
+// // =================================================================
+// // BERTH MAPPINGS (WITHOUT SAFETY CHECKS)
+// // =================================================================
 
+// const berth_Var_To_Column = {};
+// Berth_Config.tables.forEach(table => {
+//     Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+//         berth_Var_To_Column[var_Name] = col_Info.column_Name;
+//     });
+// });
+
+// const berth_Var_To_Table = {};
+// Berth_Config.tables.forEach(table => {
+//     Object.keys(table.columns).forEach(var_Name => {
+//         berth_Var_To_Table[var_Name] = table.table_Name;
+//     });
+// });
+// // const berth_Unique_Table = [...new Set(Berth_Config.map(table => table.table_Name))];
+// const berth_Unique_Table = [...new Set(Berth_Config.tables.map(table => table.table_Name).filter(Boolean))];
+// export { berth_Var_To_Column, berth_Var_To_Table, berth_Unique_Table };
+
+// const charter_Var_To_Column = {};
+// Charter_Config.tables.forEach(table => {
+//   Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+//     charter_Var_To_Column[var_Name] = col_Info.column_Name;
+//   });
+// });
+
+// const charter_Var_To_Table = {};
+// Charter_Config.tables.forEach(table => {
+//   Object.keys(table.columns).forEach(var_Name => {
+//     charter_Var_To_Table[var_Name] = table.table_Name;
+//   });
+// });
+
+// const charter_Unique_Table = [...new Set(Charter_Config.tables.map(table => table.table_Name).filter(Boolean))];
+
+// export { charter_Var_To_Column, charter_Var_To_Table, charter_Unique_Table };
+
+// // For Trailer_Config
+
+// // Trailer_Config mappings
+// const trailer_Var_To_Column = {};
+// Trailer_Config.tables.forEach(table => {
+//   Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+//     trailer_Var_To_Column[var_Name] = col_Info.column_Name;
+//   });
+// });
+
+// const trailer_Var_To_Table = {};
+// Trailer_Config.tables.forEach(table => {
+//   Object.keys(table.columns).forEach(var_Name => {
+//     trailer_Var_To_Table[var_Name] = table.table_Name;
+//   });
+// });
+
+// const trailer_Unique_Table = [...new Set(Trailer_Config.tables.map(table => table.table_Name).filter(Boolean))];
+
+// export { trailer_Var_To_Column, trailer_Var_To_Table, trailer_Unique_Table };
+
+
+// // Transport_Config mappings
+// const transport_Var_To_Column = {};
+// Transport_Config.forEach(table => {
+//   if (table.columns) {
+//     Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+//       transport_Var_To_Column[var_Name] = col_Info.column_Name;
+//     });
+//   }
+// });
+
+// const transport_Var_To_Table = {};
+// Transport_Config.forEach(table => {
+//   if (table.columns) {
+//     Object.keys(table.columns).forEach(var_Name => {
+//       transport_Var_To_Table[var_Name] = table.table_Name;
+//     });
+//   }
+// });
+
+// const transport_Unique_Table = [
+//   ...new Set(Transport_Config.map(table => table.table_Name).filter(Boolean))
+// ];
+
+// export { transport_Var_To_Column, transport_Var_To_Table, transport_Unique_Table };
+// // Export the mappings
+
+
+// // // =================================================================
+// // MAIN SERVICES EXPORT (UNCHANGED)
+// // =================================================================
+// export const SERVICES = {
+//     berth: Berth_Config,
+//     trailer: Trailer_Config,
+//     charter: Charter_Config,
+//     transport: Transport_Config,
+// };
+// ===============================
+// BERTH MAPPINGS
+// ===============================
 const berth_Var_To_Column = {};
 Berth_Config.tables.forEach(table => {
-    Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
-        berth_Var_To_Column[var_Name] = col_Info.column_Name;
-    });
+  Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
+    berth_Var_To_Column[var_Name] = col_Info.column_Name;
+  });
 });
 
 const berth_Var_To_Table = {};
 Berth_Config.tables.forEach(table => {
-    Object.keys(table.columns).forEach(var_Name => {
-        berth_Var_To_Table[var_Name] = table.table_Name;
-    });
+  Object.keys(table.columns).forEach(var_Name => {
+    berth_Var_To_Table[var_Name] = table.table_Name;
+  });
 });
-// const berth_Unique_Table = [...new Set(Berth_Config.map(table => table.table_Name))];
-const berth_Unique_Table = [...new Set(Berth_Config.tables.map(table => table.table_Name).filter(Boolean))];
+
+const berth_Unique_Table = [
+  ...new Set(Berth_Config.tables.map(table => table.table_Name).filter(Boolean))
+];
+
 export { berth_Var_To_Column, berth_Var_To_Table, berth_Unique_Table };
 
+
+// ===============================
+// CHARTER MAPPINGS
+// ===============================
 const charter_Var_To_Column = {};
 Charter_Config.tables.forEach(table => {
   Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
@@ -1114,13 +1219,16 @@ Charter_Config.tables.forEach(table => {
   });
 });
 
-const charter_Unique_Table = [...new Set(Charter_Config.tables.map(table => table.table_Name).filter(Boolean))];
+const charter_Unique_Table = [
+  ...new Set(Charter_Config.tables.map(table => table.table_Name).filter(Boolean))
+];
 
 export { charter_Var_To_Column, charter_Var_To_Table, charter_Unique_Table };
 
-// For Trailer_Config
 
-// Trailer_Config mappings
+// ===============================
+// TRAILER MAPPINGS
+// ===============================
 const trailer_Var_To_Column = {};
 Trailer_Config.tables.forEach(table => {
   Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
@@ -1135,15 +1243,19 @@ Trailer_Config.tables.forEach(table => {
   });
 });
 
-const trailer_Unique_Table = [...new Set(Trailer_Config.tables.map(table => table.table_Name).filter(Boolean))];
+const trailer_Unique_Table = [
+  ...new Set(Trailer_Config.tables.map(table => table.table_Name).filter(Boolean))
+];
 
 export { trailer_Var_To_Column, trailer_Var_To_Table, trailer_Unique_Table };
 
 
-// Transport_Config mappings
+// ===============================
+// TRANSPORT MAPPINGS (array, NOT .tables)
+// ===============================
 const transport_Var_To_Column = {};
 Transport_Config.forEach(table => {
-  if (table.columns) {
+  if (table.columns && table.table_Name) { // Only process actual tables
     Object.entries(table.columns).forEach(([var_Name, col_Info]) => {
       transport_Var_To_Column[var_Name] = col_Info.column_Name;
     });
@@ -1152,7 +1264,7 @@ Transport_Config.forEach(table => {
 
 const transport_Var_To_Table = {};
 Transport_Config.forEach(table => {
-  if (table.columns) {
+  if (table.columns && table.table_Name) {
     Object.keys(table.columns).forEach(var_Name => {
       transport_Var_To_Table[var_Name] = table.table_Name;
     });
@@ -1160,19 +1272,20 @@ Transport_Config.forEach(table => {
 });
 
 const transport_Unique_Table = [
-  ...new Set(Transport_Config.map(table => table.table_Name).filter(Boolean))
+  ...new Set(
+    Transport_Config
+      .filter(table => table.table_Name && table.columns)
+      .map(table => table.table_Name)
+      .filter(Boolean)
+  )
 ];
-
 export { transport_Var_To_Column, transport_Var_To_Table, transport_Unique_Table };
-// Export the mappings
-
-
-// // =================================================================
+// ===============================
 // MAIN SERVICES EXPORT (UNCHANGED)
-// =================================================================
+// ===============================
 export const SERVICES = {
-    berth: Berth_Config,
-    trailer: Trailer_Config,
-    charter: Charter_Config,
-    transport: Transport_Config,
+  berth: Berth_Config,
+  trailer: Trailer_Config,
+  charter: Charter_Config,
+  transport: Transport_Config,
 };
