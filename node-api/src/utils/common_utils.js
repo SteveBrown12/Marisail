@@ -69,31 +69,67 @@ const validate_Schema = async (config) => {
     // If we reach here, the schema is valid.
     console.log(`✅ Schema validated successfully for service: ${config.schema_name}`);
 };
-
-
-export const initialize_service = async (req, res, next) => {
-    try {
-        const service_name = req.params.service_name.toLowerCase();
-        
-        const service_config = SERVICES[service_name];
-        const service_mappings = SERVICE_MAPPINGS[service_name];
-
-        if (!service_config) {
-            return handle_error_response(res, `Service '${service_name}' not found. Check SERVICES export.`, 404);
-        }
-        
-        // We validate the loaded config against the database before proceeding.
-        await validate_Schema(service_config);
-        
-        req.service_config = service_config;
-        req.service_mappings = service_mappings;
-        
-        next();
-    } catch (err) {
-        // This will now catch both config loading errors AND schema validation errors.
-        handle_error_response(res, `Service initialization failed: ${err.message}`, 500);
-    }
+const load_service_config = (service_name) => {
+  const config = SERVICES[service_name.toLowerCase()];
+  if (!config) throw new Error(`Invalid service '${service_name}'`);
+  return config;
 };
+
+// Updated initialize_service middleware using load_service_config
+export const initialize_service = async (req, res, next) => {
+  try {
+    const service_name = req.params.service_name.toLowerCase();
+
+    // Use the helper function to get service config safely
+    const service_config = load_service_config(service_name);
+
+    // Get the mappings from SERVICE_MAPPINGS as before
+    const service_mappings = SERVICE_MAPPINGS[service_name];
+
+    if (!service_mappings) {
+      return handle_error_response(
+        res,
+        `Mappings for service '${service_name}' not found.`,
+        500
+      );
+    }
+
+    // Validate schema for the loaded config
+    await validate_Schema(service_config);
+
+    // Attach config and mappings to request for downstream handlers
+    req.service_config = service_config;
+    req.service_mappings = service_mappings;
+
+    next();
+  } catch (err) {
+    handle_error_response(res, `Service initialization failed: ${err.message}`, 500);
+  }
+};
+
+// export const initialize_service = async (req, res, next) => {
+//     try {
+//         const service_name = req.params.service_name.toLowerCase();
+        
+//         const service_config = SERVICES[service_name];
+//         const service_mappings = SERVICE_MAPPINGS[service_name];
+
+//         if (!service_config) {
+//             return handle_error_response(res, `Service '${service_name}' not found. Check SERVICES export.`, 404);
+//         }
+        
+//         // We validate the loaded config against the database before proceeding.
+//         await validate_Schema(service_config);
+        
+//         req.service_config = service_config;
+//         req.service_mappings = service_mappings;
+        
+//         next();
+//     } catch (err) {
+//         // This will now catch both config loading errors AND schema validation errors.
+//         handle_error_response(res, `Service initialization failed: ${err.message}`, 500);
+//     }
+// };
 export const handle_error_response = (res, message, status = 500) => {
   console.error(`[Error] ${message}`);
   res.status(status).json({ ok: false, message });
