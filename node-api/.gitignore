@@ -1,6 +1,5 @@
 node_modules
 .env
 data
-package-lock.json
-# dbConfig.js
-# src/config/dbConfig.js
+dbConfig.js
+src/config/dbConfig.js
