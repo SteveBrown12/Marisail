@@ -1,23 +1,19 @@
-import connection from "./config/dbConfig.js"; // Import the MySQL connection pool
+import db_connection from "./config/dbConfig.js"; 
 
 // Test database connection
 async function testDatabaseConnection() {
   try {
-    // Get a connection from the pool to test the connection
-    const conn = await connection.getConnection();
+    // Get a connection from the pool to test
+    const conn = await db_connection.getConnection();
 
-    // Release the connection immediately (no queries are executed)
+    // Immediately release the connection (no queries needed for this test)
     conn.release();
 
     console.log("✅ Connected to the database successfully.");
   } catch (err) {
     console.error("❌ Database connection error:", err.message);
-  } finally {
-    // Close the connection pool
-    await connection.end();
-    console.log("Connection pool closed.");
   }
+
 }
 
-// Run the connection test
 testDatabaseConnection();

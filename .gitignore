@@ -30,3 +30,5 @@ dist-ssr
 .env.development
 
 package-lock.json
+node-api/.env.example
+node-api/.env.example
