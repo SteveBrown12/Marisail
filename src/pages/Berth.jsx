@@ -16,8 +16,8 @@ import ResetBar from "../components/ResetBar";
 import InputComponentDynamic from "../components/InputComponentDynamic";
 import InputComponentDual from "../components/InputComponentDual";
 
-import { keyToExpectedValueMap, typeDef } from "../config/Berth_Advert_Info";
-import { varToDb, varToScreen } from "../config/Berth_Search_Info";
+import { keyToExpectedValueMap, typeDef } from "../info/Berth_Advert_Info";
+import { varToDb, varToScreen } from "../info/Berth_Search_Info";
 
 import {
   makeString,

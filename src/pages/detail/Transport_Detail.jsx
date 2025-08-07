@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
-import { detailStateType } from "../../config/Trailer_Search_Info";
+import { detailStateType } from "../../info/Trailer_Search_Info";
 import Loader from "../../components/Loader";
 import PropTypes from "prop-types";
-import { varToScreen } from "../../config/Trailer_Search_Info";
-import { varToDb } from "../../config/Transport_Search_Info";
+import { varToScreen } from "../../info/Trailer_Search_Info";
+import { varToDb } from "../../info/Transport_Search_Info";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const URL = apiUrl + "/search_transport/";

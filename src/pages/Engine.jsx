@@ -14,8 +14,8 @@ import EngineCard from "../components/EngineCard";
 import Pagination from "../components/CustomPagination";
 
 // Config
-import { keyToExpectedValueMap, typeDef } from "../config/Engine_Advert_Info";
-import { varToDb, varToScreen } from "../config/Engine_Search_Info";
+import { keyToExpectedValueMap, typeDef } from "../info/Engine_Advert_Info";
+import { varToDb, varToScreen } from "../info/Engine_Search_Info";
 
 // Services
 import { makeString } from "../services/common_functions";

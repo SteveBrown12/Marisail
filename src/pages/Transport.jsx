@@ -14,8 +14,8 @@ import DatePickerComponent from "../components/DatePickerComponent";
 import TransportCard from "../components/TransportCard";
 
 // Config
-import { keyToExpectedValueMap, typeDef } from "../config/Transport_Advert_Info";
-import { varToDb, varToScreen } from "../config/Transport_Search_Info";
+import { keyToExpectedValueMap, typeDef } from "../info/Transport_Advert_Info";
+import { varToDb, varToScreen } from "../info/Transport_Search_Info";
 
 // Services
 import {

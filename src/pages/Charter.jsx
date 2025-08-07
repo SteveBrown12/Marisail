@@ -14,8 +14,8 @@ import InputComponentDynamic from "../components/InputComponentDynamic";
 import CharterCard from "../components/CharterCard";
 
 // Config
-import { keyToExpectedValueMap, typeDef } from "../config/Charter_Advert_Info";
-import { varToDb, varToScreen } from "../config/Charter_Search_Info";
+import { keyToExpectedValueMap, typeDef } from "../info/Charter_Advert_Info";
+import { varToDb, varToScreen } from "../info/Charter_Search_Info";
 
 // Services
 import { makeString } from "../services/common_functions";

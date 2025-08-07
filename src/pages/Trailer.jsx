@@ -16,8 +16,8 @@ import RangeInput from "../components/RangeInput";
 import TrailerCard from "../components/TrailerCard";
 
 // Config
-import { keyToExpectedValueMap, typeDef } from "../config/Trailer_Advert_Info";
-import { varToDb, varToScreen } from "../config/Trailer_Search_Info";
+import { keyToExpectedValueMap, typeDef } from "../info/Trailer_Advert_Info";
+import { varToDb, varToScreen } from "../info/Trailer_Search_Info";
 
 // Services
 import {
