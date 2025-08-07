@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import DropdownWithRadio from "../DropdownWithRadio";
 import Loader from "../Loader";
 import SubmitButton from "../SubmitButton";
-import { keyToExpectedValueMap, typeDef } from "../Transport/Transport_Advert_Info";
+import { keyToExpectedValueMap, typeDef } from "../../config/Transport_Advert_Info";
 import { makeString, convertUnitsInFormData } from "../../services/common_functions";
 import DatePickerComponent from "../DatePickerComponent";
 import InputComponentDual from "../InputComponentDual";
