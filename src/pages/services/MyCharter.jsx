@@ -1,9 +1,9 @@
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useEffect, useState, useRef } from "react";
-import DropdownWithRadio from "../DropdownWithRadio";
-import Loader from "../Loader";
-import InputComponentDynamic from "../InputComponentDynamic";
-import SubmitButton from "../SubmitButton";
+import DropdownWithRadio from "../../components/DropdownWithRadio";
+import Loader from "../../components/Loader";
+import InputComponentDynamic from "../../components/InputComponentDynamic";
+import SubmitButton from "../../components/SubmitButton";
 import { keyToExpectedValueMap, typeDef } from "../../config/Charter_Advert_Info";
 import { makeString } from "../../services/common_functions";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;

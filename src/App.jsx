@@ -10,10 +10,10 @@ import Berths from "./pages/Berth";
 import Buy from "./pages/Buy";
 import Sell from "./pages/Sell";
 import Services from "./pages/Service";
-import EngineDetailPage from "./components/Engine/Engine_Detail";
-import TrailerDetail from "./components/Trailers/Trailer_Detail";
-import TransportDetail from "./components/Transport/Transport_Detail";
-import CharterDetail from "./components/Charter/Charter_Details";
+import EngineDetailPage from "./pages/detail/Engine_Detail";
+import TrailerDetail from "./pages/detail/Trailer_Detail";
+import TransportDetail from "./pages/detail/Transport_Detail";
+import CharterDetail from "./pages/detail/Charter_Details";
 import Register from "./pages/auth/Registration";
 import Login from "./pages/auth/Login";
 

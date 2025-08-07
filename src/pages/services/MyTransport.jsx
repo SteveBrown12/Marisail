@@ -1,13 +1,13 @@
 import { Form, Container, Row, Col } from "react-bootstrap";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom"; 
-import DropdownWithRadio from "../DropdownWithRadio";
-import Loader from "../Loader";
-import SubmitButton from "../SubmitButton";
+import DropdownWithRadio from "../../components/DropdownWithRadio";
+import Loader from "../../components/Loader";
+import SubmitButton from "../../components/SubmitButton";
 import { keyToExpectedValueMap, typeDef } from "../../config/Transport_Advert_Info";
 import { makeString, convertUnitsInFormData } from "../../services/common_functions";
-import DatePickerComponent from "../DatePickerComponent";
-import InputComponentDual from "../InputComponentDual";
+import DatePickerComponent from "../../components/DatePickerComponent";
+import InputComponentDual from "../../components/InputComponentDual";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 

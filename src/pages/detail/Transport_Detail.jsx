@@ -1,19 +1,56 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
-import Loader from "../Loader";
-import { detailStateType, varToDb } from "../../config/Charter_Search_Info";
-import CharterDetailPanel from "./Charter_Detail_Panel";
+import { detailStateType } from "../../config/Trailer_Search_Info";
+import Loader from "../../components/Loader";
+import PropTypes from "prop-types";
+import { varToScreen } from "../../config/Trailer_Search_Info";
+import { varToDb } from "../../config/Transport_Search_Info";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
-const URL = apiUrl + "/search_charter/";
+const URL = apiUrl + "/search_transport/";
 
-const CharterDetail = () => {
+
+const TrailerDetailsPanel = ({ title, details }) => {
+  console.log("title :>> ", title);
+  return (
+    <div className="details-panel-container">
+      <div className="details-panel-header">
+        <span className="panel-title ">
+          <h6>{varToScreen[title]?.displayText}</h6>
+        </span>
+      </div>
+      <div className="details-panel-content">
+        <table className="details-panel-table">
+          <tbody>
+            {Object.entries(details).map(([key, value]) => {
+              return (
+                <tr key={key}>
+                  <td className="details-panel-key">
+                    <strong>{varToScreen?.[key]?.displayText}:</strong>
+                  </td>
+                  <td className="details-panel-value">{value}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+TrailerDetailsPanel.propTypes = {
+  title: PropTypes.string.isRequired,
+  details: PropTypes.object.isRequired,
+};
+
+
+const TransportDetail = () => {
   // console.log("detailStateType", detailStateType);
   // console.log("varToDb", varToDb);
   const { id } = useParams();
   const [trailer, setTrailer] = useState(detailStateType);
-
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   console.log(id);
@@ -23,7 +60,7 @@ const CharterDetail = () => {
   useEffect(() => {
     const fetchEngineDetails = async (id) => {
       try {
-        const response = await fetch(`${URL}charter-detail/${id}`);
+        const response = await fetch(`${URL}transport-detail/${id}`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -31,14 +68,12 @@ const CharterDetail = () => {
 
         Object.keys(trailer).map((key) => {
           Object.keys(trailer[key]).map((key2) => {
-            console.log("key2 :>> ", key, key2);
             // console.log("key2", key2);
             var name = varToDb[key2];
             // console.log("size", data.res[0].length);
             // console.log("name", name);
             // console.log("data[name] ooutside", data.res[0][0][name]);
-
-            if (data.res[0][0] && data.res[0][0][name] !== undefined)
+            if (data.res[0][0][name] !== undefined)
               // console.log("data[name] inside", data.res[0][0][name]);
               setTrailer((prevState) => ({
                 ...prevState,
@@ -73,19 +108,20 @@ const CharterDetail = () => {
   if (loading) return <Loader />;
   if (error) return <p>Error: {error}</p>;
   if (!trailer) return <p>No trailer details available.</p>;
+
   console.log("trailer :>> ", trailer);
+
   return (
     <div className="engine-detail-page">
       <div className="engine-main-section">
-   
+        
         <div>
           <Row>
-            {trailer &&
-              Object.keys(trailer).map((key) => (
-                <Col key={key} md={6}>
-                  <CharterDetailPanel title={key} details={trailer[key]} />
-                </Col>
-              ))}
+            {Object.keys(trailer).map((key) => (
+              <Col key={key} md={6}>
+                <TrailerDetailsPanel title={key} details={trailer[key]} />
+              </Col>
+            ))}
           </Row>
         </div>
       </div>
@@ -93,4 +129,4 @@ const CharterDetail = () => {
   );
 };
 
-export default CharterDetail;
+export default TransportDetail;
