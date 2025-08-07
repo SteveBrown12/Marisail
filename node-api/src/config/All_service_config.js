@@ -650,7 +650,6 @@ export const Charter_Config = {
     primary_key: "Charter_ID",
     join_tables: ["Charter_Costs", "Charter_Date", "Charter_Food", "Charter_Insurance","Charter_Location", "Charter_Payment", "Charter_Policy", "Charter_Requirements","Charter_Safety", "Costs", "Crew",  "Food", "Policy","Requirements", "Sales"],
 
-    //     [Error] Service initialization failed: Configuration error: The join table 'Charter_Dates' does not exist in the database.
     
     tables: [
         {
@@ -749,7 +748,7 @@ export const Charter_Config = {
             }
         },
         {
-            // table_Name: "Charter_Dates",
+          
             table_Name: "Charter_Date",
             section_Heading: "Charter Date",
             columns: {
