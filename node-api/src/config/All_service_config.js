@@ -860,7 +860,7 @@ export const Transport_Config = {
                 quoteDate: { column_Name: 'Quote_Date', display_Text: 'Quote Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
                 declineDate: { column_Name: 'Decline_Date', display_Text: 'Decline Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
                 withdrawDate: { column_Name: 'Withdraw_Date', display_Text: 'Withdraw Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
-                // quoteStatus: { column_Name: 'Quote_Status', display_Text: 'Quote Status', type: 'radio', mandatory: false, searchable: false, radioOptions: null },//ERROR table Transportation_Quotes IN Transport Service no quote_status column in db but View_Declined_Withdrawn_Expired column present 
+                quoteStatus: { column_Name: 'Quote_Status', display_Text: 'Quote Status', type: 'radio', mandatory: false, searchable: false, radioOptions: null },//ERROR table Transportation_Quotes IN Transport Service no quote_status column in db but View_Declined_Withdrawn_Expired column present 
             },
         },
         {
