@@ -6,7 +6,8 @@ const search_Router = Router();
 // Endpoint to provide the UI with the fields needed to build the search form.
 
 search_Router.get("/:service_name/search-options", initialize_service, (request, response) => {
-    response.json({ ok: true, data: request.service_config.searchable_fields || [] });
+    const { service_config, service_mappings } = request;
+    response.json({ ok: true, data:{ service_config, service_mappings }});
 });
 search_Router.get("/:service_name/search", initialize_service, async (request, response) => {
     try {
