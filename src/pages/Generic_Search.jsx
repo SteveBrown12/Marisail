@@ -205,30 +205,85 @@ export default function GenericSearch() {
         </div>
 
         {/* Results */}
-        <div className="col-md-9">
-          <h4>Results ({results.length})</h4>
-          {loading && <Loader />}
-          {!loading && results.length === 0 && <p>No results found</p>}
-          <div className="row">
-            {results.map((item, idx) => (
-              <div className="col-md-4 mb-3" key={item.id || idx}>
-                <div
-                  className="card h-100"
-                  onClick={() => handleDetailsClick(item.id)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className="card-body">
-                    {Object.entries(item).map(([key, value]) => (
-                      <p key={key} className="mb-1">
-                        <strong>{key}:</strong> {String(value)}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              </div>
+<div className="col-md-9">
+  <h4>Results ({results.length})</h4>
+
+  {/* Active Filters Summary */}
+  {Object.keys(allSelectedOptions).length > 0 && (
+    <div className="mb-3 p-2 border rounded bg-light">
+      <strong>Active Filters:</strong>
+      <div className="d-flex flex-wrap mt-2">
+        {Object.entries(allSelectedOptions).map(([key, value]) => {
+          if (!value || (Array.isArray(value) && value.length === 0)) return null;
+
+          let displayValue;
+          if (typeof value === "object" && value.from !== undefined) {
+            displayValue = `${value.from || ""} - ${value.to || ""}`;
+          } else if (Array.isArray(value)) {
+            displayValue = value.join(", ");
+          } else {
+            displayValue = String(value);
+          }
+
+          return (
+            <span
+              key={key}
+              className="badge bg-primary text-white me-2 mb-2 d-flex align-items-center"
+              style={{ fontSize: "0.9rem" }}
+            >
+              {key}: {displayValue}
+              <button
+                type="button"
+                className="btn-close btn-close-white ms-2"
+                style={{ fontSize: "0.6rem" }}
+                onClick={() =>
+                  setAllSelectedOptions((prev) => {
+                    const updated = { ...prev };
+                    delete updated[key];
+                    return updated;
+                  })
+                }
+              ></button>
+            </span>
+          );
+        })}
+
+        {/* Clear All Button */}
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-danger ms-2"
+          onClick={() => setAllSelectedOptions({})}
+        >
+          Clear All
+        </button>
+      </div>
+    </div>
+  )}
+
+  {loading && <Loader />}
+  {!loading && results.length === 0 && <p>No results found</p>}
+
+  <div className="row">
+    {results.map((item, idx) => (
+      <div className="col-md-4 mb-3" key={item.id || idx}>
+        <div
+          className="card h-100"
+          onClick={() => handleDetailsClick(item.id)}
+          style={{ cursor: "pointer" }}
+        >
+          <div className="card-body">
+            {Object.entries(item).map(([key, value]) => (
+              <p key={key} className="mb-1">
+                <strong>{key}:</strong> {String(value)}
+              </p>
             ))}
           </div>
         </div>
+      </div>
+    ))}
+  </div>
+</div>
+
       </div>
     </div>
   );

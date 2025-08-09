@@ -1,25 +1,26 @@
-// Generic_Advert.jsx
 import React, { useEffect, useState, useCallback } from "react";
-import { Form, Container, Row, Col, Button, Card } from "react-bootstrap";
-import FormUtilities from "./Form_Utilities";
+import { Form, Container, Row, Col, Button } from "react-bootstrap";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
-import InputComponentDual from "../components/InputComponentDual";
-import InputComponentDynamic from "../components/InputComponentDynamic";
+import RangeInput from "../components/RangeInput";
 import Loader from "../components/Loader";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import FormUtilities from "./Form_Utilities";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 export default function GenericAdvert() {
   const { serviceName } = useParams();
   const [loading, setLoading] = useState(true);
+  const [fetchingOptions, setFetchingOptions] = useState(false);
   const [serviceConfig, setServiceConfig] = useState(null);
   const [serviceMappings, setServiceMappings] = useState(null);
   const [formState, setFormState] = useState({});
   const [errors, setErrors] = useState({});
+  const [filtersData, setFiltersData] = useState({});
   const [autofillLoading, setAutofillLoading] = useState(false);
 
+  // Fetch config
   const init = useCallback(async () => {
     setLoading(true);
     try {
@@ -42,44 +43,22 @@ export default function GenericAdvert() {
     init();
   }, [serviceName, init]);
 
-  const handleChange = (varName, value) => {
-    setFormState((prev) => ({ ...prev, [varName]: value }));
-    setErrors((prev) => ({ ...prev, [varName]: null }));
-  };
-
-  const handleDualChange = (varName, { value, unit }) => {
-    setFormState((prev) => ({ ...prev, [varName]: { value, unit } }));
-    setErrors((prev) => ({ ...prev, [varName]: null }));
-  };
-
-  const handleAutofill = async (keyTriplet) => {
-    if (!serviceName) return;
-    setAutofillLoading(true);
+  // Fetch dropdown options on demand
+  const fetchDropdownData = async (fieldKey) => {
+    if (!serviceName || !fieldKey) return;
+    setFetchingOptions(true);
     try {
-      const res = await fetch(`${API_BASE}/advert/${serviceName}/autofill`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(keyTriplet),
-      });
-      const js = await res.json();
-      if (!js.ok) throw new Error(js.message || "Autofill failed");
-      setFormState((prev) => {
-        const merged = { ...prev };
-        Object.entries(js.result || {}).forEach(([k, v]) => {
-          if (
-            merged[k] === undefined ||
-            merged[k] === "" ||
-            (Array.isArray(merged[k]) && merged[k].length === 0)
-          ) {
-            merged[k] = v;
-          }
-        });
-        return merged;
-      });
-    } catch (e) {
-      console.error("autofill error", e);
+      const res = await axios.get(`${API_BASE}/${serviceName}/facets/${fieldKey}`);
+      if (res.data.ok) {
+        setFiltersData((prev) => ({
+          ...prev,
+          [fieldKey]: res.data.facets || [],
+        }));
+      }
+    } catch (err) {
+      console.error(`Error fetching facets for ${fieldKey}:`, err);
     } finally {
-      setAutofillLoading(false);
+      setFetchingOptions(false);
     }
   };
 
@@ -126,66 +105,117 @@ export default function GenericAdvert() {
       <h3 className="mb-4">Advertise {serviceName.toUpperCase()}</h3>
       <Form onSubmit={handleSubmit}>
         <Row>
-          {(serviceConfig?.tables || []).map((table) => (
-            <Col md={12} key={table.table_Name} className="mb-4">
-              <Card className="h-100 shadow-sm">
-                <Card.Body>
-                  <Card.Title>{table.section_Heading || table.table_Name}</Card.Title>
-                  <Row>
-                    {Object.entries(table.columns).map(([varName, colCfg]) => {
-                      const label = colCfg.displayText || varName;
+          {serviceConfig?.tables?.map((table) => {
+            const tableColumns = Array.isArray(table.columns)
+              ? table.columns
+              : table.columns
+              ? Object.values(table.columns)
+              : [];
 
-                      return (
-                        <Col md={4} sm={6} xs={12} key={varName} className="mb-3">
-                          {colCfg.type === "radio" ? (
-                            <>
-                              <label className="form-label">{label}</label>
+            return (
+              <Col md={12} key={table.table_Name} className="mb-4">
+                <h6>{table.section_Heading}</h6>
+                <Row>
+                  {tableColumns
+                    .filter((col) => col.searchable)
+                    .map((col) => {
+                      const fieldKey = col.column_Name;
+                      const label = col.display_Text || fieldKey;
+
+                      switch (col.type) {
+                        case "radio":
+                          return (
+                            <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
                               <DropdownWithCheckBoxes
-                                options={colCfg.options || []}
-                                value={formState[varName] || []}
-                                onChange={(v) => handleChange(varName, v)}
-                                multi={true}
+                                title={label}
+                                options={filtersData[fieldKey] || []}
+                                selected={formState[fieldKey] || []}
+                                onChange={(vals) =>
+                                  setFormState((prev) => ({
+                                    ...prev,
+                                    [fieldKey]: vals
+                                  }))
+                                }
+                                onOpen={() => fetchDropdownData(fieldKey)}
+                                fetching={fetchingOptions}
                                 placeholder={`Select ${label}`}
                               />
-                            </>
-                          ) : colCfg.type === "dual" ? (
-                            <>
-                              <label className="form-label">{label}</label>
-                              <InputComponentDual
-                                value={formState[varName]?.value || ""}
-                                unit={
-                                  formState[varName]?.unit ||
-                                  colCfg.radioOptions?.[0]?.value
-                                }
-                                radioOptions={colCfg.radioOptions || []}
-                                onChange={(value, unit) =>
-                                  handleDualChange(varName, { value, unit })
+                              {errors[fieldKey] && (
+                                <div className="text-danger small">{errors[fieldKey]}</div>
+                              )}
+                            </Col>
+                          );
+
+                        case "number":
+                          return (
+                            <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
+                              <RangeInput
+                                title={label}
+                                min={col.min || ""}
+                                max={col.max || ""}
+                                valueFrom={formState[fieldKey]?.from || ""}
+                                valueTo={formState[fieldKey]?.to || ""}
+                                onChange={(min, max) =>
+                                  setFormState((prev) => ({
+                                    ...prev,
+                                    [fieldKey]: { from: min, to: max }
+                                  }))
                                 }
                               />
-                            </>
-                          ) : (
-                            <>
-                              <label className="form-label">{label}</label>
-                              <InputComponentDynamic
-                                value={formState[varName] || ""}
-                                onChange={(v) => handleChange(varName, v)}
-                                type={colCfg.type === "number" ? "number" : "text"}
+                              {errors[fieldKey] && (
+                                <div className="text-danger small">{errors[fieldKey]}</div>
+                              )}
+                            </Col>
+                          );
+
+                        case "date":
+                          return (
+                            <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
+                              <label>{label}</label>
+                              <input
+                                type="date"
+                                className="form-control mb-2"
+                                value={formState[fieldKey] || ""}
+                                onChange={(e) =>
+                                  setFormState((prev) => ({
+                                    ...prev,
+                                    [fieldKey]: e.target.value
+                                  }))
+                                }
                               />
-                            </>
-                          )}
-                          {errors[varName] && (
-                            <div className="text-danger small">
-                              {errors[varName]}
-                            </div>
-                          )}
-                        </Col>
-                      );
+                              {errors[fieldKey] && (
+                                <div className="text-danger small">{errors[fieldKey]}</div>
+                              )}
+                            </Col>
+                          );
+
+                        default:
+                          return (
+                            <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
+                              <label>{label}</label>
+                              <input
+                                type="text"
+                                className="form-control mb-2"
+                                placeholder={label}
+                                value={formState[fieldKey] || ""}
+                                onChange={(e) =>
+                                  setFormState((prev) => ({
+                                    ...prev,
+                                    [fieldKey]: e.target.value
+                                  }))
+                                }
+                              />
+                              {errors[fieldKey] && (
+                                <div className="text-danger small">{errors[fieldKey]}</div>
+                              )}
+                            </Col>
+                          );
+                      }
                     })}
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+                </Row>
+              </Col>
+            );
+          })}
         </Row>
 
         <Row className="mt-3">
