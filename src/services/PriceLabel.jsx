@@ -34,7 +34,6 @@ export default function PriceLabel() {
 
   const prevPrice = [10000, 89000, 50000, 110000, 90000, 114000, 120000];
   const mean = prevPrice.reduce((acc, curr) => acc + curr, 0) / prevPrice.length;
-  console.log(mean.toFixed(2));
   const tenP = mean * 0.1; // 10 percent of the average
   const thirtyP = mean * 0.3; // 30 percent of the average
 
@@ -61,7 +60,6 @@ export default function PriceLabel() {
     if (value) {
       // Converting the string value back to a number, removing the commas (priceLabel fn only takes nums)
       const num = parseFloat(value.replace(/,/g, ""));
-       // console.log('type: ', typeof num);
       if (num > 0) {
         priceLabel(num);
       } else {

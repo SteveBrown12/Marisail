@@ -15,12 +15,13 @@ const VideoUploader = () => {
     }
 
     const newFiles = acceptedFiles.filter((newFile) => 
-        !files.some(file => file.path === newFile.path)
+        !files.some(file => file.newFile?.name === newFile.name)
     );
 
+    // Store the original File object separately to preserve File/Blob type
     const filesWithPreview = newFiles.map((newFile) => ({
-    ...newFile,
-    preview: URL.createObjectURL(newFile),
+      newFile,
+      preview: URL.createObjectURL(newFile),
     }));
 
     setFiles((prevFiles) => [...prevFiles, ...filesWithPreview]);
@@ -34,10 +35,11 @@ const VideoUploader = () => {
     const formData = new FormData();
     formData.append("operation", "upload");
 
-    files.map((fileAndPreviewUrl) => {
-          formData.append("previews", JSON.stringify(fileAndPreviewUrl.preview))
-          formData.append("payloads", fileAndPreviewUrl.newFile)
-    })
+    files.forEach((fileAndPreviewUrl) => {
+      formData.append("previews", JSON.stringify(fileAndPreviewUrl.preview));
+      // Append the actual File object
+      formData.append("payloads", fileAndPreviewUrl.newFile);
+    });
 
     const res = await fetch('/api/upload-media', {
             method: 'POST',
@@ -48,18 +50,18 @@ const VideoUploader = () => {
     //uploadServerAction(formData);
 
     //
-    console.log("Files ready to upload:", files);
     alert("Files uploaded successfully!");
     setFiles([])
   };
 
-  const removeFile = (filePath) => {
-    setFiles(files.filter((file) => file.path !== filePath));
+  const removeFile = (previewUrl) => {
+    setFiles((prev) => prev.filter((f) => f.preview !== previewUrl));
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: ["video/*"],
+    // react-dropzone v14+ accepts an object map of MIME types
+    accept: { "video/*": [] },
     multiple: true
   });
 
@@ -70,7 +72,7 @@ const VideoUploader = () => {
         {...getRootProps()}
         className={`dropzone ${isDragActive ? "dropzone-active" : ""}`}
       >
-        <input {...getInputProps()} accept="video/*" multiple={true} />
+        <input {...getInputProps()} multiple={true} />
         {isDragActive ? (
           <p>Drop the videos here...</p>
         ) : (
@@ -87,11 +89,11 @@ const VideoUploader = () => {
                 <div key={index} className="preview-item">
                   <video
                     src={file.preview}
-                    alt="Preview"
                     className="preview-image"
+                    controls
                   />
                   <button
-                    onClick={() => removeFile(file.path)}
+                    onClick={() => removeFile(file.preview)}
                     className="remove-button"
                   >
                     &times;

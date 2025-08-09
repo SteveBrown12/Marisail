@@ -159,27 +159,22 @@ function CharterAdvert() {
 
       return updatedOptions;
     });
-
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      // if (checkRequired()) {
-      console.log("001 Form is valid, submitting...");
       localStorage.setItem("CharterData", JSON.stringify(allSelectedOptions));
       navigate("/view-charter");
-     
     } catch (error) {
       console.error(error);
     }
   };
+
   function setPageData(key, newData) {
     const setStateFunction = setStateFunctions[key];
     if (setStateFunction) {
-      setStateFunction((prevState) => ({
-        ...prevState,
-        ...newData,
-      }));
+      setStateFunction((prevState) => ({ ...prevState, ...newData }));
     } else {
       console.error(`No setState function found for key: ${key}`);
     }
@@ -188,19 +183,16 @@ function CharterAdvert() {
   const cacheKey = "charterFilterData";
   const URL = apiUrl + "/advert_charter/";
 
-
   const fetchDistinctData = useCallback(
     async (sectionKey, fieldKey) => {
       try {
         setLoading(true);
 
-        // Prepare request payload based on the opened section & field
         const requestBody = {
-          sectionKey: sectionKey, // The section (e.g., "amenitiesAndServices")
-          fieldKey: fieldKey, // The specific field/column (e.g., "wifiAvailability")
+          sectionKey: sectionKey,
+          fieldKey: fieldKey,
         };
 
-        // Call API for only the relevant section & field
         const response = await fetch(`${URL}charter`, {
           method: "POST",
           headers: {
@@ -210,9 +202,7 @@ function CharterAdvert() {
         });
 
         const data = await response.json();
-        console.log("data :>> ", data);
 
-        // Update state only for the specific field
         setPageData(sectionKey, data.res);
       } catch (err) {
         console.error(err);
@@ -222,7 +212,6 @@ function CharterAdvert() {
     },
     [URL, sections, setPageData]
   );
-
 
   const handleInputChange = (title, fieldKey, newValue) => {
     setEngines((prevCharter) => ({
@@ -245,7 +234,6 @@ function CharterAdvert() {
   const handleDropdownOpen = (sectionKey, fieldKey) => {
     setOpenKey(fieldKey);
 
-    // Fetch data only if not already loaded
     if (
       !sections[sectionKey][fieldKey] ||
       sections[sectionKey][fieldKey].length === 0
@@ -355,7 +343,6 @@ function CharterAdvert() {
   );
 }
 
-
 function CharterSearch() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -442,7 +429,6 @@ function CharterSearch() {
   });
 
   const filters = {
-    // identification,
     guestAccommodation,
     locationDetails,
     guestRequirements,
@@ -455,7 +441,6 @@ function CharterSearch() {
   };
 
   const setStateFunctions = {
-    // identification: setIdentification,
     guestAccommodation: setGuestAccommodation,
     locationDetails: setLocationDetails,
     guestRequirements: setGuestRequirements,
@@ -470,6 +455,7 @@ function CharterSearch() {
   const handleRadioChange = (key2, value) => {
     setSelectedRadios((prev) => ({ ...prev, [key2]: value }));
   };
+
   const removeTag = (tag) => {
     setAllSelectedOptions((prev) => {
       const newOptions = { ...prev };
@@ -496,7 +482,6 @@ function CharterSearch() {
         console.error(`Missing varToScreen mapping for ${columnKey}`);
         return;
       }
-      console.log("/berths Put");
       setFetching(true);
       const response = await fetch(`${apiUrl + "/search_berth/"}charters`, {
         method: "PUT",
@@ -509,6 +494,7 @@ function CharterSearch() {
           appliedFilters: allSelectedOptions,
         }),
       });
+
       setFetching(false);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -556,15 +542,11 @@ function CharterSearch() {
         });
 
         const data = await response.json();
-        // console.log(data);
         setTrailers(data.res[0]);
-        // console.log("trailers", trailers);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       } finally {
         setLoading(false);
-
-        console.log("done");
       }
     };
 

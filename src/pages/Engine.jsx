@@ -501,11 +501,9 @@ function EngineAdvert() {
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      // if (checkRequired()) {
-      console.log("001 Form is valid, submitting...");
       localStorage.setItem("EngineData", JSON.stringify(allSelectedOptions));
       navigate("/view-engine");
-   
+     
     } catch (error) {
       console.error(error);
     }
@@ -546,8 +544,22 @@ function EngineAdvert() {
           body: JSON.stringify(requestBody),
         });
 
+        if (!response.ok) {
+          const text = await response.text().catch(() => "");
+          throw new Error(
+            `engines endpoint error: ${response.status} ${response.statusText}\n${text.slice(0, 200)}`
+          );
+        }
+
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          const text = await response.text().catch(() => "");
+          throw new Error(
+            `engines endpoint returned non-JSON (${contentType}). Body: ${text.slice(0, 200)}`
+          );
+        }
+
         const data = await response.json();
-        console.log("data :>> ", data);
 
         // Update state only for the specific field
         setPageData(sectionKey, data.res);
@@ -583,6 +595,21 @@ function EngineAdvert() {
         },
         body: JSON.stringify({ requestBody }),
       });
+      if (!response.ok) {
+        const text = await response.text().catch(() => "");
+        throw new Error(
+          `relevant_data endpoint error: ${response.status} ${response.statusText}\n${text.slice(0, 200)}`
+        );
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        const text = await response.text().catch(() => "");
+        throw new Error(
+          `relevant_data endpoint returned non-JSON (${contentType}). Body: ${text.slice(0, 200)}`
+        );
+      }
+
       const data = await response.json();
       const result = data?.result;
 
@@ -675,6 +702,21 @@ function EngineAdvert() {
         },
         body: JSON.stringify({ requestBody }),
       });
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => "");
+        throw new Error(
+          `${tableName}/${fetchColumn} endpoint error: ${response.status} ${response.statusText}\n${text.slice(0, 200)}`
+        );
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        const text = await response.text().catch(() => "");
+        throw new Error(
+          `${tableName}/${fetchColumn} returned non-JSON (${contentType}). Body: ${text.slice(0, 200)}`
+        );
+      }
 
       const data = await response.json();
 
@@ -1160,7 +1202,6 @@ function EngineSearch() {
         console.error(`Missing varToScreen mapping for ${columnKey}`);
         return;
       }
-      console.log("/berths Put");
       setFetching(true);
       const response = await fetch(`${apiUrl + "/search_berth/"}engines`, {
         method: "PUT",
@@ -1236,10 +1277,9 @@ function EngineSearch() {
         const data = await response.json();
         setEngines(data?.res[0]);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       } finally {
         setLoading(false);
-        console.log("done");
       }
     };
 
@@ -1257,8 +1297,6 @@ function EngineSearch() {
   const resetTags = () => {
     setAllSelectedOptions({});
   };
-
-  console.log("engines :>> ", engines);
 
   return (
     <Container>

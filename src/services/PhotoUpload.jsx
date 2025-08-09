@@ -31,7 +31,6 @@ const PhotoUploader = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
     // upload logic
-    console.log("Files ready to upload:", files);
 
     const formData = new FormData();
     formData.append("operation", "upload");
@@ -57,13 +56,14 @@ const PhotoUploader = () => {
     setFiles([]);
   };
 
-  const removeFile = (filePath) => {
-    setFiles(files.filter((file) => file.path !== filePath));
+  const removeFile = (previewUrl) => {
+    setFiles((prev) => prev.filter((f) => f.preview !== previewUrl));
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: ["image/*"],
+    // react-dropzone v14+ accepts an object map of MIME types
+    accept: { "image/*": [] },
     multiple: true,
   });
 
@@ -74,7 +74,7 @@ const PhotoUploader = () => {
         {...getRootProps()}
         className={`dropzone ${isDragActive ? "dropzone-active" : ""}`}
       >
-        <input {...getInputProps()} accept="image/*" multiple={true} />
+        <input {...getInputProps()} multiple={true} />
         {isDragActive ? (
           <p>Drop the files here...</p>
         ) : (
@@ -95,7 +95,7 @@ const PhotoUploader = () => {
                     className="preview-image"
                   />
                   <button
-                    onClick={() => removeFile(file.path)}
+                    onClick={() => removeFile(file.preview)}
                     className="remove-button"
                   >
                     &times;

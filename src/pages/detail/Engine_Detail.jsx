@@ -54,8 +54,7 @@ const EngineDetail = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-
-        console.log("data :>> ", data[0]);
+        
         setEngine(data[0]);
         setLoading(false);
       } catch (error) {

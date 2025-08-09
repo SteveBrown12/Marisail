@@ -5,27 +5,39 @@ import { Loader } from "rsuite";
 
 const DropdownWithCheckBoxes = ({
   defaultUnit,
-  varToDb,
+  varToDb = {},
   heading,
   title,
-  options,
+  options = [],
+  // Backwards-compat props (simple API)
+  selected,
+  onChange,
+  // Original API (grouped selections by heading)
   selectedOptions,
   setSelectedOptions,
   onOpen,
-  fetching,
+  fetching = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState("");
   const [filteredOptions, setFilteredOptions] = useState(options);
   const dropdownRef = useRef(null); // Ref for the scrollable container
   const [offSet, setOffSet] = useState(0);
+  const safeOnOpen = typeof onOpen === "function" ? onOpen : () => {};
+
+  // Determine selected values and setter behavior
+  const selectedValues = Array.isArray(selected)
+    ? selected
+    : (heading && selectedOptions && Array.isArray(selectedOptions[heading])
+        ? selectedOptions[heading]
+        : []);
 
   // Toggle dropdown visibility
   const handleDropdownToggle = () => {
     setIsOpen((prev) => !prev);
     if (!isOpen) {
       console.log("call from dropdowntoggle");
-      onOpen(inputText, offSet); // Call onOpen when the dropdown is opened
+      safeOnOpen(inputText, offSet); // Call onOpen when the dropdown is opened
     }
   };
 
@@ -51,19 +63,31 @@ const DropdownWithCheckBoxes = ({
   };
 
   // Handle checkbox selection
-  const handleOptionChange = (option, e) => {
+  const handleOptionChange = (value, e) => {
     e.stopPropagation(); // Stop event propagation to prevent dropdown from closing
-    setSelectedOptions((prev) => {
-      const currentSelections = prev[heading] || [];
-      const updatedSelections = currentSelections.includes(option)
-        ? currentSelections.filter((item) => item !== option) // Remove if already selected
-        : [...currentSelections, option]; // Add if not selected
+    // If simple API is provided
+    if (Array.isArray(selected) && typeof onChange === "function") {
+      const exists = selected.includes(value);
+      const updated = exists
+        ? selected.filter((v) => v !== value)
+        : [...selected, value];
+      onChange(updated);
+      return;
+    }
 
-      return {
-        ...prev,
-        [heading]: updatedSelections,
-      };
-    });
+    // Fallback to grouped API (requires heading)
+    if (typeof setSelectedOptions === "function" && heading) {
+      setSelectedOptions((prev) => {
+        const currentSelections = (prev && prev[heading]) || [];
+        const updatedSelections = currentSelections.includes(value)
+          ? currentSelections.filter((item) => item !== value)
+          : [...currentSelections, value];
+        return {
+          ...(prev || {}),
+          [heading]: updatedSelections,
+        };
+      });
+    }
   };
   // console.log(heading);
 
@@ -71,12 +95,12 @@ const DropdownWithCheckBoxes = ({
     const debounceTimeout = setTimeout(() => {
       if (isOpen) {
         console.log("call from ");
-        onOpen(inputText, offSet);
+        safeOnOpen(inputText, offSet);
       }
     }, 500);
 
     return () => clearTimeout(debounceTimeout); // Cleanup on re-renders
-  }, [inputText, offSet, selectedOptions]); // Depend on `inputText` and `onOpen`
+  }, [inputText, offSet, selectedOptions, isOpen]); // Depend on `inputText` and `isOpen`
 
   // Update filtered options when the options prop changes
   useEffect(() => {
@@ -150,9 +174,21 @@ const DropdownWithCheckBoxes = ({
               onScroll={handleScroll}
             >
               {filteredOptions.length > 0 ? (
-                filteredOptions.map((option) => (
+                filteredOptions.map((option, idx) => {
+                  const valueKey =
+                    heading && typeof option === "object" && option && varToDb[heading] && option[varToDb[heading]] != null
+                      ? option[varToDb[heading]]
+                      : (typeof option === "string"
+                          ? option
+                          : (option && (option.value ?? option.label)) || String(idx));
+
+                  const isChecked = Array.isArray(selectedValues)
+                    ? selectedValues.includes(valueKey)
+                    : false;
+
+                  return (
                   <div
-                    key={option[varToDb[heading]]}
+                    key={`${valueKey}-${idx}`}
                     className="custom-dropdown-option"
                     onClick={(e) => e.stopPropagation()} // Prevent clicks on the option from closing the dropdown
                     style={{
@@ -165,16 +201,10 @@ const DropdownWithCheckBoxes = ({
                   >
                     <Form.Check
                       type="checkbox"
-                      id={`checkbox-${option[varToDb[heading]]}`}
-                      label={option[varToDb[heading]]}
-                      checked={
-                        selectedOptions[heading]?.includes(
-                          option[varToDb[heading]]
-                        ) || false
-                      }
-                      onChange={(e) =>
-                        handleOptionChange(option[varToDb[heading]], e)
-                      }
+                      id={`checkbox-${heading || 'opt'}-${idx}`}
+                      label={valueKey}
+                      checked={isChecked}
+                      onChange={(e) => handleOptionChange(valueKey, e)}
                       style={{ flexGrow: 1 }} // Allow label to take available space
                     />
 
@@ -192,10 +222,11 @@ const DropdownWithCheckBoxes = ({
                         whiteSpace: "nowrap", // Prevent badge text from wrapping
                       }}
                     >
-                      {option["occurrence_cnt"]}
+                      {option && option["occurrence_cnt"]}
                     </span>
                   </div>
-                ))
+                  );
+                })
               ) : fetching ? (
                 <Loader />
               ) : (
@@ -213,14 +244,18 @@ const DropdownWithCheckBoxes = ({
 
 // Prop Types Validation
 DropdownWithCheckBoxes.propTypes = {
-  heading: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  selectedOptions: PropTypes.object.isRequired,
-  setSelectedOptions: PropTypes.func.isRequired,
+  heading: PropTypes.string,
+  title: PropTypes.string,
+  options: PropTypes.array,
+  // Simple API
+  selected: PropTypes.array,
+  onChange: PropTypes.func,
+  // Grouped API
+  selectedOptions: PropTypes.object,
+  setSelectedOptions: PropTypes.func,
   defaultUnit: PropTypes.string,
-  onOpen: PropTypes.func.isRequired,
-  fetching: PropTypes.bool.isRequired,
+  onOpen: PropTypes.func,
+  fetching: PropTypes.bool,
 };
 
 export default DropdownWithCheckBoxes;

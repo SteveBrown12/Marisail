@@ -1,30 +1,59 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 const RangeInput = ({
-  title,
+  // Common/simple API (used by Generic_Search)
+  title = "Range",
+  min,
+  max,
+  valueFrom,
+  valueTo,
+  onChange,
+
+  // Back-compat API (legacy callers)
   fromValue,
   toValue,
   setFromValue,
   setToValue,
-  radioOptions,
-  selectedRadio,
-  onRadioChange,
-  key2,
+
+  // Optional radios
+  radioOptions = [],
+  selectedRadio = "",
+  onRadioChange = () => {},
+  key2 = "range",
+
+  // Optional accordion controls
   isOpen,
   toggleAccordion,
 }) => {
+  // Fallback open state if parent doesn't control accordion
+  const [isOpenInternal, setIsOpenInternal] = useState(true);
+  const open = typeof isOpen === "boolean" ? isOpen : isOpenInternal;
+  const handleToggle = toggleAccordion || (() => setIsOpenInternal((p) => !p));
+
+  const effectiveFrom = valueFrom !== undefined ? valueFrom : (fromValue ?? "");
+  const effectiveTo = valueTo !== undefined ? valueTo : (toValue ?? "");
+
   const handleFromChange = (e) => {
     const value = e.target.value;
     if (!isNaN(value) || value === "") {
-      setFromValue(value);
+      if (typeof onChange === "function") {
+        onChange(value, effectiveTo);
+      } else if (typeof setFromValue === "function") {
+        setFromValue(value);
+      }
     }
   };
 
   const handleToChange = (e) => {
     const value = e.target.value;
     if (!isNaN(value) || value === "") {
-      setToValue(value);
+      if (typeof onChange === "function") {
+        onChange(effectiveFrom, value);
+      } else if (typeof setToValue === "function") {
+        setToValue(value);
+      }
     }
   };
 
@@ -36,13 +65,13 @@ const RangeInput = ({
     <div className="custom-dropdown-container">
       <div
         className="custom-dropdown-header"
-        onClick={toggleAccordion}
-        aria-expanded={isOpen}
+        onClick={handleToggle}
+        aria-expanded={open}
         aria-controls="dropdown-content"
         style={{ marginBottom: "10px" }}
       >
         <span>{title}</span>
-        <span className={`dropdown-icon ${isOpen ? "open" : ""}`}>
+        <span className={`dropdown-icon ${open ? "open" : ""}`}>
           <svg
             width="10"
             height="10"
@@ -54,16 +83,16 @@ const RangeInput = ({
               fill="none"
               stroke="black"
               strokeWidth="1.5"
-              transform={isOpen ? "rotate(180 5 5)" : ""}
+              transform={open ? "rotate(180 5 5)" : ""}
             />
           </svg>
         </span>
       </div>
-      {isOpen && (
+      {open && (
         <div>
           <input
             type="number"
-            value={fromValue}
+            value={effectiveFrom}
             onChange={handleFromChange}
             placeholder="From"
             style={{
@@ -77,6 +106,8 @@ const RangeInput = ({
               outline: "none",
               backgroundColor: "#f5f5f5",
             }}
+            min={min}
+            max={max}
           />
           <span style={{ marginRight: 8, marginLeft: 8 }}>-</span>
           <input
@@ -91,11 +122,13 @@ const RangeInput = ({
               backgroundColor: "#f5f5f5",
             }}
             type="number"
-            value={toValue}
+            value={effectiveTo}
             onChange={handleToChange}
             placeholder="To"
+            min={min}
+            max={max}
           />
-          {radioOptions.length > 0 && (
+          {Array.isArray(radioOptions) && radioOptions.length > 0 && (
             <div
               className="btn-group"
               role="group"
@@ -142,22 +175,34 @@ const RangeInput = ({
 };
 
 RangeInput.propTypes = {
-  fromValue: PropTypes.string.isRequired,
-  toValue: PropTypes.string.isRequired,
-  setFromValue: PropTypes.func.isRequired,
-  setToValue: PropTypes.func.isRequired,
-  title: PropTypes.string.isRequired,
+  // Simple API
+  title: PropTypes.string,
+  min: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  max: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  valueFrom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  valueTo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onChange: PropTypes.func,
+
+  // Back-compat API
+  fromValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  toValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  setFromValue: PropTypes.func,
+  setToValue: PropTypes.func,
+
+  // Optional radios
   selectedRadio: PropTypes.string,
-  onRadioChange: PropTypes.func.isRequired,
+  onRadioChange: PropTypes.func,
   radioOptions: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
     })
   ),
-  key2: PropTypes.string.isRequired,
-  isOpen: PropTypes.bool.isRequired,
-  toggleAccordion: PropTypes.func.isRequired,
+  key2: PropTypes.string,
+
+  // Optional accordion controls
+  isOpen: PropTypes.bool,
+  toggleAccordion: PropTypes.func,
 };
 
 export default RangeInput;

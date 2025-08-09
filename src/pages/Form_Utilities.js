@@ -7,8 +7,26 @@ const FormUtilities = {
       Object.entries(table.columns).forEach(([varName, cfg]) => {
         if (cfg.mandatory) {
           const val = formState[varName];
-          if (val === undefined || val === null || val === "" || (Array.isArray(val) && val.length === 0)) {
-            errs[varName] = `${cfg.displayText || varName} is required`;
+          const label = cfg.displayText || varName;
+          // Type-aware mandatory checks
+          if (cfg.type === "dual") {
+            // Expect object { value, unit }; value must be non-empty
+            const v = val && typeof val === "object" ? val.value : undefined;
+            if (v === undefined || v === null || String(v).trim() === "") {
+              errs[varName] = `${label} is required`;
+            }
+          } else if (cfg.type === "radio") {
+            // Expect array with at least one selection
+            if (!Array.isArray(val) || val.length === 0) {
+              errs[varName] = `${label} is required`;
+            }
+          } else {
+            // Default string/number/text inputs
+            const isEmptyString = typeof val === "string" && val.trim() === "";
+            const isEmptyArray = Array.isArray(val) && val.length === 0;
+            if (val === undefined || val === null || isEmptyString || isEmptyArray) {
+              errs[varName] = `${label} is required`;
+            }
           }
         }
       });

@@ -308,13 +308,8 @@ function TrailersAdvert() {
     try {
       convertUnitsInFormData(allSelectedOptions);
       // if (checkRequired()) {
-      console.log("001 Form is valid, submitting...");
       localStorage.setItem("TrailerData", JSON.stringify(allSelectedOptions));
       navigate("/view-trailer");
-      // localStorage.setItem("advertise_engine", JSON.stringify(form));
-      // } else {
-      //     console.warn(error);
-      // }
     } catch (error) {
       console.error(error);
     }
@@ -358,7 +353,6 @@ function TrailersAdvert() {
         });
 
         const data = await response.json();
-        console.log("data :>> ", data);
 
         // Update state only for the specific field
         setPageData(sectionKey, data.res);
@@ -876,7 +870,6 @@ function TrailersSearch() {
         console.error(`Missing varToScreen mapping for ${columnKey}`);
         return;
       }
-      console.log("/berths Put");
       setFetching(true);
       const response = await fetch(`${apiUrl + "/search_berth/"}trailers`, {
         method: "PUT",
@@ -935,10 +928,9 @@ function TrailersSearch() {
         const data = await response.json();
         setTrailers(data?.res[0]);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       } finally {
         setLoading(false);
-        console.log("done");
       }
     };
 

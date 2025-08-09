@@ -11,7 +11,7 @@ const URL = apiUrl + "/search_charter/";
 
 
 const CharterDetailPanel = ({ title, details }) => {
-  console.log("title :>> ", title);
+  
   return (
     <div className="details-panel-container">
       <div className="details-panel-header">
@@ -45,16 +45,13 @@ CharterDetailPanel.propTypes = {
 };
 
 const CharterDetail = () => {
-  // console.log("detailStateType", detailStateType);
-  // console.log("varToDb", varToDb);
   const { id } = useParams();
   const [trailer, setTrailer] = useState(detailStateType);
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  console.log(id);
-
-  // console.log("trailer", trailer);
+  
+  
 
   useEffect(() => {
     const fetchEngineDetails = async (id) => {
@@ -67,15 +64,9 @@ const CharterDetail = () => {
 
         Object.keys(trailer).map((key) => {
           Object.keys(trailer[key]).map((key2) => {
-            console.log("key2 :>> ", key, key2);
-            // console.log("key2", key2);
             var name = varToDb[key2];
-            // console.log("size", data.res[0].length);
-            // console.log("name", name);
-            // console.log("data[name] ooutside", data.res[0][0][name]);
 
             if (data.res[0][0] && data.res[0][0][name] !== undefined)
-              // console.log("data[name] inside", data.res[0][0][name]);
               setTrailer((prevState) => ({
                 ...prevState,
                 [key]: {
@@ -83,14 +74,10 @@ const CharterDetail = () => {
                   [key2]: data.res[0][0][name],
                 },
               }));
-            // trailer[key][key2] = data[name];
           });
         });
 
-        // console.log("trailer", trailer);
-        // console.log("data[name] trailer", data.res[0]["Trailer_ID"]);
         setLoading(false);
-        // console.log("trailer", trailer);
       } catch (error) {
         setError(error.message);
         setLoading(false);
@@ -109,7 +96,7 @@ const CharterDetail = () => {
   if (loading) return <Loader />;
   if (error) return <p>Error: {error}</p>;
   if (!trailer) return <p>No trailer details available.</p>;
-  console.log("trailer :>> ", trailer);
+  
   return (
     <div className="engine-detail-page">
       <div className="engine-main-section">

@@ -237,12 +237,9 @@ function TransportAdvert() {
       convertUnitsInFormData(allSelectedOptions);
       // if (checkRequired()) {
       // If no errors, proceed with form submission logic
-      console.log("001 Form is valid, submitting...", allSelectedOptions);
       localStorage.setItem("TransportData", JSON.stringify(allSelectedOptions));
       navigate("/view-transport");
-      // console.log("001 Form data saved to localStorage:", allFormData);
       // } else {
-      //     console.warn(error);
       // }
     } catch (error) {
       console.error(error);
@@ -290,7 +287,6 @@ function TransportAdvert() {
         });
 
         const data = await response.json();
-        console.log("data :>> ", data);
 
         // Update state only for the specific field
         setPageData(sectionKey, data.res);
@@ -553,14 +549,11 @@ function TransportSearch() {
     if (varToScreen[columnKey]?.type === "range" || tableKey === "notDefined")
       return;
 
-    console.log("Fetching dropdown data for:", tableKey, columnKey, search);
-
     try {
       if (!varToScreen[columnKey]) {
         console.error(`Missing varToScreen mapping for ${columnKey}`);
         return;
       }
-      console.log("/transport Put");
       setFetching(true);
       const response = await fetch(`${apiUrl + "/search_berth/"}transports`, {
         method: "PUT",
@@ -590,10 +583,8 @@ function TransportSearch() {
         .map((value) => value); // Convert to string and trim whitespace
 
       // Update the state with the cleaned data
-      // console.log(data,"Clean********************************")
       const setStateFunction = setStateFunctions[tableKey];
       if (setStateFunction) {
-        // console.log("***********",cleanData,filters[tableKey][columnKey].length,offSet, offSet ==0)
         setStateFunction((prev) => ({
           ...prev,
           [columnKey]:
@@ -633,15 +624,11 @@ function TransportSearch() {
         });
 
         const data = await response.json();
-        // console.log(data);
         setTrailers(data.res[0]);
-        // console.log("trailers", trailers);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       } finally {
         setLoading(false);
-
-        console.log("done");
       }
     };
 
