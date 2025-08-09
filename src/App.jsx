@@ -41,12 +41,13 @@ function AppRoutes() {
 
         <Route path="/buy" element={<Buy />} />
         <Route path="/sell" element={<Sell />} />
-        <Route path="/services" element={<Services type="myEngines" />} />
 
+        <Route path="/services" element={<Services type="myEngines" />} />
         <Route path="/view-berth" element={<Services type="myBerth" />} />
         <Route path="/view-transport" element={<Services type="myTransport" />}/>
         <Route path="/view-charter" element={<Services type="myCharter" />} />
         <Route path="/view-trailer" element={<Services type="myTrailer" />} />
+
         <Route path="/engines/:id" element={<EngineDetailPage />} />
         <Route path="/trailer/:id" element={<TrailerDetail />} />
         <Route path="/berth/:id" element={<TrailerDetail />} />

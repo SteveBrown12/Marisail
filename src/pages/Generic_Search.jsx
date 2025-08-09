@@ -12,13 +12,15 @@ export default function GenericSearch() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+  const [fetchingOptions, setFetchingOptions] = useState(false);
   const [config, setConfig] = useState(null);
   const [mapping, setMapping] = useState(null);
-  const [filters, setFilters] = useState({});
+  const [filtersData, setFiltersData] = useState({}); // available dropdown data
+  const [allSelectedOptions, setAllSelectedOptions] = useState({});
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
 
-  // Fetch search config
+  // Fetch service search config (field structure)
   const fetchSearchOptions = useCallback(async () => {
     if (!serviceName) return;
     setLoading(true);
@@ -38,7 +40,26 @@ export default function GenericSearch() {
     }
   }, [serviceName]);
 
-  // Map UI filters to DB keys
+  // Lazy load dropdown data from backend /facets/:field
+  const fetchDropdownData = async (fieldKey) => {
+    if (!serviceName || !fieldKey) return;
+    setFetchingOptions(true);
+    try {
+      const res = await axios.get(`${apiUrl}/${serviceName}/facets/${fieldKey}`);
+      if (res.data.ok) {
+        setFiltersData((prev) => ({
+          ...prev,
+          [fieldKey]: res.data.facets || [],
+        }));
+      }
+    } catch (err) {
+      console.error(`Error fetching facets for ${fieldKey}:`, err);
+    } finally {
+      setFetchingOptions(false);
+    }
+  };
+
+  // Map UI filters to DB keys for backend query
   const mapFiltersToDbKeys = (rawFilters) => {
     if (!mapping?.var_to_column) return rawFilters;
     const mapped = {};
@@ -54,12 +75,12 @@ export default function GenericSearch() {
     if (!serviceName || !config) return;
     setLoading(true);
     try {
-      const mappedFilters = mapFiltersToDbKeys(filters);
+      const mappedFilters = mapFiltersToDbKeys(allSelectedOptions);
       const res = await axios.get(`${apiUrl}/${serviceName}/search`, {
         params: { filters: mappedFilters },
       });
       if (res.data.ok) {
-        setResults(res.data.data);
+        setResults(res.data.data || []);
       } else {
         setError("Search failed");
       }
@@ -69,30 +90,29 @@ export default function GenericSearch() {
     } finally {
       setLoading(false);
     }
-  }, [filters, serviceName, config]);
+  }, [allSelectedOptions, serviceName, config]);
 
+  // Load config once
   useEffect(() => {
     fetchSearchOptions();
   }, [fetchSearchOptions]);
 
   // Auto search whenever filters change
   useEffect(() => {
-    if (config) {
-      fetchResults();
-    }
-  }, [filters, fetchResults, config]);
+    if (config) fetchResults();
+  }, [allSelectedOptions, fetchResults, config]);
 
   // Handlers
   const handleMultiSelectChange = (field, selectedValues) => {
-    setFilters((prev) => ({ ...prev, [field]: selectedValues }));
+    setAllSelectedOptions((prev) => ({ ...prev, [field]: selectedValues }));
   };
 
   const handleRangeChange = (field, min, max) => {
-    setFilters((prev) => ({ ...prev, [field]: { from: min, to: max } }));
+    setAllSelectedOptions((prev) => ({ ...prev, [field]: { from: min, to: max } }));
   };
 
   const handleTextChange = (field, value) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
+    setAllSelectedOptions((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleDetailsClick = (id) => {
@@ -104,83 +124,78 @@ export default function GenericSearch() {
 
   return (
     <div className="container-fluid my-4">
-      <h2 className="mb-4 text-capitalize">{serviceName.toUpperCase()} Search</h2>
-
       <div className="row">
         {/* Sidebar Filters */}
-        <div className="col-md-3 border-end" style={{ maxHeight: "80vh", overflowY: "auto" }}>
-          {config && config.tables && config.tables.map((table) => {
+        <div className="col-md-3 border-end">
+          <h4 className="mb-4 text-capitalize">Search {serviceName}</h4>
+          {config?.tables?.map((table) => {
             const tableColumns = Array.isArray(table.columns)
               ? table.columns
               : table.columns
               ? Object.values(table.columns)
               : [];
 
-            if (tableColumns.length === 0) return null;
-
             return (
               <div key={table.table_Name} className="mb-4">
-                <h5 className="mb-3">{table.section_Heading}</h5>
+                <h6>{table.section_Heading}</h6>
                 {tableColumns
                   .filter((col) => col.searchable)
                   .map((col) => {
                     const fieldKey = col.column_Name;
-                    const label = col.label || fieldKey;
-
+                    const label = col.display_Text || fieldKey;
+                    
                     switch (col.type) {
                       case "radio":
                         return (
-                          <div className="mb-3" key={fieldKey}>
-                            <label className="form-label">{label}</label>
-                            <DropdownWithCheckBoxes
-                              options={col.radioOptions || []}
-                              selected={filters[fieldKey] || []}
-                              onChange={(vals) => handleMultiSelectChange(fieldKey, vals)}
-                            />
-                          </div>
+                          <DropdownWithCheckBoxes
+                            title={label}
+                            key={fieldKey}
+                            options={filtersData[fieldKey] || []}
+                            selected={allSelectedOptions[fieldKey] || []}
+                            onChange={(vals) => handleMultiSelectChange(fieldKey, vals)}
+                            onOpen={() => fetchDropdownData(fieldKey)}
+                            fetching={fetchingOptions}
+                            placeholder={`Select ${label}`}
+                          />
                         );
                       case "number":
                         return (
-                          <div className="mb-3" key={fieldKey}>
-                            <label className="form-label">{label}</label>
-                            <RangeInput
-                              min={col.min || ""}
-                              max={col.max || ""}
-                              valueFrom={filters[fieldKey]?.from || ""}
-                              valueTo={filters[fieldKey]?.to || ""}
-                              onChange={(min, max) =>
-                                handleRangeChange(fieldKey, min, max)
-                              }
-                            />
-                          </div>
+                          <RangeInput
+                            title={label}
+                            key={fieldKey}
+                            min={col.min || ""}
+                            max={col.max || ""}
+                            valueFrom={allSelectedOptions[fieldKey]?.from || ""}
+                            valueTo={allSelectedOptions[fieldKey]?.to || ""}
+                            onChange={(min, max) => handleRangeChange(fieldKey, min, max)}
+                          />
                         );
                       case "date":
                         return (
-                          <div className="mb-3" key={fieldKey}>
-                            <label className="form-label">{label}</label>
+                          <>
+                            <label>{label}</label>
                             <input
+                              key={fieldKey}
                               type="date"
-                              className="form-control"
-                              value={filters[fieldKey] || ""}
-                              onChange={(e) =>
-                                handleTextChange(fieldKey, e.target.value)
-                              }
+                              className="form-control mb-2"
+                              value={allSelectedOptions[fieldKey] || ""}
+                              onChange={(e) => handleTextChange(fieldKey, e.target.value)}
                             />
-                          </div>
+                          </>
                         );
                       default:
                         return (
-                          <div className="mb-3" key={fieldKey}>
-                            <label className="form-label">{label}</label>
+                          <>
+                            <label>{label}</label>
                             <input
+                              key={fieldKey}
                               type="text"
-                              className="form-control"
-                              value={filters[fieldKey] || ""}
-                              onChange={(e) =>
-                                handleTextChange(fieldKey, e.target.value)
-                              }
+                              className="form-control mb-2"
+                              placeholder={label}
+                              value={allSelectedOptions[fieldKey] || ""}
+                              onChange={(e) => handleTextChange(fieldKey, e.target.value)}
                             />
-                          </div>
+                          </>
                         );
                     }
                   })}
@@ -194,42 +209,24 @@ export default function GenericSearch() {
           <h4>Results ({results.length})</h4>
           {loading && <Loader />}
           {!loading && results.length === 0 && <p>No results found</p>}
-
           <div className="row">
-            {results.map((item, idx) => {
-              const keys = Object.keys(item);
-              const primaryKey = keys.find(k => /id$/i.test(k)) || keys[0]; // Try to find an ID field
-
-              return (
+            {results.map((item, idx) => (
+              <div className="col-md-4 mb-3" key={item.id || idx}>
                 <div
-                  className="col-md-6 mb-4"
-                  key={item[primaryKey] || idx}
+                  className="card h-100"
+                  onClick={() => handleDetailsClick(item.id)}
+                  style={{ cursor: "pointer" }}
                 >
-                  <div
-                    className="card h-100 shadow-sm"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleDetailsClick(item[primaryKey])}
-                  >
-                    <div className="card-body">
-                      <h5 className="card-title">
-                        {item.Name || item.Title || item[keys[1]] || `Record #${idx + 1}`}
-                      </h5>
-                      <h6 className="card-subtitle mb-2 text-muted">
-                        {primaryKey}: {item[primaryKey]}
-                      </h6>
-
-                      <div className="card-text">
-                        {keys.slice(1, 8).map((key) => (
-                          <p key={key} className="mb-1">
-                            <strong>{key.replace(/_/g, " ")}:</strong> {String(item[key] ?? "N/A")}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
+                  <div className="card-body">
+                    {Object.entries(item).map(([key, value]) => (
+                      <p key={key} className="mb-1">
+                        <strong>{key}:</strong> {String(value)}
+                      </p>
+                    ))}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       </div>
