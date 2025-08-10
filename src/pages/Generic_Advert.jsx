@@ -135,7 +135,6 @@ export default function GenericAdvert() {
                       </h5>
                       <Row>
                         {tableColumns
-                          .filter((col) => col.searchable)
                           .map((col) => {
                             const fieldKey = col.column_Name;
                             const uiKey = buildUiKey(table.table_Name, fieldKey);

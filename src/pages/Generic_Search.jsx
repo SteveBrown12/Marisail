@@ -171,14 +171,14 @@ export default function GenericSearch() {
   // --- render ---
   if (loading && !config) return <Loader />;
   if (error) return <div className="alert alert-danger">{error}</div>;
-
+  let a = 0; //using for generate unique key
   return (
     <div className="container-fluid my-4">
       <div className="row">
         {/* Sidebar Filters */}
-        <div className="col-md-3 border-end bg-white shadow-sm p-3 rounded">
-          <h4 className="mb-4 text-capitalize fw-bold border-bottom pb-2">
-            <i className="bi bi-search me-2"></i> Search {serviceName}
+        <div className="col-md-3 border-end bg-white shadow-sm p-3">
+          <h4 className="mb-4 text-capitalize fw-bold pb-2">
+            <i className="bi bi-search me-2">Search {serviceName}</i>
           </h4>
 
           {config?.tables?.map((table) => {
@@ -187,15 +187,14 @@ export default function GenericSearch() {
               : table.columns
               ? Object.values(table.columns)
               : [];
-
+            a += 1;
             return (
-              <div key={table.table_Name} className="mb-4">
-                <h6 className="text-primary fw-semibold border-bottom pb-1 mb-3">
+              <div key={`${table.table_Name}-${a}`} className="mb-4">
+                <h6 className="text-primary fw-semibold border-bottom pb-1 mb-3 text-center">
                   {table.section_Heading}
                 </h6>
 
                 {tableColumns
-                  .filter((col) => col.searchable)
                   .map((col) => {
                     const uiKey = `${table.table_Name}${UI_KEY_SEP}${col.column_Name}`;
                     const backendFieldKey = col.column_Name;
