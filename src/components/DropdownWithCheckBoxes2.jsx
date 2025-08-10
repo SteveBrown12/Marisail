@@ -17,8 +17,9 @@ const DropdownWithCheckBoxes = ({
   setSelectedOptions,
   onOpen,
   fetching = false,
+  open
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(open);
   const [inputText, setInputText] = useState("");
   const [filteredOptions, setFilteredOptions] = useState(options);
   const dropdownRef = useRef(null);
@@ -121,6 +122,10 @@ const DropdownWithCheckBoxes = ({
     }
   }, [options, inputText]);
 
+  useEffect(() => {
+    setIsOpen(!!open);
+  }, [open]);
+
   return (
     <div className="dropdown w-100">
       {/* Toggle Button */}
@@ -136,21 +141,30 @@ const DropdownWithCheckBoxes = ({
       {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className="dropdown-menu show w-100 p-2"
-          style={{ maxHeight: "250px", overflowY: "auto" }}
+          className="dropdown-menu show w-100 p-3 shadow-lg border-0 rounded-3"
+          style={{
+            maxHeight: "280px",
+            overflowY: "auto",
+            backgroundColor: "#fff",
+            scrollbarWidth: "thin",
+            scrollbarColor: "#ccc transparent",
+          }}
           ref={dropdownRef}
           onScroll={handleScroll}
         >
           {/* Search Box */}
           <input
             type="text"
-            className="form-control mb-2"
+            className="form-control mb-3 rounded-pill px-3"
+            style={{ border: "1px solid #ddd" }}
             placeholder={
               defaultUnit ? `Search in ${defaultUnit}...` : "Search..."
             }
             value={inputText}
             onChange={handleInputChange}
           />
+
+          <hr className="my-2" style={{ borderColor: "#eee" }} />
 
           {/* Options */}
           {filteredOptions.length > 0 ? (
@@ -173,11 +187,19 @@ const DropdownWithCheckBoxes = ({
               return (
                 <div
                   key={`${valueKey}-${idx}`}
-                  className="dropdown-item pl-5"
+                  className="dropdown-item px-auto py-2 rounded-2"
                   style={{
                     display: "flex",
                     alignItems: "center",
+                    transition: "background 0.2s ease",
+                    cursor: "pointer",
                   }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#f0f0f0ff")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "transparent")
+                  }
                 >
                   <Form.Check
                     type="checkbox"
@@ -188,7 +210,14 @@ const DropdownWithCheckBoxes = ({
                       <div className="d-flex justify-content-between align-items-center w-100">
                         <span className="ms-1">{valueKey}</span>
                         {option.occurrence_cnt !== undefined && (
-                          <span className="badge bg-light text-dark">
+                          <span
+                            className="badge rounded-pill"
+                            style={{
+                              backgroundColor: "#f1f3f5",
+                              color: "#333",
+                              fontSize: "0.75rem",
+                            }}
+                          >
                             {option.occurrence_cnt}
                           </span>
                         )}
@@ -203,9 +232,7 @@ const DropdownWithCheckBoxes = ({
           ) : fetching ? (
             <Loader />
           ) : (
-            <div className="text-muted text-center p-2">
-              No options available
-            </div>
+            <div className="text-muted text-center p-2">No options available</div>
           )}
         </div>
       )}

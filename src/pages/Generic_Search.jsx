@@ -21,6 +21,7 @@ export default function GenericSearch() {
   const [allSelectedOptions, setAllSelectedOptions] = useState({}); // keyed by uiKey
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   // --- Helpers ---
   const normalizeFacets = (facets) => {
@@ -211,7 +212,12 @@ export default function GenericSearch() {
                               onChange={(vals) =>
                                 handleMultiSelectChange(table.table_Name, backendFieldKey, vals)
                               }
-                              onOpen={() => fetchDropdownData(uiKey, backendFieldKey)}
+                              onOpen={() => {
+                                setOpenDropdown(uiKey); // close any others and open this one
+                                fetchDropdownData(uiKey, backendFieldKey)
+                              }}
+                              open={openDropdown === uiKey}
+                              onClose={() => setOpenDropdown(null)}
                               fetching={!!fetchingOptions[uiKey]}
                               placeholder={`Select ${label}`}
                             />

@@ -12,13 +12,14 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL;
 export default function GenericAdvert() {
   const { serviceName } = useParams();
   const [loading, setLoading] = useState(true);
-  const [fetchingOptions, setFetchingOptions] = useState(false);
+  const [fetchingOptions, setFetchingOptions] = useState({});
   const [serviceConfig, setServiceConfig] = useState(null);
   const [serviceMappings, setServiceMappings] = useState(null);
   const [formState, setFormState] = useState({});
   const [errors, setErrors] = useState({});
   const [filtersData, setFiltersData] = useState({});
   const [autofillLoading, setAutofillLoading] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   // Fetch config
   const init = useCallback(async () => {
@@ -43,24 +44,32 @@ export default function GenericAdvert() {
     init();
   }, [serviceName, init]);
 
-  // Fetch dropdown options on demand
-  const fetchDropdownData = async (fieldKey) => {
-    if (!serviceName || !fieldKey) return;
-    setFetchingOptions(true);
+  // helper to build uiKey
+  const UI_KEY_SEP = "||";
+  const buildUiKey = (tableName, fieldKey) => `${tableName}${UI_KEY_SEP}${fieldKey}`;
+
+  // updated fetchDropdownData
+  const fetchDropdownData = async (uiKey, fieldKey) => {
+    if (!serviceName || !fieldKey || !uiKey) return;
+    setFetchingOptions((prev) => ({ ...prev, [uiKey]: true }));
     try {
       const res = await axios.get(`${API_BASE}/${serviceName}/facets/${fieldKey}`);
       if (res.data.ok) {
         setFiltersData((prev) => ({
           ...prev,
-          [fieldKey]: res.data.facets || [],
+          [uiKey]: [...(res.data.facets || [])],
         }));
+      } else {
+        setFiltersData((prev) => ({ ...prev, [uiKey]: [] }));
       }
     } catch (err) {
       console.error(`Error fetching facets for ${fieldKey}:`, err);
+      setFiltersData((prev) => ({ ...prev, [uiKey]: [] }));
     } finally {
-      setFetchingOptions(false);
+      setFetchingOptions((prev) => ({ ...prev, [uiKey]: false }));
     }
   };
+
 
   const validate = () => {
     if (!serviceConfig) return true;
@@ -128,37 +137,43 @@ export default function GenericAdvert() {
                           .filter((col) => col.searchable)
                           .map((col) => {
                             const fieldKey = col.column_Name;
+                            const uiKey = buildUiKey(table.table_Name, fieldKey);
                             const label = col.display_Text || fieldKey;
 
                             switch (col.type) {
                               case "radio":
                                 return (
-                                  <Col md={4} sm={6} xs={12} key={fieldKey}>
-                                    <Form.Group className="mb-3" controlId={fieldKey}>
+                                  <Col md={4} sm={6} xs={12} key={uiKey}>
+                                    <Form.Group className="mb-3" controlId={uiKey}>
                                       <Form.Label className="fw-semibold">{label}</Form.Label>
                                       <DropdownWithCheckBoxes
                                         title={label}
-                                        options={filtersData[fieldKey] || []}
-                                        selected={formState[fieldKey] || []}
+                                        options={filtersData[uiKey] ? [...filtersData[uiKey]] : []}
+                                        selected={formState[uiKey] || []}
                                         onChange={(vals) =>
                                           setFormState((prev) => ({
                                             ...prev,
-                                            [fieldKey]: vals
+                                            [uiKey]: vals
                                           }))
                                         }
-                                        onOpen={() => fetchDropdownData(fieldKey)}
-                                        fetching={fetchingOptions}
+                                        onOpen={() => {
+                                          setOpenDropdown(uiKey);
+                                          fetchDropdownData(uiKey, fieldKey);
+                                        }}
+                                        onClose={() => setOpenDropdown(null)}
+                                        open={openDropdown === uiKey}
+                                        fetching={!!fetchingOptions[uiKey]}
                                         placeholder={`Select ${label}`}
                                       />
-                                      {errors[fieldKey] && (
+
+                                      {errors[uiKey] && (
                                         <div className="text-danger small mt-1">
-                                          {errors[fieldKey]}
+                                          {errors[uiKey]}
                                         </div>
                                       )}
                                     </Form.Group>
                                   </Col>
                                 );
-
                               case "number":
                                 return (
                                   <Col md={4} sm={6} xs={12} key={fieldKey}>
