@@ -6,21 +6,61 @@ import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
 import RangeInput from "../components/RangeInput";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
+// separator between tableName and fieldName in UI keys
+const UI_KEY_SEP = "||";
 
 export default function GenericSearch() {
   const { serviceName } = useParams();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [fetchingOptions, setFetchingOptions] = useState(false);
+  const [fetchingOptions, setFetchingOptions] = useState({}); // per-dropdown loading state
   const [config, setConfig] = useState(null);
   const [mapping, setMapping] = useState(null);
-  const [filtersData, setFiltersData] = useState({}); // available dropdown data
-  const [allSelectedOptions, setAllSelectedOptions] = useState({});
+  const [filtersData, setFiltersData] = useState({}); // keyed by uiKey
+  const [allSelectedOptions, setAllSelectedOptions] = useState({}); // keyed by uiKey
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
 
-  // Fetch service search config (field structure)
+  // --- Helpers ---
+  const normalizeFacets = (facets) => {
+    if (!Array.isArray(facets)) return [];
+
+    return facets.map((opt) => {
+      // primitive values -> make { value, label }
+      if (opt === null || opt === undefined) {
+        return { value: opt, label: String(opt) };
+      }
+      if (typeof opt === "string" || typeof opt === "number" || typeof opt === "boolean") {
+        return { value: opt, label: String(opt) };
+      }
+
+      // object -> try to pick sensible keys for value/label
+      const valueCandidates = ["value", "id", "key", "code", "name"];
+      const labelCandidates = ["label", "name", "text", "display", "value"];
+      const value = valueCandidates.map((k) => opt[k]).find((v) => v !== undefined);
+      const label = labelCandidates.map((k) => opt[k]).find((v) => v !== undefined);
+
+      return {
+        // preserve original object fields too (useful if dropdown shows counts etc)
+        ...opt,
+        value: value !== undefined ? value : opt, // fallback to the whole object
+        label: label !== undefined ? String(label) : String(value !== undefined ? value : JSON.stringify(opt)),
+      };
+    });
+  };
+
+  const uiKeyToField = (uiKey) => {
+    // split by last occurrence of UI_KEY_SEP to safely handle separator in table names
+    const idx = uiKey.lastIndexOf(UI_KEY_SEP);
+    if (idx === -1) return { tableName: null, fieldName: uiKey };
+    return {
+      tableName: uiKey.slice(0, idx),
+      fieldName: uiKey.slice(idx + UI_KEY_SEP.length),
+    };
+  };
+
+  // --- API calls ---
   const fetchSearchOptions = useCallback(async () => {
     if (!serviceName) return;
     setLoading(true);
@@ -40,37 +80,42 @@ export default function GenericSearch() {
     }
   }, [serviceName]);
 
-  // Lazy load dropdown data from backend /facets/:field
-  const fetchDropdownData = async (fieldKey) => {
-    if (!serviceName || !fieldKey) return;
-    setFetchingOptions(true);
+  // uiKey = `${tableName}${UI_KEY_SEP}${fieldKey}`
+  // fieldKey is the backend field used in the facets endpoint
+  const fetchDropdownData = async (uiKey, fieldKey) => {
+    if (!serviceName || !fieldKey || !uiKey) return;
+    // set loading for this uiKey
+    setFetchingOptions((prev) => ({ ...prev, [uiKey]: true }));
     try {
       const res = await axios.get(`${apiUrl}/${serviceName}/facets/${fieldKey}`);
       if (res.data.ok) {
-        setFiltersData((prev) => ({
-          ...prev,
-          [fieldKey]: res.data.facets || [],
-        }));
+        const rawFacets = res.data.facets ?? [];
+        // deep-clone + normalize so each dropdown gets its own shaped objects
+        const clonedNormalized = normalizeFacets(rawFacets).map((o) => ({ ...o }));
+        setFiltersData((prev) => ({ ...prev, [uiKey]: clonedNormalized }));
+      } else {
+        // if backend returns ok:false, set empty
+        setFiltersData((prev) => ({ ...prev, [uiKey]: [] }));
       }
     } catch (err) {
       console.error(`Error fetching facets for ${fieldKey}:`, err);
+      setFiltersData((prev) => ({ ...prev, [uiKey]: [] }));
     } finally {
-      setFetchingOptions(false);
+      setFetchingOptions((prev) => ({ ...prev, [uiKey]: false }));
     }
   };
 
-  // Map UI filters to DB keys for backend query
+  // map UI-keyed filters back to db keys (strip table prefix)
   const mapFiltersToDbKeys = (rawFilters) => {
-    if (!mapping?.var_to_column) return rawFilters;
     const mapped = {};
-    Object.keys(rawFilters).forEach((key) => {
-      const dbKey = mapping.var_to_column[key] || key;
-      mapped[dbKey] = rawFilters[key];
+    Object.keys(rawFilters).forEach((uiKey) => {
+      const { fieldName } = uiKeyToField(uiKey);
+      const dbKey = mapping?.var_to_column?.[fieldName] || fieldName;
+      mapped[dbKey] = rawFilters[uiKey];
     });
     return mapped;
   };
 
-  // Fetch search results
   const fetchResults = useCallback(async () => {
     if (!serviceName || !config) return;
     setLoading(true);
@@ -90,35 +135,38 @@ export default function GenericSearch() {
     } finally {
       setLoading(false);
     }
-  }, [allSelectedOptions, serviceName, config]);
+  }, [allSelectedOptions, serviceName, config, mapping]);
 
-  // Load config once
+  // --- lifecycle ---
   useEffect(() => {
     fetchSearchOptions();
   }, [fetchSearchOptions]);
 
-  // Auto search whenever filters change
   useEffect(() => {
     if (config) fetchResults();
   }, [allSelectedOptions, fetchResults, config]);
 
-  // Handlers
-  const handleMultiSelectChange = (field, selectedValues) => {
-    setAllSelectedOptions((prev) => ({ ...prev, [field]: selectedValues }));
+  // --- Handlers ---
+  const handleMultiSelectChange = (tableName, field, selectedValues) => {
+    const uiKey = `${tableName}${UI_KEY_SEP}${field}`;
+    setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: selectedValues }));
   };
 
-  const handleRangeChange = (field, min, max) => {
-    setAllSelectedOptions((prev) => ({ ...prev, [field]: { from: min, to: max } }));
+  const handleRangeChange = (tableName, field, min, max) => {
+    const uiKey = `${tableName}${UI_KEY_SEP}${field}`;
+    setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: { from: min, to: max } }));
   };
 
-  const handleTextChange = (field, value) => {
-    setAllSelectedOptions((prev) => ({ ...prev, [field]: value }));
+  const handleTextChange = (tableName, field, value) => {
+    const uiKey = `${tableName}${UI_KEY_SEP}${field}`;
+    setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: value }));
   };
 
   const handleDetailsClick = (id) => {
     navigate(`/details/${serviceName}/${id}`);
   };
 
+  // --- render ---
   if (loading && !config) return <Loader />;
   if (error) return <div className="alert alert-danger">{error}</div>;
 
@@ -126,8 +174,11 @@ export default function GenericSearch() {
     <div className="container-fluid my-4">
       <div className="row">
         {/* Sidebar Filters */}
-        <div className="col-md-3 border-end">
-          <h4 className="mb-4 text-capitalize">Search {serviceName}</h4>
+        <div className="col-md-3 border-end bg-white shadow-sm p-3 rounded">
+          <h4 className="mb-4 text-capitalize fw-bold border-bottom pb-2">
+            <i className="bi bi-search me-2"></i> Search {serviceName}
+          </h4>
+
           {config?.tables?.map((table) => {
             const tableColumns = Array.isArray(table.columns)
               ? table.columns
@@ -137,65 +188,81 @@ export default function GenericSearch() {
 
             return (
               <div key={table.table_Name} className="mb-4">
-                <h6>{table.section_Heading}</h6>
+                <h6 className="text-primary fw-semibold border-bottom pb-1 mb-3">
+                  {table.section_Heading}
+                </h6>
+
                 {tableColumns
                   .filter((col) => col.searchable)
                   .map((col) => {
-                    const fieldKey = col.column_Name;
-                    const label = col.display_Text || fieldKey;
-                    
+                    const uiKey = `${table.table_Name}${UI_KEY_SEP}${col.column_Name}`;
+                    const backendFieldKey = col.column_Name;
+                    const label = col.display_Text || backendFieldKey;
+
                     switch (col.type) {
                       case "radio":
                         return (
-                          <DropdownWithCheckBoxes
-                            title={label}
-                            key={fieldKey}
-                            options={filtersData[fieldKey] || []}
-                            selected={allSelectedOptions[fieldKey] || []}
-                            onChange={(vals) => handleMultiSelectChange(fieldKey, vals)}
-                            onOpen={() => fetchDropdownData(fieldKey)}
-                            fetching={fetchingOptions}
-                            placeholder={`Select ${label}`}
-                          />
+                          <div className="mb-3" key={uiKey}>
+                            <DropdownWithCheckBoxes
+                              title={label}
+                              // pass a copy to be extra-safe (component shouldn't be able to mutate parent data)
+                              options={filtersData[uiKey] ? [...filtersData[uiKey]] : []}
+                              selected={allSelectedOptions[uiKey] || []}
+                              onChange={(vals) =>
+                                handleMultiSelectChange(table.table_Name, backendFieldKey, vals)
+                              }
+                              onOpen={() => fetchDropdownData(uiKey, backendFieldKey)}
+                              fetching={!!fetchingOptions[uiKey]}
+                              placeholder={`Select ${label}`}
+                            />
+                          </div>
                         );
+
                       case "number":
                         return (
-                          <RangeInput
-                            title={label}
-                            key={fieldKey}
-                            min={col.min || ""}
-                            max={col.max || ""}
-                            valueFrom={allSelectedOptions[fieldKey]?.from || ""}
-                            valueTo={allSelectedOptions[fieldKey]?.to || ""}
-                            onChange={(min, max) => handleRangeChange(fieldKey, min, max)}
-                          />
+                          <div className="mb-3" key={uiKey}>
+                            <RangeInput
+                              title={label}
+                              min={col.min || ""}
+                              max={col.max || ""}
+                              valueFrom={allSelectedOptions[uiKey]?.from || ""}
+                              valueTo={allSelectedOptions[uiKey]?.to || ""}
+                              onChange={(min, max) =>
+                                handleRangeChange(table.table_Name, backendFieldKey, min, max)
+                              }
+                            />
+                          </div>
                         );
+
                       case "date":
                         return (
-                          <>
-                            <label>{label}</label>
+                          <div className="mb-3" key={uiKey}>
+                            <label className="form-label fw-medium">{label}</label>
                             <input
-                              key={fieldKey}
                               type="date"
-                              className="form-control mb-2"
-                              value={allSelectedOptions[fieldKey] || ""}
-                              onChange={(e) => handleTextChange(fieldKey, e.target.value)}
+                              className="form-control form-control-sm"
+                              value={allSelectedOptions[uiKey] || ""}
+                              onChange={(e) =>
+                                handleTextChange(table.table_Name, backendFieldKey, e.target.value)
+                              }
                             />
-                          </>
+                          </div>
                         );
+
                       default:
                         return (
-                          <>
-                            <label>{label}</label>
+                          <div className="mb-3" key={uiKey}>
+                            <label className="form-label fw-medium">{label}</label>
                             <input
-                              key={fieldKey}
                               type="text"
-                              className="form-control mb-2"
+                              className="form-control form-control-sm"
                               placeholder={label}
-                              value={allSelectedOptions[fieldKey] || ""}
-                              onChange={(e) => handleTextChange(fieldKey, e.target.value)}
+                              value={allSelectedOptions[uiKey] || ""}
+                              onChange={(e) =>
+                                handleTextChange(table.table_Name, backendFieldKey, e.target.value)
+                              }
                             />
-                          </>
+                          </div>
                         );
                     }
                   })}
@@ -205,85 +272,94 @@ export default function GenericSearch() {
         </div>
 
         {/* Results */}
-<div className="col-md-9">
-  <h4>Results ({results.length})</h4>
+        <div className="col-md-9">
+          <h4 className="fw-bold mb-3">
+            <i className="bi bi-list-ul me-2"></i> Results ({results.length})
+          </h4>
 
-  {/* Active Filters Summary */}
-  {Object.keys(allSelectedOptions).length > 0 && (
-    <div className="mb-3 p-2 border rounded bg-light">
-      <strong>Active Filters:</strong>
-      <div className="d-flex flex-wrap mt-2">
-        {Object.entries(allSelectedOptions).map(([key, value]) => {
-          if (!value || (Array.isArray(value) && value.length === 0)) return null;
+          {/* Active Filters Summary */}
+          {Object.keys(allSelectedOptions).length > 0 && (
+            <div className="mb-3 p-3 border rounded bg-light shadow-sm">
+              <strong className="text-secondary">Active Filters:</strong>
+              <div className="d-flex flex-wrap mt-2">
+                {Object.entries(allSelectedOptions).map(([uiKey, value]) => {
+                  if (!value || (Array.isArray(value) && value.length === 0)) return null;
+                  const { fieldName } = uiKeyToField(uiKey);
 
-          let displayValue;
-          if (typeof value === "object" && value.from !== undefined) {
-            displayValue = `${value.from || ""} - ${value.to || ""}`;
-          } else if (Array.isArray(value)) {
-            displayValue = value.join(", ");
-          } else {
-            displayValue = String(value);
-          }
+                  let displayValue;
+                  if (typeof value === "object" && value.from !== undefined) {
+                    displayValue = `${value.from || ""} - ${value.to || ""}`;
+                  } else if (Array.isArray(value)) {
+                    // if selected values are objects, try to pick their label/value
+                    displayValue = value
+                      .map((v) => {
+                        if (v && typeof v === "object") return v.label ?? v.value ?? JSON.stringify(v);
+                        return String(v);
+                      })
+                      .join(", ");
+                  } else {
+                    displayValue = String(value);
+                  }
 
-          return (
-            <span
-              key={key}
-              className="badge bg-primary text-white me-2 mb-2 d-flex align-items-center"
-              style={{ fontSize: "0.9rem" }}
-            >
-              {key}: {displayValue}
-              <button
-                type="button"
-                className="btn-close btn-close-white ms-2"
-                style={{ fontSize: "0.6rem" }}
-                onClick={() =>
-                  setAllSelectedOptions((prev) => {
-                    const updated = { ...prev };
-                    delete updated[key];
-                    return updated;
-                  })
-                }
-              ></button>
-            </span>
-          );
-        })}
+                  return (
+                    <span
+                      key={uiKey}
+                      className="badge bg-primary text-white me-2 mb-2 d-flex align-items-center shadow-sm"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      {fieldName}: {displayValue}
+                      <button
+                        type="button"
+                        className="btn-close btn-close-white ms-2"
+                        style={{ fontSize: "0.6rem" }}
+                        onClick={() =>
+                          setAllSelectedOptions((prev) => {
+                            const updated = { ...prev };
+                            delete updated[uiKey];
+                            return updated;
+                          })
+                        }
+                      />
+                    </span>
+                  );
+                })}
 
-        {/* Clear All Button */}
-        <button
-          type="button"
-          className="btn btn-sm btn-outline-danger ms-2"
-          onClick={() => setAllSelectedOptions({})}
-        >
-          Clear All
-        </button>
-      </div>
-    </div>
-  )}
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-danger ms-2"
+                  onClick={() => setAllSelectedOptions({})}
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+          )}
 
-  {loading && <Loader />}
-  {!loading && results.length === 0 && <p>No results found</p>}
+          {loading && <Loader />}
+          {!loading && results.length === 0 && (
+            <p className="text-muted fst-italic">No results found</p>
+          )}
 
-  <div className="row">
-    {results.map((item, idx) => (
-      <div className="col-md-4 mb-3" key={item.id || idx}>
-        <div
-          className="card h-100"
-          onClick={() => handleDetailsClick(item.id)}
-          style={{ cursor: "pointer" }}
-        >
-          <div className="card-body">
-            {Object.entries(item).map(([key, value]) => (
-              <p key={key} className="mb-1">
-                <strong>{key}:</strong> {String(value)}
-              </p>
+          <div className="row">
+            {results.map((item, idx) => (
+              <div className="col-md-4 mb-3" key={item.id || idx}>
+                <div
+                  className="card h-100 shadow-sm border-0 hover-shadow"
+                  onClick={() => handleDetailsClick(item.id)}
+                  style={{ cursor: "pointer", transition: "0.3s" }}
+                >
+                  <div className="card-body">
+                    {Object.entries(item).map(([key, value]) => (
+                      <p key={key} className="mb-1">
+                        <strong className="text-capitalize">{key}:</strong> {String(value)}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-      </div>
-    ))}
-  </div>
-</div>
-
       </div>
     </div>
   );
