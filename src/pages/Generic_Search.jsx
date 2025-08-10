@@ -4,6 +4,7 @@ import axios from "axios";
 import Loader from "../components/Loader";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
 import RangeInput from "../components/RangeInput";
+import DatePickerField from "../components/DatePickerField";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -172,16 +173,18 @@ export default function GenericSearch() {
                         );
                       case "date":
                         return (
-                          <>
-                            <label>{label}</label>
-                            <input
-                              key={fieldKey}
-                              type="date"
-                              className="form-control mb-2"
-                              value={allSelectedOptions[fieldKey] || ""}
-                              onChange={(e) => handleTextChange(fieldKey, e.target.value)}
+                          <div key={fieldKey} className="mb-2">
+                            <label className="d-block mb-1">{label}</label>
+                            <DatePickerField
+                              mode="range"
+                              value={allSelectedOptions[fieldKey] || {}}
+                              onChange={(range) =>
+                                handleRangeChange(fieldKey, range?.from || "", range?.to || "")
+                              }
+                              placeholder="dd-mm-yyyy - dd-mm-yyyy"
+                              style={{ width: 220 }}
                             />
-                          </>
+                          </div>
                         );
                       default:
                         return (

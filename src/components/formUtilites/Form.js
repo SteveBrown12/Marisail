@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import "./style/main.css";
 
-function JobDescription({ props, setProps }) {
+function JobDescription({ props, setProps, errors = {} }) {
   const handleChange = (input) => (e) => {
     setProps({ ...props, [input]: e.target.value });
   };
+  const errorInputStyle = { borderColor: "#dc3545" };
+  const errorTextStyle = { color: "#dc3545", fontSize: 12, marginTop: 4 };
 
   return (
     <div>
@@ -27,7 +29,10 @@ function JobDescription({ props, setProps }) {
             name="category"
             onChange={handleChange("category")}
             value={props.category}
+            aria-invalid={!!errors.category}
+            style={errors.category ? errorInputStyle : undefined}
           />
+          {errors.category && <div style={errorTextStyle}>{errors.category}</div>}
         </div>
 
         <div className="set">
@@ -37,7 +42,10 @@ function JobDescription({ props, setProps }) {
             name="title"
             onChange={handleChange("title")}
             value={props.title}
+            aria-invalid={!!errors.title}
+            style={errors.title ? errorInputStyle : undefined}
           />
+          {errors.title && <div style={errorTextStyle}>{errors.title}</div>}
         </div>
 
         <div className="set">
@@ -47,7 +55,12 @@ function JobDescription({ props, setProps }) {
             name="description"
             onChange={handleChange("description")}
             value={props.description}
+            aria-invalid={!!errors.description}
+            style={errors.description ? errorInputStyle : undefined}
           />
+          {errors.description && (
+            <div style={errorTextStyle}>{errors.description}</div>
+          )}
         </div>
 
         <div className="set">
@@ -311,10 +324,12 @@ function VesselDetails({ props, setProps }) {
   );
 }
 
-function CustomerContactDetails({ props, setProps }) {
+function CustomerContactDetails({ props, setProps, errors = {} }) {
   const handleChange = (input) => (e) => {
     setProps({ ...props, [input]: e.target.value });
   };
+  const errorInputStyle = { borderColor: "#dc3545" };
+  const errorTextStyle = { color: "#dc3545", fontSize: 12, marginTop: 4 };
   return (
     <div>
       <h2>Customer Contact Details</h2>
@@ -326,12 +341,20 @@ function CustomerContactDetails({ props, setProps }) {
 
         <div className="set">
           <label>Customer ID:</label>
-          <input type="text" name="customerID" onChange={handleChange("customerID")} value={props.customerID} />
+          <input type="text" name="customerID" onChange={handleChange("customerID")} value={props.customerID}
+            aria-invalid={!!errors.customerID}
+            style={errors.customerID ? errorInputStyle : undefined}
+          />
+          {errors.customerID && <div style={errorTextStyle}>{errors.customerID}</div>}
         </div>
 
         <div className="set">
           <label>Customer Name:</label>
-          <input type="text" name="customerName" onChange={handleChange("customerName")} value={props.customerName} />
+          <input type="text" name="customerName" onChange={handleChange("customerName")} value={props.customerName}
+            aria-invalid={!!errors.customerName}
+            style={errors.customerName ? errorInputStyle : undefined}
+          />
+          {errors.customerName && <div style={errorTextStyle}>{errors.customerName}</div>}
         </div>
 
         <div className="set">
@@ -351,7 +374,11 @@ function CustomerContactDetails({ props, setProps }) {
 
         <div className="set">
           <label>Collection Address Departure:</label>
-          <input type="text" name="collectionAddressDeparture" onChange={handleChange("collectionAddressDeparture")} value={props.collectionAddressDeparture} />
+          <input type="text" name="collectionAddressDeparture" onChange={handleChange("collectionAddressDeparture")} value={props.collectionAddressDeparture}
+            aria-invalid={!!errors.collectionAddressDeparture}
+            style={errors.collectionAddressDeparture ? errorInputStyle : undefined}
+          />
+          {errors.collectionAddressDeparture && <div style={errorTextStyle}>{errors.collectionAddressDeparture}</div>}
         </div>
 
         <div className="set">
@@ -366,7 +393,11 @@ function CustomerContactDetails({ props, setProps }) {
 
         <div className="set">
           <label>Delivery Address Destination:</label>
-          <input type="text" name="deliveryAddressDestination" onChange={handleChange("deliveryAddressDestination")} value={props.deliveryAddressDestination} />
+          <input type="text" name="deliveryAddressDestination" onChange={handleChange("deliveryAddressDestination")} value={props.deliveryAddressDestination}
+            aria-invalid={!!errors.deliveryAddressDestination}
+            style={errors.deliveryAddressDestination ? errorInputStyle : undefined}
+          />
+          {errors.deliveryAddressDestination && <div style={errorTextStyle}>{errors.deliveryAddressDestination}</div>}
         </div>
 
         <div className="set">
@@ -1035,6 +1066,45 @@ export default function Form() {
     totalPrice: "",
   });
 
+  // Validation state
+  const [errors, setErrors] = useState({ jobDes: {}, customerContactDetails: {} });
+  const [errorSummary, setErrorSummary] = useState([]);
+
+  const validateAll = () => {
+    const jobErrors = {};
+    if (!jobDes.category?.trim()) jobErrors.category = "Category is required";
+    if (!jobDes.title?.trim()) jobErrors.title = "Title is required";
+    if (!jobDes.description?.trim()) jobErrors.description = "Description is required";
+
+    const contactErrors = {};
+    if (!customerContactDetails.customerID?.trim()) contactErrors.customerID = "Customer ID is required";
+    if (!customerContactDetails.customerName?.trim()) contactErrors.customerName = "Customer Name is required";
+    if (!customerContactDetails.collectionAddressDeparture?.trim()) contactErrors.collectionAddressDeparture = "Collection address is required";
+    if (!customerContactDetails.deliveryAddressDestination?.trim()) contactErrors.deliveryAddressDestination = "Delivery address is required";
+
+    const newErrors = { jobDes: jobErrors, customerContactDetails: contactErrors };
+    setErrors(newErrors);
+
+    const summary = [];
+    Object.values(jobErrors).forEach((msg) => summary.push(`Job Description: ${msg}`));
+    Object.values(contactErrors).forEach((msg) => summary.push(`Customer Contact Details: ${msg}`));
+    setErrorSummary(summary);
+
+    return summary.length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    const ok = validateAll();
+    if (!ok) {
+      setSubmit(false);
+      setPage(0);
+      return;
+    }
+    setSubmit(true);
+    // TODO: implement actual submit to backend
+  };
+
   if (submit) {
     console.log("OOOO");
   }
@@ -1050,11 +1120,12 @@ export default function Form() {
   };
 
   const pages = [
-    <JobDescription props={jobDes} setProps={setJobDes} />,
+    <JobDescription props={jobDes} setProps={setJobDes} errors={errors.jobDes} />,
     <VesselDetails props={vesselDetails} setProps={setVesselDetails} />,
     <CustomerContactDetails
       props={customerContactDetails}
       setProps={setCustomerContactDetails}
+      errors={errors.customerContactDetails}
     />,
     <TransportQuotes props={transportQuotes} setProps={setTransportQuotes} />,
     <QueAns props={queAns} setProps={setQueAns} />,
@@ -1081,6 +1152,16 @@ export default function Form() {
   return (
     <div>
       <p>Fill the below info</p>
+      {errorSummary.length > 0 && (
+        <div className="alert alert-danger" role="alert">
+          <strong>Please correct the following:</strong>
+          <ul style={{ margin: '8px 0 0 16px' }}>
+            {errorSummary.map((msg, idx) => (
+              <li key={idx}>{msg}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       {pages.map((item, index) => {
         if (index === page) return item;
 
@@ -1092,7 +1173,7 @@ export default function Form() {
         {/* <button onClick={() => setSubmit(true)}>Submit</button> */}
         {page === 0 ? null : <button onClick={prevStep}>Previous</button>}
         {page === pages.length - 1 ? (
-          <button onClick={() => setSubmit(true)}>Submit</button>
+          <button onClick={handleSubmit}>Submit</button>
         ) : (
           <button onClick={nextStep}>Next</button>
         )}

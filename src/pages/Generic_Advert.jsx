@@ -3,6 +3,7 @@ import { Form, Container, Row, Col, Button } from "react-bootstrap";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
 import RangeInput from "../components/RangeInput";
 import Loader from "../components/Loader";
+import DatePickerField from "../components/DatePickerField";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import FormUtilities from "./Form_Utilities";
@@ -172,16 +173,17 @@ export default function GenericAdvert() {
                           return (
                             <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
                               <label>{label}</label>
-                              <input
-                                type="date"
-                                className="form-control mb-2"
+                              <DatePickerField
+                                mode="single"
                                 value={formState[fieldKey] || ""}
-                                onChange={(e) =>
+                                onChange={(iso) =>
                                   setFormState((prev) => ({
                                     ...prev,
-                                    [fieldKey]: e.target.value
+                                    [fieldKey]: iso,
                                   }))
                                 }
+                                placeholder="dd-mm-yyyy"
+                                style={{ width: 220 }}
                               />
                               {errors[fieldKey] && (
                                 <div className="text-danger small">{errors[fieldKey]}</div>

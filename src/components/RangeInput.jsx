@@ -35,8 +35,20 @@ const RangeInput = ({
   const effectiveFrom = valueFrom !== undefined ? valueFrom : (fromValue ?? "");
   const effectiveTo = valueTo !== undefined ? valueTo : (toValue ?? "");
 
+  const numMin = min !== undefined && min !== null && min !== "" ? Number(min) : undefined;
+  const numMax = max !== undefined && max !== null && max !== "" ? Number(max) : undefined;
+  const step = 1;
+
+  const clamp = (val) => {
+    if (val === "" || isNaN(Number(val))) return "";
+    let n = Number(val);
+    if (numMin !== undefined && n < numMin) n = numMin;
+    if (numMax !== undefined && n > numMax) n = numMax;
+    return n;
+  };
+
   const handleFromChange = (e) => {
-    const value = e.target.value;
+    const value = e.target.value.replace(/[^0-9.-]/g, "");
     if (!isNaN(value) || value === "") {
       if (typeof onChange === "function") {
         onChange(value, effectiveTo);
@@ -47,7 +59,7 @@ const RangeInput = ({
   };
 
   const handleToChange = (e) => {
-    const value = e.target.value;
+    const value = e.target.value.replace(/[^0-9.-]/g, "");
     if (!isNaN(value) || value === "") {
       if (typeof onChange === "function") {
         onChange(effectiveFrom, value);
@@ -55,6 +67,22 @@ const RangeInput = ({
         setToValue(value);
       }
     }
+  };
+
+  const bumpFrom = (dir) => {
+    const current = effectiveFrom === "" ? (numMin ?? 0) : Number(effectiveFrom);
+    const next = clamp(current + (dir > 0 ? step : -step));
+    const nextStr = next === "" ? "" : String(next);
+    if (typeof onChange === "function") onChange(nextStr, effectiveTo);
+    else if (typeof setFromValue === "function") setFromValue(nextStr);
+  };
+
+  const bumpTo = (dir) => {
+    const current = effectiveTo === "" ? (numMin ?? 0) : Number(effectiveTo);
+    const next = clamp(current + (dir > 0 ? step : -step));
+    const nextStr = next === "" ? "" : String(next);
+    if (typeof onChange === "function") onChange(effectiveFrom, nextStr);
+    else if (typeof setToValue === "function") setToValue(nextStr);
   };
 
   const handleRadioChangeInternal = (value) => {
@@ -89,45 +117,39 @@ const RangeInput = ({
         </span>
       </div>
       {open && (
-        <div>
-          <input
-            type="number"
-            value={effectiveFrom}
-            onChange={handleFromChange}
-            placeholder="From"
-            style={{
-              width: "65px",
-              marginRight: "10px",
-              padding: "8px 0px 8px 14px",
-              margin: "0px 0 12px 0",
-              display: "inline-block",
-              border: "1px solid #fff",
-              borderRadius: "4px",
-              outline: "none",
-              backgroundColor: "#f5f5f5",
-            }}
-            min={min}
-            max={max}
-          />
-          <span style={{ marginRight: 8, marginLeft: 8 }}>-</span>
-          <input
-            style={{
-              width: "65px",
-              padding: "8px 0px 8px 14px",
-              margin: "0px 0 12px 0",
-              display: "inline-block",
-              border: "1px solid #fff",
-              borderRadius: "4px",
-              outline: "none",
-              backgroundColor: "#f5f5f5",
-            }}
-            type="number"
-            value={effectiveTo}
-            onChange={handleToChange}
-            placeholder="To"
-            min={min}
-            max={max}
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: '#fff', border: '1px solid #dee2e6', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+            <button type="button" aria-label="Decrease from" onClick={() => bumpFrom(-1)}
+              style={{ padding: '6px 10px', border: 'none', background: 'transparent', cursor: 'pointer' }}>←</button>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={effectiveFrom}
+              onChange={handleFromChange}
+              placeholder="From"
+              style={{ width: 70, padding: '8px 10px', border: 'none', outline: 'none', textAlign: 'center' }}
+            />
+            <button type="button" aria-label="Increase from" onClick={() => bumpFrom(1)}
+              style={{ padding: '6px 10px', border: 'none', background: 'transparent', cursor: 'pointer' }}>→</button>
+          </div>
+
+          <span style={{ opacity: 0.7 }}>–</span>
+
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: '#fff', border: '1px solid #dee2e6', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+            <button type="button" aria-label="Decrease to" onClick={() => bumpTo(-1)}
+              style={{ padding: '6px 10px', border: 'none', background: 'transparent', cursor: 'pointer' }}>←</button>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={effectiveTo}
+              onChange={handleToChange}
+              placeholder="To"
+              style={{ width: 70, padding: '8px 10px', border: 'none', outline: 'none', textAlign: 'center' }}
+            />
+            <button type="button" aria-label="Increase to" onClick={() => bumpTo(1)}
+              style={{ padding: '6px 10px', border: 'none', background: 'transparent', cursor: 'pointer' }}>→</button>
+          </div>
+
           {Array.isArray(radioOptions) && radioOptions.length > 0 && (
             <div
               className="btn-group"
