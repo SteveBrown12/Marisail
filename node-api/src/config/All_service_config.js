@@ -591,7 +591,7 @@ export const Trailer_Config = {
             table_Name: 'Documentation', 
             section_Heading: 'Documentation',
             columns: {
-                // ownersManual: { column_Name: 'Owners_Manual', display_Text: "Owner's Manual", type: 'radio', mandatory: false, searchable: false, radioOptions: null },//[Error: Service: Trailer, Column: Owners_Manual not present in the database But there is a column name as owners_manual]
+                // ownersManual: { column_Name: 'Owners_Manual', display_Text: "Owner's Manual", type: 'radio', mandatory: false, searchable: false, radioOptions: null },//[Error: Service: Trailer, Column:   not present in the database But there is a column name as owners_manual]
                 // warranty: { column_Name: 'Warranty', display_Text: 'Warranty', type: 'radio', mandatory: false, searchable: false, radioOptions: null }// [Error: Service: Trailer, Column: Warranty not present in the database But there is a column name as warranty]
             }
             },
