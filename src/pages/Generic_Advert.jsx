@@ -146,7 +146,6 @@ export default function GenericAdvert() {
                                 return (
                                   <Col md={4} sm={6} xs={12} key={uiKey}>
                                     <Form.Group className="mb-3" controlId={uiKey}>
-                                      <Form.Label className="fw-semibold">{label}</Form.Label>
                                       <DropdownWithCheckBoxes
                                         title={label}
                                         options={filtersData[uiKey] ? [...filtersData[uiKey]] : []}
@@ -179,7 +178,6 @@ export default function GenericAdvert() {
                                 return (
                                   <Col md={4} sm={6} xs={12} key={fieldKey}>
                                     <Form.Group className="mb-3" controlId={fieldKey}>
-                                      <Form.Label className="fw-semibold">{label}</Form.Label>
                                       <RangeInput
                                         title={label}
                                         min={col.min || ""}

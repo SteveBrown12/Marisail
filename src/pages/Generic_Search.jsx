@@ -368,15 +368,20 @@ export default function GenericSearch() {
             {results.map((item, idx) => (
               <div className="col-md-4 mb-3" key={item.id || idx}>
                 <div
-                  className="card h-100 shadow-sm border-0 hover-shadow"
+                  className="card h-100 shadow-sm border-1 hover-shadow"
                   onClick={() => handleDetailsClick(item.id)}
                   style={{ cursor: "pointer", transition: "0.3s" }}
                 >
                   <div className="card-body">
-                    {Object.entries(item).map(([key, value]) => (
-                      <p key={key} className="mb-1">
-                        <strong className="text-capitalize">{key}:</strong> {String(value)}
-                      </p>
+                    {Object.entries(item).slice(0, 5).map(([key, value]) => (
+                      <>
+                        {value && (
+                          <p key={key} className="mb-1">
+                            <strong className="text-capitalize">{key}:</strong> {String(value)}
+                          </p>
+                          )
+                        }
+                      </>
                     ))}
                   </div>
                 </div>

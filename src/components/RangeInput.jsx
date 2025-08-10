@@ -28,7 +28,7 @@ const RangeInput = ({
   toggleAccordion,
 }) => {
   // Fallback open state if parent doesn't control accordion
-  const [isOpenInternal, setIsOpenInternal] = useState(true);
+  const [isOpenInternal, setIsOpenInternal] = useState(false);
   const open = typeof isOpen === "boolean" ? isOpen : isOpenInternal;
   const handleToggle = toggleAccordion || (() => setIsOpenInternal((p) => !p));
 
