@@ -3,6 +3,7 @@ import { Form, Container, Row, Col, Button } from "react-bootstrap";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
 import RangeInput from "../components/RangeInput";
 import Loader from "../components/Loader";
+import DatePickerField from "../components/DatePickerField";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import FormUtilities from "./Form_Utilities";
@@ -201,29 +202,27 @@ export default function GenericAdvert() {
                                   </Col>
                                 );
 
-                              case "date":
-                                return (
-                                  <Col md={4} sm={6} xs={12} key={fieldKey}>
-                                    <Form.Group className="mb-3" controlId={fieldKey}>
-                                      <Form.Label className="fw-semibold">{label}</Form.Label>
-                                      <Form.Control
-                                        type="date"
-                                        value={formState[fieldKey] || ""}
-                                        onChange={(e) =>
-                                          setFormState((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: e.target.value
-                                          }))
-                                        }
-                                      />
-                                      {errors[fieldKey] && (
-                                        <div className="text-danger small mt-1">
-                                          {errors[fieldKey]}
-                                        </div>
-                                      )}
-                                    </Form.Group>
-                                  </Col>
-                                );
+                        case "date":
+                          return (
+                            <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
+                              <label>{label}</label>
+                              <DatePickerField
+                                mode="single"
+                                value={formState[fieldKey] || ""}
+                                onChange={(iso) =>
+                                  setFormState((prev) => ({
+                                    ...prev,
+                                    [fieldKey]: iso,
+                                  }))
+                                }
+                                placeholder="dd-mm-yyyy"
+                                style={{ width: 220 }}
+                              />
+                              {errors[fieldKey] && (
+                                <div className="text-danger small">{errors[fieldKey]}</div>
+                              )}
+                            </Col>
+                          );
 
                               default:
                                 return (

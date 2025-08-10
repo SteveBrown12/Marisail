@@ -5,8 +5,25 @@ import { Col, Row } from "react-bootstrap";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 import PropTypes from 'prop-types';
+import { format as formatDate, parseISO, isValid } from "date-fns";
 
 const EngineDetailsPanel = ({ title, details }) => {
+  const formatDisplayValue = (value) => {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "string") {
+      const iso = parseISO(value);
+      if (isValid(iso)) {
+        const showsTime = value.includes("T") || value.includes(":");
+        return formatDate(iso, showsTime ? "dd MMM yyyy HH:mm" : "dd MMM yyyy");
+      }
+      const d = new Date(value);
+      if (isValid(d)) {
+        const showsTime = value.includes("T") || value.includes(":");
+        return formatDate(d, showsTime ? "dd MMM yyyy HH:mm" : "dd MMM yyyy");
+      }
+    }
+    return value;
+  };
   return (
     <div className="details-panel-container">
       <div className="details-panel-header">
@@ -22,7 +39,7 @@ const EngineDetailsPanel = ({ title, details }) => {
                 <td className="details-panel-key">
                   <strong>{key}:</strong>
                 </td>
-                <td className="details-panel-value">{value}</td>
+                <td className="details-panel-value">{formatDisplayValue(value)}</td>
               </tr>
             ))}
           </tbody>
@@ -454,9 +471,9 @@ const EngineDetail = () => {
           </div>
         </div>
         <div>
-          <Row>
+          <Row className="g-2 g-md-3">
             {panelData.map((section, index) => (
-              <Col key={index} md={6}>
+              <Col key={index} md={4}>
                 <EngineDetailsPanel
                   title={section.title}
                   details={section.details}

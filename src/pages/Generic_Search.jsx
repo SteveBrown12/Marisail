@@ -4,6 +4,7 @@ import axios from "axios";
 import Loader from "../components/Loader";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
 import RangeInput from "../components/RangeInput";
+import DatePickerField from "../components/DatePickerField";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 // separator between tableName and fieldName in UI keys
@@ -206,11 +207,14 @@ export default function GenericSearch() {
                           <div className="mb-3" key={uiKey}>
                             <DropdownWithCheckBoxes
                               title={label}
-                              // pass a copy to be extra-safe (component shouldn't be able to mutate parent data)
                               options={filtersData[uiKey] ? [...filtersData[uiKey]] : []}
                               selected={allSelectedOptions[uiKey] || []}
                               onChange={(vals) =>
-                                handleMultiSelectChange(table.table_Name, backendFieldKey, vals)
+                                handleMultiSelectChange(
+                                  table.table_Name,
+                                  backendFieldKey,
+                                  vals
+                                )
                               }
                               onOpen={() => {
                                 setOpenDropdown(uiKey); // close any others and open this one
@@ -234,7 +238,12 @@ export default function GenericSearch() {
                               valueFrom={allSelectedOptions[uiKey]?.from || ""}
                               valueTo={allSelectedOptions[uiKey]?.to || ""}
                               onChange={(min, max) =>
-                                handleRangeChange(table.table_Name, backendFieldKey, min, max)
+                                handleRangeChange(
+                                  table.table_Name,
+                                  backendFieldKey,
+                                  min,
+                                  max
+                                )
                               }
                             />
                           </div>
@@ -244,13 +253,18 @@ export default function GenericSearch() {
                         return (
                           <div className="mb-3" key={uiKey}>
                             <label className="form-label fw-medium">{label}</label>
-                            <input
-                              type="date"
-                              className="form-control form-control-sm"
-                              value={allSelectedOptions[uiKey] || ""}
-                              onChange={(e) =>
-                                handleTextChange(table.table_Name, backendFieldKey, e.target.value)
+                            <DatePickerField
+                              mode="range"
+                              value={allSelectedOptions[uiKey] || {}}
+                              onChange={(range) =>
+                                handleRangeChange(
+                                  table.table_Name,
+                                  backendFieldKey,
+                                  range?.from || "",
+                                  range?.to || ""
+                                )
                               }
+                              style={{ width: "100%" }}
                             />
                           </div>
                         );
@@ -265,7 +279,11 @@ export default function GenericSearch() {
                               placeholder={label}
                               value={allSelectedOptions[uiKey] || ""}
                               onChange={(e) =>
-                                handleTextChange(table.table_Name, backendFieldKey, e.target.value)
+                                handleTextChange(
+                                  table.table_Name,
+                                  backendFieldKey,
+                                  e.target.value
+                                )
                               }
                             />
                           </div>

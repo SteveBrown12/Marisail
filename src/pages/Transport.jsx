@@ -10,7 +10,7 @@ import ResetBar from "../components/ResetBar";
 import DropdownWithRadio from "../components/DropdownWithRadio";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
 import InputComponentDual from "../components/InputComponentDual";
-import DatePickerComponent from "../components/DatePickerComponent";
+import DatePickerField from "../components/DatePickerField";
 import TransportCard from "../components/TransportCard";
 
 // Config
@@ -392,16 +392,20 @@ function TransportAdvert() {
                         key={fieldKey}
                         style={{ width: 480 }}
                       >
-                        <DatePickerComponent
-                          label={makeString(fieldKey, keyToExpectedValueMap)}
-                          value={transport[title]?.[fieldKey] || new Date()}
-                          setValue={(e) =>
-                            handleInputChange(title, fieldKey, e.target.value)
+                        <label className="d-block mb-1">
+                          {makeString(fieldKey, keyToExpectedValueMap)}
+                          {field.mandatory && (
+                            <span className="text-danger">&nbsp;*</span>
+                          )}
+                        </label>
+                        <DatePickerField
+                          mode="single"
+                          value={transport[title]?.[fieldKey] || ""}
+                          onChange={(iso) =>
+                            handleInputChange(title, fieldKey, iso)
                           }
-                          formType="number"
-                          setOpenKey={setOpenKey}
-                          openKey={openKey}
-                          isMandatory={field.mandatory}
+                          placeholder="dd-mm-yyyy"
+                          style={{ width: 220 }}
                         />
                         {error[`${fieldKey}`] && (
                           <div>

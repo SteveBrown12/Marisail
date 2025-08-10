@@ -6,12 +6,32 @@ import Loader from "../../components/Loader";
 import PropTypes from "prop-types";
 import { varToScreen } from "../../info/Trailer_Search_Info";
 import { varToDb } from "../../info/Transport_Search_Info";
+import { format as formatDate, parseISO, isValid } from "date-fns";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const URL = apiUrl + "/search_transport/";
 
 
 const TrailerDetailsPanel = ({ title, details }) => {
+  const formatDisplayValue = (value) => {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "string") {
+      // Try ISO parse first
+      const iso = parseISO(value);
+      if (isValid(iso)) {
+        // If time component present, show time as well
+        const showsTime = value.includes("T") || value.includes(":");
+        return formatDate(iso, showsTime ? "dd MMM yyyy HH:mm" : "dd MMM yyyy");
+      }
+      // Fallback: Date constructor
+      const d = new Date(value);
+      if (isValid(d)) {
+        const showsTime = value.includes("T") || value.includes(":");
+        return formatDate(d, showsTime ? "dd MMM yyyy HH:mm" : "dd MMM yyyy");
+      }
+    }
+    return value;
+  };
   
   return (
     <div className="details-panel-container">
@@ -29,7 +49,7 @@ const TrailerDetailsPanel = ({ title, details }) => {
                   <td className="details-panel-key">
                     <strong>{varToScreen?.[key]?.displayText}:</strong>
                   </td>
-                  <td className="details-panel-value">{value}</td>
+                  <td className="details-panel-value">{formatDisplayValue(value)}</td>
                 </tr>
               );
             })}
@@ -102,9 +122,9 @@ const TransportDetail = () => {
       <div className="engine-main-section">
         
         <div>
-          <Row>
+          <Row className="g-2 g-md-3">
             {Object.keys(trailer).map((key) => (
-              <Col key={key} md={6}>
+              <Col key={key} md={4}>
                 <TrailerDetailsPanel title={key} details={trailer[key]} />
               </Col>
             ))}
