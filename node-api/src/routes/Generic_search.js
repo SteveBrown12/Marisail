@@ -24,23 +24,35 @@ search_Router.get("/:service_name/search", initialize_service, async (request, r
         handle_error_response(response, `Search failed: ${error.message}`);
     }
 });
+
 search_Router.get("/:service_name/details/:id", initialize_service, async (request, response) => {
-    try {
-        const { service_config } = request;
-        const all_columns = (service_config.join_tables || []).map(t => `\`${t}\`.*`).join(', ');
-        const query = ` SELECT \`${service_config.main_table}\`.*FROM \`${service_config.main_table}\` ${build_joins(service_config)}
-                        ${build_where_clause(request.query.filters || {}, service_mappings)}ORDER BY \`${service_config.main_table}\`.\`${service_config.primary_key}\` DESC LIMIT 50 OFFSET 0`;
-        console.log('Details query:', query);  
-        console.log('Params:', request.params.id);
-        const [results] = await db_connection.query(query, [request.params.id]);
-        if (results.length === 0) {
-            return handle_error_response(response, 'Record not found', 404);
-        }
-        response.json({ ok: true, data: results[0] });
-    } catch (error) {
-        handle_error_response(response, `Details fetch failed: ${error.message}`);
+  try {
+    const { service_config } = request;
+    const id = request.params.id;
+
+    const query = `
+      SELECT \`${service_config.main_table}\`.*
+      FROM \`${service_config.main_table}\`
+      ${build_joins(service_config)}
+      WHERE \`${service_config.main_table}\`.\`${service_config.primary_key}\` = ?
+      LIMIT 1
+    `;
+
+    console.log("Details query:", query, "with id:", id);
+
+    const [results] = await db_connection.query(query, [id]);
+
+    if (results.length === 0) {
+      return handle_error_response(response, 'Record not found', 404);
     }
+
+    response.json({ ok: true, data: results[0] });
+  } catch (error) {
+    handle_error_response(response, `Details fetch failed: ${error.message}`);
+  }
 });
+
+
 search_Router.get("/:service_name/facets/:field", initialize_service, async (request, response) => {
     try {
         const { field } = request.params;

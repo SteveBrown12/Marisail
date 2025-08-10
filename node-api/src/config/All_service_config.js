@@ -526,7 +526,8 @@ export const Trailer_Config = {
             section_Heading: 'Accessories',
             columns: {
                 spareTyreCarrier: { column_Name: 'Spare_Tyre_Carrier', display_Text: 'Spare Tyre Carrier', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
-                // spareTyre: { column_Name: 'Spare_Tyre_Size', display_Text: 'Spare Tyre Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },[Error: Service: Trailer, Column: Spare_Tyre_Size not present in the database But there is a column name as Spare_Tyre_Type]
+                spareTyre: { column_Name: 'Spare_Tyre_Size', display_Text: 'Spare Tyre Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
+                spareType: { column_Name: 'Spare_Tyre_Type', display_Text: 'Spare Tyre Type', type: 'dual', mandatory: true, searchable: true, radioOptions: null},
                 spareTyreLocation: { column_Name: 'Spare_Tyre_Mounting_Location', display_Text: 'Spare Tyre Mounting Location', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
                 jack: { column_Name: 'Jack_Type', display_Text: 'Jack Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
                 jackWheel: { column_Name: 'Jack_Wheel', display_Text: 'Jack Wheel Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
@@ -591,8 +592,8 @@ export const Trailer_Config = {
             table_Name: 'Documentation', 
             section_Heading: 'Documentation',
             columns: {
-                // ownersManual: { column_Name: 'Owners_Manual', display_Text: "Owner's Manual", type: 'radio', mandatory: false, searchable: false, radioOptions: null },//[Error: Service: Trailer, Column:   not present in the database But there is a column name as owners_manual]
-                // warranty: { column_Name: 'Warranty', display_Text: 'Warranty', type: 'radio', mandatory: false, searchable: false, radioOptions: null }// [Error: Service: Trailer, Column: Warranty not present in the database But there is a column name as warranty]
+                ownersManual: { column_Name: 'Owners_Manual', display_Text: "Owner's Manual", type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+                warranty: { column_Name: 'Warranty', display_Text: 'Warranty', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
             }
             },
             {
@@ -645,7 +646,7 @@ export const Trailer_Config = {
 export const Charter_Config = {
    
     schema_name: "marisail",
-    main_table: "Accomodation",// [Error] Service initialization failed: Configuration error: The main table 'Accomodiation' does not have any entries in the database.
+    main_table: "Accomodation",
 
     primary_key: "Charter_ID",
     join_tables: ["Charter_Costs", "Charter_Date", "Charter_Food", "Charter_Insurance","Charter_Location", "Charter_Payment", "Charter_Policy", "Charter_Requirements","Charter_Safety", "Costs", "Crew",  "Food", "Policy","Requirements", "Sales"],
@@ -674,15 +675,11 @@ export const Charter_Config = {
                 boardingPortArrivalTime: { column_Name: "Arrival_Time", display_Text: "Boarding Arrival Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null },
                 boardingPortDepartureTime: { column_Name: "Departure_Time", display_Text: "Boarding Departure Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null },
                 summerCruisingAreas: { column_Name: "Summer_Cruising_Area", display_Text: "Summer Cruising Areas", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                // boardingPort: { column_Name: "Boarding_Port_Time", display_Text: "Boarding Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },//[Error: Service: Charter, Table: Charter_Location Column: Boarding_Port not present in the database But there is a column name as Boardingport_Time]
-                boardingPort: { column_Name: "Boardingport_Time", display_Text: "Boarding Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },//[Error: Service: Charter, Table: Charter_Location Column: Boarding_Port not present in the database But there is a column name as Boardingport_Time]
-
-                // winterCruisingAreas: { column_Name: "Winter_Cruising_Area", display_Text: "Winter Cruising Areas", type: "radio", mandatory: true, searchable: true, radioOptions: null }, //[Error: Service: Charter, Table: Charter_Location, Column: Winter_Cruising_Area not present in the database But there is a column name as winter_cruisingarea]
-                 winterCruisingAreas: { column_Name: "Winter_Cruisingarea", display_Text: "Winter Cruising Areas", type: "radio", mandatory: true, searchable: true, radioOptions: null }, //[Error: Service: Charter, Table: Charter_Location, Column: Winter_Cruising_Area not present in the database But there is a column name as winter_cruisingarea]
-                // disembarkationPort: { column_Name: "Disembarkation_Port", display_Text: "Disembarkation Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },// [Error: Service: Charter, Table: Charter_Location, Column: Disembarkation_Port not present in the database But there is a column name as disembarkationport_Time]
-                 disembarkationPort: { column_Name: "Disembarkationport_Time", display_Text: "Disembarkation Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },// [Error: Service: Charter, Table: Charter_Location, Column: Disembarkation_Port not present in the database But there is a column name as disembarkationport_Time]
+                boardingPort: { column_Name: "Boarding_Port_Time", display_Text: "Boarding Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                boardingPort: { column_Name: "Boardingport_Time", display_Text: "Boarding Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                winterCruisingAreas: { column_Name: "Winter_Cruising_Area", display_Text: "Winter Cruising Areas", type: "radio", mandatory: true, searchable: true, radioOptions: null },
                 embarkationAndDisembarkationLogistics: { column_Name: "Logistics", display_Text: "Embarkation & Disembarkation", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                // disembarkationPortArrivalTime: { column_Name: "Disembarkation_Arrival_Time", display_Text: "Disembarkation Arrival Time", type: "timestamp", mandatory: true, searchable: false, radioOptions: null }, // [Error: Service: Charter, Column: Disembarkation_Arrival_Time not present in the database ]
+                disembarkationPort: { column_Name: "Disembarkationport_Time", display_Text: "Disembarkation Port", type: "radio", mandatory: true, searchable: true, radioOptions: null },
                 dockingAndMooringInstructions: { column_Name: "Mooring_Instructions", display_Text: "Mooring Instructions", type: "radio", mandatory: true, searchable: true, radioOptions: null }
             }
         },
@@ -742,9 +739,9 @@ export const Charter_Config = {
                 additionalFees: { column_Name: "Additional_Fees", display_Text: "Additional Fees", type: "radio", mandatory: true, searchable: false, radioOptions: null },
                 fuelIncluded: { column_Name: "Fuel_Included", display_Text: "Fuel Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
                 lateCheckInCheckOutFees: { column_Name: "Late_Fees", display_Text: "Late Fees", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                // insuranceForGuestsPersonalBelongings: { column_Name: "Guest_Insurance", display_Text: "Guest Insurance Available", type: "radio", mandatory: true, searchable: true, radioOptions: null },//[Error: Service: Charter, Column: Guest_Insurance is not present in the database But there is a column name as VAT]
-                // insuranceCoverageDetails: { column_Name: "Insurance_Coverage", display_Text: "Insurance Coverage", type: "radio", mandatory: true, searchable: true, radioOptions: null }  //[Error: Service: Charter, Column: Insurance_Coverage is not present in the database But there is a column name as VAT]
-                vatdeta: { column_Name: "VAT", display_Text: "Insurance Coverage", type: "radio", mandatory: true, searchable: true, radioOptions: null }  //[Error: Service: Charter, Column: Insurance_Coverage is not present in the database But there is a column name as VAT]
+                insuranceForGuestsPersonalBelongings: { column_Name: "Guest_Insurance", display_Text: "Guest Insurance Available", type: "radio", mandatory: true, searchable: true, radioOptions: null },
+                insuranceCoverageDetails: { column_Name: "Charter_Insurance", display_Text: "Charter Insurance ", type: "radio", mandatory: true, searchable: true, radioOptions: null } ,
+                vatdeta: { column_Name: "VAT", display_Text: "Insurance Coverage", type: "radio", mandatory: true, searchable: true, radioOptions: null }  
             }
         },
         {
@@ -788,14 +785,14 @@ export const Charter_Config = {
 export const Transport_Config = {
     schema_name: 'marisail',
     main_table: 'Job',
-    primary_key: 'Transport_Item_ID',
+    primary_key: 'Transport_ID',
     join_tables: ['Compliance','Haulier', 'Questions', 'Reviews', 'Transportation_Contacts', 'Transportation_Payment', 'Transportation_Quotes', 'Transportation_Sales'],
     tables: [
         {
             table_Name: 'Job',
             section_Heading: 'Job Description',
             columns: {
-                TransportItemID: { column_Name: 'Transport_Item_ID', display_Text: 'Transport Item ID', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
+                TransportId: { column_Name: 'Transport_ID', display_Text: 'Transport  ID', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
                 category: { column_Name: 'Category', display_Text: 'Category', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
                 title: { column_Name: 'Title', display_Text: 'Title', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
                 description: { column_Name: 'Description', display_Text: 'Description', type: 'radio', mandatory: true, searchable: true, radioOptions: null },
@@ -860,9 +857,9 @@ export const Transport_Config = {
                 quoteDate: { column_Name: 'Quote_Date', display_Text: 'Quote Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
                 declineDate: { column_Name: 'Decline_Date', display_Text: 'Decline Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
                 withdrawDate: { column_Name: 'Withdraw_Date', display_Text: 'Withdraw Date', type: 'date', mandatory: false, searchable: false, radioOptions: null },
-                quoteStatus: { column_Name: 'Quote_Status', display_Text: 'Quote Status', type: 'radio', mandatory: false, searchable: false, radioOptions: null },//ERROR table Transportation_Quotes IN Transport Service no quote_status column in db but View_Declined_Withdrawn_Expired column present 
+                quoteStatus: { column_Name: 'Quote_Status', display_Text: 'Quote Status', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
+            }
             },
-        },
         {
             table_Name: 'Questions',
             section_Heading: 'Customer Questions',
