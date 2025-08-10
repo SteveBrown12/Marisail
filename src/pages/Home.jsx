@@ -1,16 +1,14 @@
+import { Outlet } from "react-router-dom";
+import HeaderNavbar from "../components/HeaderNavbar";
 
 const Home = () => {
   
   return (
     <>
-      <main
-        style={{
-          maxHeight: `100vh `,
-          overflow: "hidden",
-        }}
-      ></main>
-      <section>
-      </section>
+      <main>
+        <HeaderNavbar />
+        <Outlet/>
+      </main>
     </>
   );
 };

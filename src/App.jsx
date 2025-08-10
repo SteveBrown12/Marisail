@@ -1,6 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import HeaderNavbar from "./components/HeaderNavbar";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Engines from "./pages/Engine";
 import Buy from "./pages/Buy";
@@ -16,52 +15,38 @@ import Login from "./pages/auth/Login";
 import GenericSearch from "./pages/Generic_Search";
 import GenericAdvert from "./pages/Generic_Advert";
 
-
-function AppRoutes() {
-  const location = useLocation();
-
-  console.log("location.pathname :>> ", location.pathname);
-  // Check if current path is /login or /register
-  const hideNavbarRoutes = ["/login", "/register"];
-  const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
-
-  return (
-    <>
-      {!shouldHideNavbar && <HeaderNavbar />}
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home />} />
-
-        <Route path="/advert/:serviceName" element={<GenericAdvert />} />
-        <Route path="/find/:serviceName" element={<GenericSearch />} />
-
-        <Route path="/engines" element={<Engines type="advert" />} />
-        <Route path="/advert-engines" element={<Engines type="search" />} />
-
-        <Route path="/buy" element={<Buy />} />
-        <Route path="/sell" element={<Sell />} />
-
-        <Route path="/services" element={<Services type="myEngines" />} />
-        <Route path="/view-berth" element={<Services type="myBerth" />} />
-        <Route path="/view-transport" element={<Services type="myTransport" />}/>
-        <Route path="/view-charter" element={<Services type="myCharter" />} />
-        <Route path="/view-trailer" element={<Services type="myTrailer" />} />
-
-        <Route path="/engines/:id" element={<EngineDetailPage />} />
-        <Route path="/trailer/:id" element={<TrailerDetail />} />
-        <Route path="/berth/:id" element={<TrailerDetail />} />
-        <Route path="/transport/:id" element={<TransportDetail />} />
-        <Route path="/charter/:id" element={<CharterDetail />} />
-      </Routes>
-    </>
-  );
-}
-
 function App() {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/" element={<Home />}>
+
+          <Route path="/advert/:serviceName" element={<GenericAdvert />} />
+          <Route path="/find/:serviceName" element={<GenericSearch />} />
+
+          <Route path="/engines" element={<Engines type="advert" />} />
+          <Route path="/advert-engines" element={<Engines type="search" />} />
+
+          <Route path="/buy" element={<Buy />} />
+          <Route path="/sell" element={<Sell />} />
+
+          <Route path="/services" element={<Services type="myEngines" />} />
+          <Route path="/view-berth" element={<Services type="myBerth" />} />
+          <Route path="/view-transport" element={<Services type="myTransport" />}/>
+          <Route path="/view-charter" element={<Services type="myCharter" />} />
+          <Route path="/view-trailer" element={<Services type="myTrailer" />} />
+
+          <Route path="/engines/:id" element={<EngineDetailPage />} />
+          <Route path="/trailer/:id" element={<TrailerDetail />} />
+          <Route path="/berth/:id" element={<TrailerDetail />} />
+          <Route path="/transport/:id" element={<TransportDetail />} />
+          <Route path="/charter/:id" element={<CharterDetail />} />
+
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
