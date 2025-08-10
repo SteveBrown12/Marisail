@@ -102,72 +102,90 @@ export default function GenericAdvert() {
   if (loading) return <Loader />;
 
   return (
-    <Container className="generic-advert">
-      <h3 className="mb-4">Advertise {serviceName.toUpperCase()}</h3>
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          {serviceConfig?.tables?.map((table) => {
-            const tableColumns = Array.isArray(table.columns)
-              ? table.columns
-              : table.columns
-              ? Object.values(table.columns)
-              : [];
+    <Container className="generic-advert py-5">
+      <Row className="justify-content-center">
+        <Col lg={10}>
+          <div className="card shadow-sm border-0 rounded-4 p-4">
+            <h3 className="mb-4 fw-bold text-primary">
+              Advertise {serviceName.toUpperCase()}
+            </h3>
 
-            return (
-              <Col md={12} key={table.table_Name} className="mb-4">
-                <h6>{table.section_Heading}</h6>
-                <Row>
-                  {tableColumns
-                    .filter((col) => col.searchable)
-                    .map((col) => {
-                      const fieldKey = col.column_Name;
-                      const label = col.display_Text || fieldKey;
+            <Form onSubmit={handleSubmit}>
+              <Row>
+                {serviceConfig?.tables?.map((table) => {
+                  const tableColumns = Array.isArray(table.columns)
+                    ? table.columns
+                    : table.columns
+                    ? Object.values(table.columns)
+                    : [];
 
-                      switch (col.type) {
-                        case "radio":
-                          return (
-                            <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
-                              <DropdownWithCheckBoxes
-                                title={label}
-                                options={filtersData[fieldKey] || []}
-                                selected={formState[fieldKey] || []}
-                                onChange={(vals) =>
-                                  setFormState((prev) => ({
-                                    ...prev,
-                                    [fieldKey]: vals
-                                  }))
-                                }
-                                onOpen={() => fetchDropdownData(fieldKey)}
-                                fetching={fetchingOptions}
-                                placeholder={`Select ${label}`}
-                              />
-                              {errors[fieldKey] && (
-                                <div className="text-danger small">{errors[fieldKey]}</div>
-                              )}
-                            </Col>
-                          );
+                  return (
+                    <Col md={12} key={table.table_Name} className="mb-4">
+                      <h5 className="mt-4 mb-3 border-bottom pb-2 text-secondary">
+                        {table.section_Heading}
+                      </h5>
+                      <Row>
+                        {tableColumns
+                          .filter((col) => col.searchable)
+                          .map((col) => {
+                            const fieldKey = col.column_Name;
+                            const label = col.display_Text || fieldKey;
 
-                        case "number":
-                          return (
-                            <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
-                              <RangeInput
-                                title={label}
-                                min={col.min || ""}
-                                max={col.max || ""}
-                                valueFrom={formState[fieldKey]?.from || ""}
-                                valueTo={formState[fieldKey]?.to || ""}
-                                onChange={(min, max) =>
-                                  setFormState((prev) => ({
-                                    ...prev,
-                                    [fieldKey]: { from: min, to: max }
-                                  }))
-                                }
-                              />
-                              {errors[fieldKey] && (
-                                <div className="text-danger small">{errors[fieldKey]}</div>
-                              )}
-                            </Col>
-                          );
+                            switch (col.type) {
+                              case "radio":
+                                return (
+                                  <Col md={4} sm={6} xs={12} key={fieldKey}>
+                                    <Form.Group className="mb-3" controlId={fieldKey}>
+                                      <Form.Label className="fw-semibold">{label}</Form.Label>
+                                      <DropdownWithCheckBoxes
+                                        title={label}
+                                        options={filtersData[fieldKey] || []}
+                                        selected={formState[fieldKey] || []}
+                                        onChange={(vals) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [fieldKey]: vals
+                                          }))
+                                        }
+                                        onOpen={() => fetchDropdownData(fieldKey)}
+                                        fetching={fetchingOptions}
+                                        placeholder={`Select ${label}`}
+                                      />
+                                      {errors[fieldKey] && (
+                                        <div className="text-danger small mt-1">
+                                          {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                    </Form.Group>
+                                  </Col>
+                                );
+
+                              case "number":
+                                return (
+                                  <Col md={4} sm={6} xs={12} key={fieldKey}>
+                                    <Form.Group className="mb-3" controlId={fieldKey}>
+                                      <Form.Label className="fw-semibold">{label}</Form.Label>
+                                      <RangeInput
+                                        title={label}
+                                        min={col.min || ""}
+                                        max={col.max || ""}
+                                        valueFrom={formState[fieldKey]?.from || ""}
+                                        valueTo={formState[fieldKey]?.to || ""}
+                                        onChange={(min, max) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [fieldKey]: { from: min, to: max }
+                                          }))
+                                        }
+                                      />
+                                      {errors[fieldKey] && (
+                                        <div className="text-danger small mt-1">
+                                          {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                    </Form.Group>
+                                  </Col>
+                                );
 
                         case "date":
                           return (
@@ -191,45 +209,65 @@ export default function GenericAdvert() {
                             </Col>
                           );
 
-                        default:
-                          return (
-                            <Col md={4} sm={6} xs={12} key={fieldKey} className="mb-3">
-                              <label>{label}</label>
-                              <input
-                                type="text"
-                                className="form-control mb-2"
-                                placeholder={label}
-                                value={formState[fieldKey] || ""}
-                                onChange={(e) =>
-                                  setFormState((prev) => ({
-                                    ...prev,
-                                    [fieldKey]: e.target.value
-                                  }))
-                                }
-                              />
-                              {errors[fieldKey] && (
-                                <div className="text-danger small">{errors[fieldKey]}</div>
-                              )}
-                            </Col>
-                          );
-                      }
-                    })}
-                </Row>
-              </Col>
-            );
-          })}
-        </Row>
+                              default:
+                                return (
+                                  <Col md={4} sm={6} xs={12} key={fieldKey}>
+                                    <Form.Group className="mb-3" controlId={fieldKey}>
+                                      <Form.Label className="fw-semibold">{label}</Form.Label>
+                                      <Form.Control
+                                        type="text"
+                                        placeholder={label}
+                                        value={formState[fieldKey] || ""}
+                                        onChange={(e) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [fieldKey]: e.target.value
+                                          }))
+                                        }
+                                      />
+                                      {errors[fieldKey] && (
+                                        <div className="text-danger small mt-1">
+                                          {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                    </Form.Group>
+                                  </Col>
+                                );
+                            }
+                          })}
+                      </Row>
+                    </Col>
+                  );
+                })}
+              </Row>
 
-        <Row className="mt-3">
-          <Col>
-            <Button variant="primary" type="submit" disabled={loading}>
-              {loading ? "Submitting..." : "Submit"}
-            </Button>
-          </Col>
-        </Row>
+              <Row className="mt-3">
+                <Col>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={loading}
+                    className="px-4 py-2 rounded-pill"
+                  >
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" />
+                        Submitting...
+                      </>
+                    ) : (
+                      "Submit"
+                    )}
+                  </Button>
+                </Col>
+              </Row>
 
-        {autofillLoading && <div className="text-muted mt-2">Autofilling...</div>}
-      </Form>
+              {autofillLoading && (
+                <div className="text-muted mt-2 fst-italic">Autofilling...</div>
+              )}
+            </Form>
+          </div>
+        </Col>
+      </Row>
     </Container>
   );
 }

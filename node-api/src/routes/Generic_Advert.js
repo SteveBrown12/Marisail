@@ -28,9 +28,11 @@ const validate_mandatory_fields = (request, response, next) => {
 // THE SUBMIT ROUTE
 
 // The middleware chain is now clean: initialize -> validate -> final handler.
+
 advert_router.post("/:service_name/submit", initialize_service, validate_mandatory_fields, async (request, response) => {
     
     // The submit_operation logic is now correctly defined *inside* the route handler.
+
     const submit_operation = async () => {
         const connection = await db_connection.getConnection();
         try {
@@ -73,6 +75,7 @@ advert_router.post("/:service_name/submit", initialize_service, validate_mandato
     };
 
     // The retry logic now correctly wraps the operation.
+    
     try {
         const { new_id } = await execute_operation_with_retry(submit_operation);
         response.status(201).json({ ok: true, message: "Submission successful", new_id: new_id });
