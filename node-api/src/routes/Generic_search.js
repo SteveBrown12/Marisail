@@ -1,12 +1,13 @@
 import { Router } from "express";
 import db_connection from "../config/dbConfig.js";
-import { initialize_service, handle_error_response, build_joins, build_where_clause, build_range_facets } from "../utils/Common_Utils.js"
+import { initialize_service, handle_error_response, build_joins, build_where_clause, build_range_facets, getKeyByValue } from "../utils/Common_Utils.js"
 const search_Router = Router();
 
 // Endpoint to provide the UI with the fields needed to build the search form.
 
 search_Router.get("/:service_name/search-options", initialize_service, (request, response) => {
-    response.json({ ok: true, data: request.service_config.searchable_fields || [] });
+    const { service_config, service_mappings } = request;
+    response.json({ ok: true, data:{ service_config, service_mappings }});
 });
 search_Router.get("/:service_name/search", initialize_service, async (request, response) => {
     try {
@@ -43,14 +44,17 @@ search_Router.get("/:service_name/details/:id", initialize_service, async (reque
 search_Router.get("/:service_name/facets/:field", initialize_service, async (request, response) => {
     try {
         const { field } = request.params;
-        const { service_config } = request;
-        const { mappings } = service_config;
+        const { service_mappings } = request;
 
-        const column_name = mappings.var_to_column[field];
-        if (!column_name) {
+        //we are recieving feild as a column name
+        const key = getKeyByValue(service_mappings.var_to_column, field);
+
+        if (!key) {
             return handle_error_response(response, `Field '${field}' not found.`, 404);
         }
-        const table_name = mappings.var_to_table[field];
+        
+        const column_name = field;
+        const table_name = service_mappings.var_to_table[key];
 
         if (request.query.range) {
             const query = build_range_facets(table_name, column_name, parseInt(request.query.range));

@@ -268,3 +268,7 @@ export const execute_operation_with_retry = async (
     }
   }
 };
+
+export function getKeyByValue(obj, value) {
+  return Object.keys(obj).find(key => obj[key] === value);
+}

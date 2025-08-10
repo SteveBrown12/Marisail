@@ -5,11 +5,11 @@ import PropTypes from "prop-types";
 const DropdownWithRadio = ({
   heading,
   title,
-  options,
+  options = [],
   selectedOption,
   setSelectedOption,
-  isMandatory,
-  openKey,
+  isMandatory = false,
+  openKey = null,
   setOpenKey,
 }) => {
   const [list] = useState(options);
@@ -36,9 +36,9 @@ const DropdownWithRadio = ({
 
   return (
     <Accordion
-      activeKey={openKey}
+      activeKey={openKey ?? undefined}
       style={{ marginLeft: "-10px" }}
-      onSelect={(eventKey) => setOpenKey(eventKey)}
+      onSelect={typeof setOpenKey === "function" ? (eventKey) => setOpenKey(eventKey) : undefined}
     >
       <Accordion.Item eventKey={heading}>
         <Accordion.Header>
@@ -51,7 +51,7 @@ const DropdownWithRadio = ({
           <div>
             {list.length > 0 ? (
               list.map((item, index) => (
-                <div key={index}>
+                <div key={`${item?.[0] ?? index}-${index}`}>
                   <Form.Check
                     type="radio"
                     name={`radio-options-${heading}`}
@@ -78,16 +78,16 @@ const DropdownWithRadio = ({
 DropdownWithRadio.propTypes = {
   heading: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(PropTypes.array).isRequired,
+  options: PropTypes.arrayOf(PropTypes.array),
   selectedOption: PropTypes.oneOfType([
-    PropTypes.string.isRequired,
-    PropTypes.number.isRequired,
-    PropTypes.object.isRequired,
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.object,
   ]),
   setSelectedOption: PropTypes.func.isRequired,
-  isMandatory: PropTypes.bool.isRequired,
-  openKey: PropTypes.string.isRequired,
-  setOpenKey: PropTypes.func.isRequired,
+  isMandatory: PropTypes.bool,
+  openKey: PropTypes.string, // allow null/undefined
+  setOpenKey: PropTypes.func,
 };
 
 export default DropdownWithRadio;
