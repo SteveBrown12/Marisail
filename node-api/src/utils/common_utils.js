@@ -100,8 +100,6 @@ export const join_table_check = async (service_Config) => {
     !service_Config?.join_tables ||
     !Array.isArray(service_Config.join_tables)
   ) {
-    //  if No join_tables defined, or not an array — nothing to check just return 
-    return;
   }
 
   const connection = await db_connection.getConnection();
@@ -129,10 +127,11 @@ export const join_table_check = async (service_Config) => {
 export const initialize_service = async (request, response, next) => {
   try {
     const service_name = request.params.service_name.toLowerCase();
-
     const service_config = SERVICES[service_name];
     const service_mappings = SERVICE_MAPPINGS[service_name];
 
+    // load_service_config
+    
     if (!service_config) {
       return handle_error_response(
         response,
@@ -143,6 +142,7 @@ export const initialize_service = async (request, response, next) => {
     await join_table_check(service_config);
 
     // We validate the loaded config against the database before proceeding.
+    
     await validate_Schema(service_config);
 
     request.service_config = service_config;
@@ -150,7 +150,9 @@ export const initialize_service = async (request, response, next) => {
 
     next();
   } catch (error) {
+
     // This will now catch both config loading errors AND schema validation errors.
+    
     handle_error_response(
       response,
       `Service initialization failed: ${error.message}`,
@@ -163,23 +165,17 @@ export const handle_error_response = (response, message, status = 500) => {
   response.status(status).json({ ok: false, message });
 };
 
-// SHARED QUERY BUILDERS (Updated for new structure)
-
+// SHARED QUERY BUILDERS 
 
 export const build_joins = (main_table_info) => {
   console.log('=== DEBUGGING build_joins ===');
   console.log('main_table_info:', main_table_info);
   console.log('join_tables:', main_table_info?.join_tables);
-  console.log(
-    'join_tables is array:',
-    Array.isArray(main_table_info?.join_tables)
-  );
-
+  console.log( 'join_tables is array:', Array.isArray(main_table_info?.join_tables) );
   if (!main_table_info?.join_tables) {
     console.error('❌ join_tables is undefined in build_joins!');
     return '';
   }
-
   return main_table_info.join_tables
     .map(
       (table) =>
@@ -197,24 +193,28 @@ export const build_where_clause = (filters, mappings) => {
   const conditions = Object.entries(filters || {})
     .map(([key, value]) => {
       const column_name = mappings.var_to_column[key];
-      if (!column_name) return null; // Ignore unknown fields
+      if (!column_name) return null; 
 
-      // NEW: Check if the value is an object for complex operators
+      // Check if the value is an object for complex operators
+
       if (typeof value === 'object' && !Array.isArray(value)) {
         const operator = Object.keys(value)[0]; // e.g., 'gte'
         const filter_Value = Object.values(value)[0]; // e.g., '1990'
         const sql_Operator = operator_Map[operator];
 
-        if (!sql_Operator) return null; // Ignore unknown operators
-
+        if (!sql_Operator) return null; 
         if (sql_Operator === 'IN' || sql_Operator === 'NOT IN') {
+
           // Handle comma-separated strings for IN and NOT IN clauses
+
           const list = filter_Value
             .split(',')
             .map((item) => db_connection.escape(item.trim()));
           return `\`${column_name}\` ${sql_Operator} (${list.join(', ')})`;
         } else {
+
           // Handle all other operators
+
           return `\`${column_name}\` ${sql_Operator} ${db_connection.escape(
             filter_Value
           )}`;
@@ -232,20 +232,19 @@ export const build_where_clause = (filters, mappings) => {
 export const build_range_facets = (
   table_name,
   column_name,
-  bucket_size = 1000
+  bucket_Size = 1000
 ) => {
   return `
         SELECT
             CONCAT(
-                FLOOR(${column_name}/${bucket_size})*${bucket_size},
-                '-',
-                FLOOR(${column_name}/${bucket_size})*${bucket_size} + ${bucket_size} - 1
+                FLOOR(${column_name}/${bucket_Size})*${bucket_Size},'-',
+                FLOOR(${column_name}/${bucket_Size})*${bucket_Size} + ${bucket_Size} - 1
             ) AS \`range\`,
             COUNT(*) AS count
         FROM ${table_name}
         WHERE ${column_name} IS NOT NULL
         GROUP BY 1
-        ORDER BY FLOOR(${column_name}/${bucket_size})
+        ORDER BY FLOOR(${column_name}/${bucket_Size})
     `;
 };
 
@@ -257,18 +256,13 @@ export const execute_operation_with_retry = async (
 ) => {
   for (let attempt = 1; attempt <= max_attempts; attempt++) {
     try {
-      return await operation(); // If it succeeds, return the result
+      return await operation(); 
     } catch (error) {
       console.error(`Operation failed on attempt ${attempt}: ${error.message}`);
       if (attempt >= max_attempts) {
-        throw error; // If it's the last attempt, throw the error
+        throw error; 
       }
-      // Wait a moment before retrying
       await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
     }
   }
 };
-
-export function getKeyByValue(obj, value) {
-  return Object.keys(obj).find(key => obj[key] === value);
-}

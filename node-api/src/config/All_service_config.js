@@ -96,7 +96,6 @@ export const Berth_Config = {
                 slipWidth: { column_Name: "Slip_Width", display_Text: "Slip Width", type: "dual", mandatory: true, searchable: true, radio_Options: dual_Range.feet_metres },
                 slipDepth: { column_Name: "Slip_Depth", display_Text: "Slip Depth", type: "dual", mandatory: true, searchable: true, radio_Options: dual_Range.feet_metres },
                 slipLength: { column_Name: "Slip_Length", display_Text: "Slip Length", type: "dual", mandatory: true, searchable: true, radio_Options: dual_Range.feet_metres },
-                
                 mooringType: { column_Name: "Mooring_Type", display_Text: "Mooring Type", type: "radio", mandatory: true, searchable: true, radio_Options: null },
                 tideRange: { column_Name: "Tide_Range", display_Text: "Tide Range", type: "radio", mandatory: true, searchable: true, radio_Options: null }
             }
