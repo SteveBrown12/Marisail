@@ -1,4 +1,3 @@
-import { Form, Container, Row, Col } from "react-bootstrap";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom"; 
 import DropdownWithRadio from "../../components/DropdownWithRadio";
@@ -317,136 +316,133 @@ export default function MyTransport() {
     };
 
     return (
-        <Container className="mb-5">
-            {loading ? (
-                <Loader />
-            ) : (
-                <Form onSubmit={handleSubmit}>
-                    <Row>
-                        {Object.keys(sections).map((title) => (
-                            <Col md={6} key={title} className="mt-2">
-                                <legend className="fieldset-legend">
-                                    <h6 style={{ padding: "15px 10px 0px 10px" }}>
-                                        {makeString(title, keyToExpectedValueMap)}
-                                    </h6>
-                                </legend>
-                                {Object.keys(sections[title]).map((fieldKey) => {
-                                    const field = typeDef[title][fieldKey];
-                                    if (field && field.type === "radio") {
-                                        return (
-                                            <Col
-                                                md={12}
-                                                className="mr-3"
-                                                key={fieldKey}
-                                                style={{ width: 480 }}
-                                            >
-                                                <Col xs={3} md={12}>
-                                                    <DropdownWithRadio
-                                                        heading={fieldKey}
-                                                        title={makeString(fieldKey, keyToExpectedValueMap)}
-                                                        options={sections[title][fieldKey]}
-                                                        selectedOption={
-                                                            allSelectedOptions[title]?.[fieldKey]?.value || ""
-                                                        }
-                                                        setSelectedOption={(selectedOption) =>
-                                                            handleOptionSelect(
-                                                                title,
-                                                                fieldKey,
-                                                                selectedOption
-                                                            )
-                                                        }
-                                                        isMandatory={field.mandatory}
-                                                        setOpenKey={setOpenKey}
-                                                        openKey={openKey}
-                                                    />
-                                                    {error[`${fieldKey}`] && (
-                                                        <div>
-                                                            {errorDisplay(
-                                                                makeString(fieldKey, keyToExpectedValueMap)
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </Col>
-                                            </Col>
-                                        );
-                                    } else if (field && field.type === "date") {
-                                        return (
-                                            <Col
-                                                md={12}
-                                                className="mr-3"
-                                                key={fieldKey}
-                                                style={{ width: 480 }}
-                                            >
-                                                <label className="d-block mb-1">
-                                                    {makeString(fieldKey, keyToExpectedValueMap)}
-                                                    {field.mandatory && (
-                                                        <span className="text-danger">&nbsp;*</span>
-                                                    )}
-                                                </label>
-                                                <DatePickerField
-                                                    mode="single"
-                                                    value={transport[title]?.[fieldKey] || ""}
-                                                    onChange={(iso) =>
-                                                        handleInputChange(title, fieldKey, iso)
-                                                    }
-                                                    placeholder="dd-mm-yyyy"
-                                                    style={{ width: 220 }}
-                                                />
-                                                {error[`${fieldKey}`] && (
-                                                    <div>
-                                                        {errorDisplay(
-                                                            makeString(fieldKey, keyToExpectedValueMap)
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </Col>
-                                        );
-                                    } else if (field && field.type === "dual") {
-                                        return (
-                                            <Col
-                                                md={12}
-                                                className="mr-3"
-                                                key={fieldKey}
-                                                style={{ width: 480 }}
-                                            >
-                                                <InputComponentDual
-                                                    label={makeString(fieldKey, keyToExpectedValueMap)}
-                                                    value={transport[title]?.[fieldKey] || ""}
-                                                    setValue={(e) =>
-                                                        handleInputChange(title, fieldKey, e.target.value)
-                                                    }
-                                                    formType="number"
-                                                    setOpenKey={setOpenKey}
-                                                    openKey={openKey || ""}
-                                                    isMandatory={field.mandatory}
-                                                    radioOptions={field?.radioOptions}
-                                                    selectedOption={allSelectedOptions[title]?.[fieldKey]?.unit || ""}
-                                                    setSelectedOption={(inputValue, radioValue) =>
-                                                        handleDualInputChange(title, fieldKey, inputValue, radioValue)
-                                                    }
-                                                />
-                                                {error[`${fieldKey}`] && (
-                                                    <div>
-                                                        {errorDisplay(
-                                                            makeString(fieldKey, keyToExpectedValueMap)
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </Col>
-                                        );
-                                    }
-                                    return null;
-                                })}
-                            </Col>
-                        ))}
-                    </Row>
-                    <SubmitButton
-                        text="Submit"
-                        name="advert_transport_submit"
-                        onClick={handleSubmit}
-                    />
-                </Form>
-            )}
-        </Container>
+        <div className="mb-5">
+        {loading ? (
+            <Loader />
+        ) : (
+            <form onSubmit={handleSubmit}>
+            <div className="flex flex-wrap -mx-2">
+                {Object.keys(sections).map((title) => (
+                <div key={title} className="w-full md:w-1/2 mt-2 px-2">
+                    <legend className="fieldset-legend">
+                    <h6 className="pt-[15px] pr-[10px] pb-0 pl-[10px]">
+                        {makeString(title, keyToExpectedValueMap)}
+                    </h6>
+                    </legend>
+
+                    {Object.keys(sections[title]).map((fieldKey) => {
+                    const field = typeDef[title][fieldKey];
+
+                    // Radio
+                    if (field && field.type === "radio") {
+                        return (
+                        <div key={fieldKey} className="mr-3 w-[480px] max-w-full">
+                            <div className="w-full xs:w-3/12 md:w-full">
+                            <DropdownWithRadio
+                                heading={fieldKey}
+                                title={makeString(fieldKey, keyToExpectedValueMap)}
+                                options={sections[title][fieldKey]}
+                                selectedOption={
+                                allSelectedOptions[title]?.[fieldKey]?.value || ""
+                                }
+                                setSelectedOption={(selectedOption) =>
+                                handleOptionSelect(title, fieldKey, selectedOption)
+                                }
+                                isMandatory={field.mandatory}
+                                setOpenKey={setOpenKey}
+                                openKey={openKey}
+                            />
+                            {error[`${fieldKey}`] && (
+                                <div>
+                                {errorDisplay(
+                                    makeString(fieldKey, keyToExpectedValueMap)
+                                )}
+                                </div>
+                            )}
+                            </div>
+                        </div>
+                        );
+                    }
+
+                    // Date
+                    if (field && field.type === "date") {
+                        return (
+                        <div key={fieldKey} className="mr-3 w-[480px] max-w-full">
+                            <label className="block mb-1">
+                            {makeString(fieldKey, keyToExpectedValueMap)}
+                            {field.mandatory && <span className="text-red-600">&nbsp;*</span>}
+                            </label>
+                            <DatePickerField
+                            mode="single"
+                            value={transport[title]?.[fieldKey] || ""}
+                            onChange={(iso) =>
+                                handleInputChange(title, fieldKey, iso)
+                            }
+                            placeholder="dd-mm-yyyy"
+                            className="w-[220px]"
+                            />
+                            {error[`${fieldKey}`] && (
+                            <div>
+                                {errorDisplay(
+                                makeString(fieldKey, keyToExpectedValueMap)
+                                )}
+                            </div>
+                            )}
+                        </div>
+                        );
+                    }
+
+                    // Dual Input
+                    if (field && field.type === "dual") {
+                        return (
+                        <div key={fieldKey} className="mr-3 w-[480px] max-w-full">
+                            <InputComponentDual
+                            label={makeString(fieldKey, keyToExpectedValueMap)}
+                            value={transport[title]?.[fieldKey] || ""}
+                            setValue={(e) =>
+                                handleInputChange(title, fieldKey, e.target.value)
+                            }
+                            formType="number"
+                            setOpenKey={setOpenKey}
+                            openKey={openKey || ""}
+                            isMandatory={field.mandatory}
+                            radioOptions={field?.radioOptions}
+                            selectedOption={
+                                allSelectedOptions[title]?.[fieldKey]?.unit || ""
+                            }
+                            setSelectedOption={(inputValue, radioValue) =>
+                                handleDualInputChange(
+                                title,
+                                fieldKey,
+                                inputValue,
+                                radioValue
+                                )
+                            }
+                            />
+                            {error[`${fieldKey}`] && (
+                            <div>
+                                {errorDisplay(
+                                makeString(fieldKey, keyToExpectedValueMap)
+                                )}
+                            </div>
+                            )}
+                        </div>
+                        );
+                    }
+
+                    return null;
+                    })}
+                </div>
+                ))}
+            </div>
+
+            <SubmitButton
+                text="Submit"
+                name="advert_transport_submit"
+                onClick={handleSubmit}
+            />
+            </form>
+        )}
+        </div>
     );
 }

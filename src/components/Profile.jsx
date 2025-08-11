@@ -1,51 +1,71 @@
-import React from "react";
-import { Dropdown, Button, Image } from "react-bootstrap";
+import { useState } from "react";
 
 const ProfileDropdown = () => {
+  const [open, setOpen] = useState(false);
+
   const user = {
     name: "Maulik Solanki",
     email: "mauliksolanki2002@gmail.com",
+    avatar:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToiRnzzyrDtkmRzlAvPPbh77E-Mvsk3brlxQ&s",
   };
-  return (
-    <Dropdown align="end">
-      <Dropdown.Toggle
-        variant="light"
-        id="dropdown-profile"
-        className="border-0 d-flex align-items-center gap-2"
-        style={{ backgroundColor: "transparent" }}
-      >
-        <Image
-          src={
-            user?.avatar ||
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToiRnzzyrDtkmRzlAvPPbh77E-Mvsk3brlxQ&s"
-          }
-          roundedCircle
-          width={40}
-          height={40}
-          alt="Profile Avatar"
-        />
-      </Dropdown.Toggle>
 
-      <Dropdown.Menu className="shadow">
-        {user ? (
-          <>
-            <div className="px-3 py-2">
-              <h6 className="mb-0">{user.name}</h6>
-              <small className="text-muted">{user.email}</small>
+  return (
+    <div className="relative">
+      {/* Avatar button */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 focus:outline-none cursor-pointer"
+      >
+        <img
+          src={user?.avatar}
+          alt="Profile Avatar"
+          className="w-10 h-10 rounded-full border-2 border-transparent hover:border-blue-500 transition-all"
+        />
+      </button>
+
+      {/* Dropdown menu */}
+      {open && (
+        <div
+          className="absolute right-0 mt-2 w-56 bg-white shadow-lg rounded-md overflow-hidden z-50"
+          onMouseLeave={() => setOpen(false)}
+        >
+          {user ? (
+            <>
+              <div className="px-4 py-3">
+                <h6 className="text-sm font-medium text-gray-900">
+                  {user.name}
+                </h6>
+                <p className="text-xs text-gray-500">{user.email}</p>
+              </div>
+              <div className="border-t border-gray-200">
+                <a
+                  href="/profile"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Profile
+                </a>
+                <a
+                  href="/logout"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </a>
+              </div>
+            </>
+          ) : (
+            <div className="px-4 py-3">
+              <a
+                href="/login"
+                className="block text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              >
+                Login
+              </a>
             </div>
-            <Dropdown.Divider />
-            <Dropdown.Item href="/profile">Profile</Dropdown.Item>
-            <Dropdown.Item href="/logout">Logout</Dropdown.Item>
-          </>
-        ) : (
-          <div className="px-3 py-2 text-center">
-            <Button variant="primary" href="/login" className="w-100">
-              Login
-            </Button>
-          </div>
-        )}
-      </Dropdown.Menu>
-    </Dropdown>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

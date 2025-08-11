@@ -449,38 +449,39 @@ const EngineDetail = () => {
   const panelData = mapEngineToPanelData(engine);
 
   return (
-    <div className="engine-detail-page">
-      <div className="engine-main-section">
-        <div className="engine-image-gallery">
+    <div className="engine-detail-page p-4">
+      <div className="engine-main-section flex flex-col md:flex-row gap-6">
+        {/* Image Gallery */}
+        <div className="engine-image-gallery flex flex-col items-center md:items-start">
           <img
             src="../images/engine.jpg"
             alt="Engine"
-            className="engine-main-image"
+            className="engine-main-image w-full max-w-md rounded-lg shadow-md object-cover"
           />
-          <div className="engine-thumbnails">
+          <div className="engine-thumbnails flex gap-3 mt-4">
             <img
               src="../images/engine.jpg"
               alt="Thumbnail 1"
-              className="thumbnail"
+              className="thumbnail w-20 h-20 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition"
             />
             <img
               src="../images/engine.jpg"
               alt="Thumbnail 2"
-              className="thumbnail"
+              className="thumbnail w-20 h-20 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition"
             />
           </div>
         </div>
-        <div>
-          <Row className="g-2 g-md-3">
-            {panelData.map((section, index) => (
-              <Col key={index} md={4}>
-                <EngineDetailsPanel
-                  title={section.title}
-                  details={section.details}
-                />
-              </Col>
-            ))}
-          </Row>
+
+        {/* Details Panel Grid */}
+        <div className="flex flex-wrap -mx-2 flex-1">
+          {panelData.map((section, index) => (
+            <div key={index} className="w-full md:w-1/3 px-2 mb-4">
+              <EngineDetailsPanel
+                title={section.title}
+                details={section.details}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>
