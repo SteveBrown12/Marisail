@@ -1,4 +1,3 @@
-import { Form, Container, Row, Col } from "react-bootstrap";
 import { useEffect, useState, useRef } from "react";
 import DropdownWithRadio from "../../components/DropdownWithRadio";
 import Loader from "../../components/Loader";
@@ -283,30 +282,30 @@ export default function MyCharter() {
   };
 
   return (
-    <Container className="mb-5">
+    <div className="mb-5">
       {loading ? (
         <Loader />
       ) : (
-        <Form onSubmit={handleSubmit}>
-          <Row>
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-wrap -mx-2">
             {Object.keys(sections).map((title) => (
-              <Col md={6} key={title} className="mt-2">
+              <div key={title} className="w-full md:w-1/2 mt-2 px-2">
                 <legend className="fieldset-legend">
-                  <h6 style={{ padding: "15px 10px 0px 10px" }}>
+                  <h6 className="pt-[15px] pr-[10px] pb-0 pl-[10px]">
                     {makeString(title, keyToExpectedValueMap)}
                   </h6>
                 </legend>
+
                 {Object.keys(sections[title]).map((fieldKey) => {
                   const field = typeDef[title][fieldKey];
+
                   if (field && field.type === "radio") {
                     return (
-                      <Col
-                        md={12}
-                        className="mr-3"
+                      <div
                         key={fieldKey}
-                        style={{ width: 480 }}
+                        className="mr-3 w-[480px] max-w-full"
                       >
-                        <Col xs={3} md={12}>
+                        <div className="w-full xs:w-3/12 md:w-full">
                           <DropdownWithRadio
                             heading={fieldKey}
                             title={makeString(fieldKey, keyToExpectedValueMap)}
@@ -317,11 +316,7 @@ export default function MyCharter() {
                               ""
                             }
                             setSelectedOption={(selectedOption) =>
-                              handleOptionSelect(
-                                title,
-                                fieldKey,
-                                selectedOption
-                              )
+                              handleOptionSelect(title, fieldKey, selectedOption)
                             }
                             isMandatory={field.mandatory}
                             setOpenKey={setOpenKey}
@@ -334,16 +329,14 @@ export default function MyCharter() {
                               )}
                             </div>
                           )}
-                        </Col>
-                      </Col>
+                        </div>
+                      </div>
                     );
                   } else if (field && field.type === "number") {
                     return (
-                      <Col
-                        md={12}
-                        className="mr-3"
+                      <div
                         key={fieldKey}
-                        style={{ width: 480 }}
+                        className="mr-3 w-[480px] max-w-full"
                       >
                         <InputComponentDynamic
                           label={makeString(fieldKey, keyToExpectedValueMap)}
@@ -363,21 +356,22 @@ export default function MyCharter() {
                             )}
                           </div>
                         )}
-                      </Col>
+                      </div>
                     );
                   }
                   return null;
                 })}
-              </Col>
+              </div>
             ))}
-          </Row>
+          </div>
+
           <SubmitButton
             text="Submit"
             name="advert_charter_submit"
             onClick={handleSubmit}
           />
-        </Form>
+        </form>
       )}
-    </Container>
+    </div>
   );
 }

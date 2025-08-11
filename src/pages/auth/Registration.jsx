@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Form, Button, Card } from "react-bootstrap";
 
 const URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -53,8 +52,6 @@ const Register = () => {
 
       if (data.ok) {
         alert("Registered successfully!");
-        // Optional: navigate to login page
-        // navigate("/login");
       } else {
         alert(data.message || "Registration failed.");
       }
@@ -67,79 +64,103 @@ const Register = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
-      <Card style={{ width: "400px" }} className="p-4 shadow-sm">
-        <h2 className="text-center mb-4">Create an Account</h2>
-        <Form onSubmit={handleSubmit}>
-          <div className="d-flex gap-2">
-            <Form.Group className="flex-fill mb-3">
-              <Form.Label>First Name</Form.Label>
-              <Form.Control
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white rounded-md shadow-md p-6 w-full max-w-sm">
+        <h2 className="text-2xl font-semibold text-center mb-6">
+          Create an Account
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                First Name
+              </label>
+              <input
                 type="text"
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
                 placeholder="John"
                 required
+                className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </Form.Group>
-            <Form.Group className="flex-fill mb-3">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name
+              </label>
+              <input
                 type="text"
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Doe"
                 required
+                className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </Form.Group>
+            </div>
           </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Email Address</Form.Label>
-            <Form.Control
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
+            <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               placeholder="example@mail.com"
               required
+              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </Form.Group>
+          </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="********"
               required
+              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </Form.Group>
+          </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
+            <input
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="********"
               required
+              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </Form.Group>
+          </div>
 
-          <Button type="submit" className="w-100" disabled={loading}>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50"
+          >
             {loading ? "Registering..." : "Register"}
-          </Button>
-        </Form>
-        <p className="text-center mt-3">
-          Already have an account? <a href="/login">Login</a>
+          </button>
+        </form>
+        <p className="text-center text-sm mt-4 text-gray-600">
+          Already have an account?{" "}
+          <a href="/login" className="text-blue-600 hover:underline font-medium">
+            Login
+          </a>
         </p>
-      </Card>
+      </div>
     </div>
   );
 };

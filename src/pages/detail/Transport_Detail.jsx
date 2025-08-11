@@ -1,29 +1,24 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col } from "react-bootstrap";
 import { detailStateType } from "../../info/Trailer_Search_Info";
 import Loader from "../../components/Loader";
 import PropTypes from "prop-types";
 import { varToScreen } from "../../info/Trailer_Search_Info";
 import { varToDb } from "../../info/Transport_Search_Info";
 import { format as formatDate, parseISO, isValid } from "date-fns";
+
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
-
-const URL = apiUrl + "/search_transport/";
-
+const URL = `${apiUrl}/search_transport/`;
 
 const TrailerDetailsPanel = ({ title, details }) => {
   const formatDisplayValue = (value) => {
     if (value === null || value === undefined) return "";
     if (typeof value === "string") {
-      // Try ISO parse first
       const iso = parseISO(value);
       if (isValid(iso)) {
-        // If time component present, show time as well
         const showsTime = value.includes("T") || value.includes(":");
         return formatDate(iso, showsTime ? "dd MMM yyyy HH:mm" : "dd MMM yyyy");
       }
-      // Fallback: Date constructor
       const d = new Date(value);
       if (isValid(d)) {
         const showsTime = value.includes("T") || value.includes(":");
@@ -32,27 +27,25 @@ const TrailerDetailsPanel = ({ title, details }) => {
     }
     return value;
   };
-  
+
   return (
-    <div className="details-panel-container">
-      <div className="details-panel-header">
-        <span className="panel-title ">
-          <h6>{varToScreen[title]?.displayText}</h6>
-        </span>
+    <div className="border border-gray-300 rounded-md shadow-sm mb-4">
+      <div className="bg-gray-100 px-3 py-2 border-b border-gray-300">
+        <h6 className="text-base font-semibold text-gray-800">
+          {varToScreen[title]?.displayText}
+        </h6>
       </div>
-      <div className="details-panel-content">
-        <table className="details-panel-table">
+      <div className="p-3">
+        <table className="w-full text-sm border-collapse">
           <tbody>
-            {Object.entries(details).map(([key, value]) => {
-              return (
-                <tr key={key}>
-                  <td className="details-panel-key">
-                    <strong>{varToScreen?.[key]?.displayText}:</strong>
-                  </td>
-                  <td className="details-panel-value">{formatDisplayValue(value)}</td>
-                </tr>
-              );
-            })}
+            {Object.entries(details).map(([key, value]) => (
+              <tr key={key} className="border-b border-gray-200 last:border-none">
+                <td className="pr-4 py-1 font-semibold text-gray-700 align-top w-1/3">
+                  {varToScreen?.[key]?.displayText}:
+                </td>
+                <td className="py-1 text-gray-800">{formatDisplayValue(value)}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -65,13 +58,11 @@ TrailerDetailsPanel.propTypes = {
   details: PropTypes.object.isRequired,
 };
 
-
 const TransportDetail = () => {
   const { id } = useParams();
   const [trailer, setTrailer] = useState(detailStateType);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  
 
   useEffect(() => {
     const fetchEngineDetails = async (id) => {
@@ -113,22 +104,16 @@ const TransportDetail = () => {
   }, [id]);
 
   if (loading) return <Loader />;
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p className="text-red-600">Error: {error}</p>;
   if (!trailer) return <p>No trailer details available.</p>;
-  
 
   return (
-    <div className="engine-detail-page">
-      <div className="engine-main-section">
-        
-        <div>
-          <Row className="g-2 g-md-3">
-            {Object.keys(trailer).map((key) => (
-              <Col key={key} md={4}>
-                <TrailerDetailsPanel title={key} details={trailer[key]} />
-              </Col>
-            ))}
-          </Row>
+    <div className="p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {Object.keys(trailer).map((key) => (
+            <TrailerDetailsPanel key={key} title={key} details={trailer[key]} />
+          ))}
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, Container, Row, Col } from "react-bootstrap";
 
 // Components
 import Loader from "../components/Loader";
@@ -21,9 +20,6 @@ import { varToDb, varToScreen } from "../info/Engine_Search_Info";
 import { makeString } from "../services/common_functions";
 import FormFieldCard from "../services/FormFieldCard";
 import { fetchColumns } from "../api/searchEngineApi";
-
-// Scss
-import "../scss/Engine_Search.scss";
 
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
@@ -763,30 +759,29 @@ function EngineAdvert() {
   };
 
   return (
-    <Container className="mb-5">
+    <div className="mb-5">
       {loading ? (
         <Loader />
       ) : (
-        <Form onSubmit={handleSubmit}>
-          <Row>
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-wrap -mx-2">
             {Object.keys(sections).map((title) => (
-              <Col md={6} key={title} className="mt-2">
+              <div key={title} className="w-full md:w-1/2 px-2 mt-2">
                 <legend className="fieldset-legend">
-                  <h6 style={{ padding: "15px 10px 0px 10px" }}>
+                  <h6 className="pt-4 px-2">
                     {makeString(title, keyToExpectedValueMap)}
                   </h6>
                 </legend>
                 {Object.keys(sections[title]).map((fieldKey) => {
                   const field = typeDef[title][fieldKey];
+
                   if (field && field.type === "radio") {
                     return (
-                      <Col
-                        md={12}
-                        className="mr-3"
+                      <div
                         key={fieldKey}
-                        style={{ width: 480 }}
+                        className="w-[480px] mr-3 mb-4"
                       >
-                        <Col xs={3} md={12}>
+                        <div className="w-full">
                           <DropdownWithRadio
                             heading={fieldKey}
                             title={makeString(fieldKey, keyToExpectedValueMap)}
@@ -795,16 +790,10 @@ function EngineAdvert() {
                               allSelectedOptions[title]?.[fieldKey] || ""
                             }
                             setSelectedOption={(selectedOption) =>
-                              handleOptionSelect(
-                                title,
-                                fieldKey,
-                                selectedOption
-                              )
+                              handleOptionSelect(title, fieldKey, selectedOption)
                             }
                             isMandatory={field.mandatory}
-                            setOpenKey={() =>
-                              handleDropdownOpen(title, fieldKey)
-                            }
+                            setOpenKey={() => handleDropdownOpen(title, fieldKey)}
                             openKey={openKey}
                           />
                           {error[`${fieldKey}`] && (
@@ -814,16 +803,14 @@ function EngineAdvert() {
                               )}
                             </div>
                           )}
-                        </Col>
-                      </Col>
+                        </div>
+                      </div>
                     );
                   } else if (field && field.type === "number") {
                     return (
-                      <Col
-                        md={12}
-                        className="mr-3"
+                      <div
                         key={fieldKey}
-                        style={{ width: 480 }}
+                        className="w-[480px] mr-3 mb-4"
                       >
                         <InputComponentDynamic
                           label={makeString(fieldKey, keyToExpectedValueMap)}
@@ -843,23 +830,24 @@ function EngineAdvert() {
                             )}
                           </div>
                         )}
-                      </Col>
+                      </div>
                     );
                   }
                   return null;
                 })}
-              </Col>
+              </div>
             ))}
             <FormFieldCard countryVisible={true} />
-          </Row>
+          </div>
+
           <SubmitButton
             text="Submit"
             name="advert_engine_submit"
             onClick={handleSubmit}
           />
-        </Form>
+        </form>
       )}
-    </Container>
+    </div>
   );
 }
 
@@ -1299,46 +1287,45 @@ function EngineSearch() {
   };
 
   return (
-    <Container>
-      <Row>
-        <ResetBar
-          selectedTags={allSelectedOptions}
-          removeTag={removeTag}
-          resetTags={resetTags}
-        />
-      </Row>
-      <Row>
-        <Col md={3}>
-          <Row>
+    <div className="container mx-auto">
+      <div className="flex flex-wrap">
+        <div className="w-full">
+          <ResetBar
+            selectedTags={allSelectedOptions}
+            removeTag={removeTag}
+            resetTags={resetTags}
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-wrap">
+        {/* Left Sidebar */}
+        <div className="w-full md:w-1/4 px-2">
+          <div className="flex flex-wrap">
             <h4 className="py-3">Search For Engines</h4>
-          </Row>
-          <Row>
+          </div>
+
+          <div className="flex flex-wrap">
             {Object.keys(filters).map((key) => {
               return (
                 <fieldset key={key} className="mb-4">
                   <legend className="fieldset-legend">
-                    <h6
-                      style={{
-                        padding: "15px 0px",
-
-                        width: "100%",
-                        display: "flex", // Use flex display
-                        flexDirection: "row", // Arrange elements in a row
-                        justifyContent: "space-between", // Space elements evenly
-                        alignItems: "center", // Align vertically
-                      }}
-                    >
+                    <h6 className="py-[15px] w-full flex flex-row justify-between items-center">
                       <span>{varToScreen[key]?.displayText}</span>
                     </h6>
                   </legend>
+
                   {Object.keys(filters[key]).map((key2) => {
-                    const uniqueKey = `${key}-${key2}`; // Unique key for each filter
+                    const uniqueKey = `${key}-${key2}`;
                     return (
                       <>
                         {varToScreen[key2]?.displayText && (
-                          <Row key={uniqueKey} className="row-margin">
-                            <Col md={12}>
-                              <Form.Group>
+                          <div
+                            key={uniqueKey}
+                            className="flex flex-wrap mb-2"
+                          >
+                            <div className="w-full">
+                              <div className="mb-2">
                                 {varToScreen[key2]?.type !== "range" ? (
                                   <DropdownWithCheckBoxes
                                     onOpen={(search, offSet) =>
@@ -1382,9 +1369,9 @@ function EngineSearch() {
                                     }
                                   />
                                 )}
-                              </Form.Group>
-                            </Col>
-                          </Row>
+                              </div>
+                            </div>
+                          </div>
                         )}
                       </>
                     );
@@ -1392,59 +1379,54 @@ function EngineSearch() {
                 </fieldset>
               );
             })}
-          </Row>
-        </Col>
-        <Col md={9}>
-          <Row>
-            <Col md={12}>
-              <h1
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: "200",
-                  padding: "20px",
-                }}
-              >
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="w-full md:w-3/4 px-2">
+          <div className="flex flex-wrap">
+            <div className="w-full">
+              <h1 className="text-[1.5rem] font-extralight p-5">
                 Engines For Sale
               </h1>
-            </Col>
-          </Row>
+            </div>
+          </div>
+
           {loading ? (
-            // <p>Loading...</p>
             <Loader />
           ) : (
-            <Row>
+            <div className="flex flex-wrap">
               {engines.length === 0 ? (
-                <Col md={12}>
+                <div className="w-full">
                   <p>No Results Found</p>
-                </Col>
+                </div>
               ) : (
                 engines.map((engine) => (
-                  <Col key={engine.engine_id} md={4}>
+                  <div key={engine.engine_id} className="w-full md:w-1/3 px-2">
                     <EngineCard {...engine} />
-                  </Col>
+                  </div>
                 ))
               )}
-            </Row>
+            </div>
           )}
-          {!loading ? <Pagination totalPages={pagination.totalPages} /> : <></>}
-        </Col>
-      </Row>
-    </Container>
+
+          {!loading && (
+            <Pagination totalPages={pagination.totalPages} />
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
 const Engines = ({ type }) => {
   return (
-    <main
-      style={{
-        minHeight: `100vh`,
-        overflow: "hidden",
-      }}
-    >
+    <main className="min-h-screen overflow-hidden">
       {type === "search" ? <EngineAdvert /> : <EngineSearch />}
     </main>
   );
 };
+
 
 Engines.propTypes = {
   type: PropTypes.string.isRequired,
