@@ -1,174 +1,175 @@
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import BrandIcon from "./BrandIcon";
-import PropTypes from "prop-types";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import BrandIcon from "./BrandIcon";
 import ProfileDropdown from "./Profile";
+import PropTypes from "prop-types";
+
+const menuItems = [
+  {
+    title: "boats",
+    links: [
+      { to: "/buy", label: "buy" },
+      { to: "/sell", label: "sell" },
+    ],
+  },
+  {
+    title: "berths",
+    links: [
+      { to: "/find/berth", label: "find a berth" },
+      { to: "/advert/berth", label: "advertise a berth" },
+    ],
+  },
+  {
+    title: "engines",
+    links: [
+      { to: "/engines", label: "find an engine" },
+      { to: "/advert-engines", label: "advertise an engine" },
+    ],
+  },
+  {
+    title: "transportation",
+    links: [
+      { to: "/find/transport", label: "find a transportation" },
+      { to: "/advert/transport", label: "advertise a transportation" },
+    ],
+  },
+  {
+    title: "trailers",
+    links: [
+      { to: "/find/trailer", label: "find a trailer" },
+      { to: "/advert/trailer", label: "advertise a trailer" },
+    ],
+  },
+  {
+    title: "charters",
+    links: [
+      { to: "/find/charter", label: "find a charter" },
+      { to: "/advert/charter", label: "advertise a charter" },
+    ],
+  },
+  {
+    title: "services",
+    links: [
+      { to: "/services", label: "My Engines" },
+      { to: "/view-charter", label: "My Charters" },
+      { to: "/view-trailer", label: "My Trailers" },
+      { to: "/view-berth", label: "My Berths" },
+      { to: "/view-transport", label: "My Transport" },
+    ],
+  },
+];
 
 const HeaderNavbar = ({ navbarRef }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <header ref={navbarRef}>
-      <Navbar expand="lg" className="bg-body-tertiary text-uppercase">
-        <Container className="text-uppercase">
-          <Navbar.Brand
-            as={NavLink}
+    <header
+      ref={navbarRef}
+      className="bg-white shadow-sm sticky top-0 z-50 font-medium uppercase"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Brand */}
+          <NavLink
             to="/"
-            className="d-flex align-items-center me-auto ms-auto mt-1"
+            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
           >
-            <BrandIcon></BrandIcon>
-            <h1 className="fs-4">Marisail</h1>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse
-            id="basic-navbar-nav"
-            className="justify-content-end "
+            <BrandIcon />
+            <h1 className="text-lg tracking-wide">Marisail</h1>
+          </NavLink>
+
+          {/* Mobile menu button */}
+          <button
+            className="lg:hidden p-2 rounded-md text-blue-600 hover:bg-blue-50"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
           >
-            <Nav className="me-0 text-uppercase">
-              <NavDropdown title="boats">
-                <NavDropdown.Item
-                  className="text-capitalize"
-                  as={NavLink}
-                  to="/buy"
-                >
-                  buy
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  className="text-capitalize"
-                  as={NavLink}
-                  to="/sell"
-                >
-                  sell
-                </NavDropdown.Item>
-              </NavDropdown>
-              <NavDropdown title="berths">
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/find/berth"
-                  className="text-capitalize"
-                >
-                  find a berth
-                </NavDropdown.Item>
+            <svg
+              className="h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {mobileOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
 
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/advert/berth"
-                  className="text-capitalize"
-                >
-                  advertise a berth
-                </NavDropdown.Item>
-              </NavDropdown>
-              
-              <NavDropdown title="engines">
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/engines"
-                  className="text-capitalize"
-                >
-                  find an engine
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/advert-engines"
-                  className="text-capitalize"
-                >
-                  advertise an engine
-                </NavDropdown.Item>
-              </NavDropdown>
-              <NavDropdown title="transportation">
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/find/transport"
-                  className="text-capitalize"
-                >
-                  find an transportation
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/advert/transport"
-                  className="text-capitalize"
-                >
-                  advertise an transportation
-                </NavDropdown.Item>
-              </NavDropdown>
-              <NavDropdown title="trailers">
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/find/trailer"
-                  className="text-capitalize"
-                >
-                  find a trailer
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/advert/trailer"
-                  className="text-capitalize"
-                >
-                  advertise an trailer
-                </NavDropdown.Item>
-              </NavDropdown>
-              <NavDropdown title="charters">
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/find/charter"
-                  className="text-capitalize"
-                >
-                  find a charter
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/advert/charter"
-                  className="text-capitalize"
-                >
-                  advertise an charter
-                </NavDropdown.Item>
-              </NavDropdown>
-              
+          {/* Desktop menu */}
+          <nav className="hidden lg:flex space-x-8 items-center">
+            {menuItems.map((menu) => (
+              <div key={menu.title} className="relative group">
+                <button className="hover:text-blue-600 tracking-wide cursor-pointer">
+                  {menu.title.toUpperCase()}
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all">
+                  {menu.links.map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      className="block px-4 py-2 text-sm capitalize hover:bg-blue-50 hover:text-blue-600"
+                    >
+                      {link.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {/* Profile */}
+            <div className="hidden lg:block">
+              <ProfileDropdown />
+            </div>
+          </nav>
+        </div>
+      </div>
 
-              <NavDropdown title="services">
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/services"
-                  className="text-capitalize"
-                >
-                  My Engines
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/view-charter"
-                  className="text-capitalize"
-                >
-                  My Charters
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/view-trailer"
-                  className="text-capitalize"
-                >
-                  My Trailers
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/view-berth"
-                  className="text-capitalize"
-                >
-                  My Berths
-                </NavDropdown.Item>
-                <NavDropdown.Item
-                  as={NavLink}
-                  to="/view-transport"
-                  className="text-capitalize"
-                >
-                  My Transport
-                </NavDropdown.Item>
-              </NavDropdown>
-            </Nav>
-          </Navbar.Collapse>
-          <ProfileDropdown />
-        </Container>
-      </Navbar>
+      {/* Mobile dropdown menu */}
+      {mobileOpen && (
+        <div className="lg:hidden bg-white border-t shadow-md">
+          <nav className="flex flex-col p-4 space-y-4">
+            {menuItems.map((menu) => (
+              <div key={menu.title}>
+                <p className="font-bold text-gray-800">{menu.title}</p>
+                <div className="ml-3 flex flex-col space-y-1">
+                  {menu.links.map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      className="text-sm capitalize hover:text-blue-600"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {link.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div className="pt-4 border-t">
+              <ProfileDropdown />
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };
+
 HeaderNavbar.propTypes = {
   navbarRef: PropTypes.object,
 };
+
 export default HeaderNavbar;
