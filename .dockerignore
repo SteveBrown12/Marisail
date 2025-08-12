@@ -1,0 +1,16 @@
+node_modules/
+
+*.log
+
+node-api/
+
+dist/
+build/
+
+Dockerfile
+
+.vscode/
+.idea/
+
+.git/
+.gitignore
