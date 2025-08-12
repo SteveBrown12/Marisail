@@ -11,7 +11,8 @@ search_Router.get("/:service_name/search-options", initialize_Service, (request,
 });
 
 // → Executes a search query on the main table (plus joins) using optional filters, sorted by primary key, and returns up to 50 results.
-// Key Functionality #1 — Search – MULTI‑SEARCH Code  // Key Functionality #7 - FROM TO range handling
+// Key Functionality #1 — Search – MULTI‑SEARCH Code
+// Key Functionality #7 - FROM TO range handling
 
 
 search_Router.get("/:service_name/search", initialize_Service, async (request, response) => {

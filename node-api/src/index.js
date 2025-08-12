@@ -15,14 +15,16 @@ import authRouter from "./routes/auth.js";
 const router = Router();
 
 // Use the homeRouter for requests to /api/home
+
 router.use("/home", homeRouter);
 
 // auth router
+
 router.use("/auth", authRouter);
 
 
-router.use("/", search_router); // This is the new search router
-router.use("/", advert_router); // This is the new search router
+router.use("/search", search_router); 
+router.use("/advert", advert_router); 
 
 
 router.use("/upload-media", handler);

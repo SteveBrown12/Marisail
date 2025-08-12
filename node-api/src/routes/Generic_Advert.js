@@ -4,15 +4,15 @@ import {  initialize_Service,  handle_Error_Response,  execute_Operation_With_Re
 } from "../utils/Common_Utils.js";
 const advert_router = Router();
 
-//* From-To normalization hook (Key #7)  * Example: [{ fromKey: 'lengthFrom', toKey: 'lengthTo', min_Var: 'minLength', maxVar: 'maxLength' }]
+//* From-To normalization hook (Key #7)  * Example: [{ fromKey: 'lengthFrom', toKey: 'lengthTo', min_Variable : 'minLength', max_Variable : 'maxLength' }]
 
 const normalize_From_To_Fields = (body, pairs) => {
   const normalized_Fields = { ...body };
   for (const pair of pairs) {
     const from_Value = body[pair.fromKey];
     const to_Value = body[pair.toKey];
-    if (from_Value !== undefined && pair.min_Var) normalized_Fields[pair.min_Var] = from_Value;
-    if (to_Value !== undefined && pair.maxVar) normalized_Fields[pair.maxVar] = to_Value;
+    if (from_Value !== undefined && pair.min_Variable ) normalized_Fields[pair.min_Variable ] = from_Value;
+    if (to_Value !== undefined && pair.max_Variable ) normalized_Fields[pair.max_Variable ] = to_Value;
   }
   return normalized_Fields;
 };
@@ -36,33 +36,29 @@ const validate_Mandatory_Fields = (request, response, next) => {
     if (missing_Fields.length > 0) { return handle_Error_Response(   response,   `Missing mandatory fields: ${missing_Fields.join(", ")}`,  400   );
     }
     return next();
-  } catch (err) {
-    return handle_Error_Response(
-      response,
-      `Validation error: ${err.message}`,
-      500
-    );
+  } catch (error) {
+    return handle_Error_Response( response, `Validation error: ${error.message}`,500);
   }
 };
 
 //  * OPTIONS route (for select/dropdown lists)
  
 advert_router.get("/:service_name/options/:field",  initialize_Service,
-  async (req, res) => {
+  async (request, response) => {
     try {
-      const { field } = req.params;
-      const { service_config, service_mappings } = req;
+      const { field } = request.params;
+      const { service_config, service_mappings } = request;
       const column_Name = service_mappings?.var_To_Column?.[field];
       const table_name =
         service_mappings?.var_To_Table?.[field] || service_config?.main_table;
       if (!column_Name || !table_name) {
-        return handle_Error_Response(res, `Field '${field}' not configured`, 404);
+        return handle_Error_Response(response, `Field '${field}' not configured`, 404);
       }
       const [rows] = await db_connection.query(
         `SELECT DISTINCT \`${column_Name}\` AS value FROM \`${table_name}\` WHERE \`${column_Name}\` IS NOT NULL`      );
-      return res.json({ ok: true, options: rows.map((r) => r.value) });
-    } catch (err) {
-      return handle_Error_Response(res, `Options fetch failed: ${err.message}`);
+      return response.json({ ok: true, options: rows.map((r) => r.value) });
+    } catch (error) {
+      return handle_Error_Response(response, `Options fetch failed: ${error.message}`);
     }
   }
 );
@@ -100,8 +96,8 @@ advert_router.post(  "/:service_name/autofill",initialize_Service,
         {  row[primary_key] = row[alias_Key];}
       delete row[alias_Key];
       return response.json({ ok: true, data: row || {} });
-    } catch (err) {
-      return handle_Error_Response(response, `Autofill failed: ${err.message}`);
+    } catch (error) {
+      return handle_Error_Response(response, `Autofill failed: ${error.message}`);
     }
   }
 );
@@ -119,7 +115,7 @@ advert_router.post(  "/:service_name/submit",  initialize_Service,validate_Manda
         const { service_config, service_mappings } = request;
         const { main_table, primary_key } = service_config;
         const { var_To_Table, var_To_Column } = service_mappings;
-        const data_by_table = {};
+        const data_By_Table = {};
 
         // Split body data into table-specific payloads
 
@@ -127,33 +123,33 @@ advert_router.post(  "/:service_name/submit",  initialize_Service,validate_Manda
           const table_Name = var_To_Table[key];
           const column_Name = var_To_Column[key];
           if (table_Name && column_Name) {
-            if (!data_by_table[table_Name]) data_by_table[table_Name] = {};
-            data_by_table[table_Name][column_Name] = normalizedBody[key];
+            if (!data_By_Table[table_Name]) data_By_Table[table_Name] = {};
+            data_By_Table[table_Name][column_Name] = normalizedBody[key];
           }
         }
 
         // Insert into main table first
 
-        const main_data = data_by_table[main_table];
-        if (!main_data || Object.keys(main_data).length === 0) {
+        const main_Data = data_By_Table[main_table];
+        if (!main_Data || Object.keys(main_Data).length === 0) {
           throw new Error(`No data provided for the main table: ${main_table}`);
         }
 
-        const [insert_result] = await connection.query(`INSERT INTO \`${main_table}\` SET ?`,  [main_data]);
+        const [insert_result] = await connection.query(`INSERT INTO \`${main_table}\` SET ?`,  [main_Data]);
         const new_Id = insert_result.insertId;
 
         // Insert into join tables
 
-        for (const table_Name of Object.keys(data_by_table)) {
+        for (const table_Name of Object.keys(data_By_Table)) {
           if (table_Name !== main_table) {
-            const join_data = { [primary_key]: new_Id, ...data_by_table[table_Name] };
+            const join_data = { [primary_key]: new_Id, ...data_By_Table[table_Name] };
             await connection.query(`INSERT INTO \`${table_Name}\` SET ?`, [join_data]);
           }
         }
         await connection.commit();  return { new_Id };
-      } catch (err) {
+      } catch (error) {
         await connection.rollback();
-        throw err;
+        throw error;
       } finally {
         connection.release();
       }
@@ -162,9 +158,9 @@ advert_router.post(  "/:service_name/submit",  initialize_Service,validate_Manda
       const { new_Id } = await execute_Operation_With_Retry(submit_operation);
       return response
         .status(201) .json({ ok: true, message: "Submission successful", new_Id });
-    } catch (err) {
+    } catch (error) {
       return handle_Error_Response( response,
-        `Submit failed after multiple attempts: ${err.message}`
+        `Submit failed after multiple attempts: ${error.message}`
       );
     }
   }
