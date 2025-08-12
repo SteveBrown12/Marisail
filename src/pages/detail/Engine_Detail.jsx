@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Loader from "../../components/Loader";
-import { Col, Row } from "react-bootstrap";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 import PropTypes from 'prop-types';

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Form, Accordion } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 function InputComponentDynamic({
@@ -23,28 +22,29 @@ function InputComponentDynamic({
   }, [value]);
 
   return (
-    <Accordion
-      activeKey={openKey} style={{marginLeft:'-10px'}}
-      onSelect={(eventKey) => setOpenKey(eventKey)}
-    >
-      <Accordion.Item eventKey={label}>
-        <Accordion.Header>
+    <div className="ml-[-10px]">
+      <div>
+        <button
+          className="w-full text-left font-semibold py-2 border-b"
+          onClick={() => setOpenKey(openKey === label ? "" : label)}
+        >
           {label}
-          {isMandatory && <span className="text-danger">&nbsp;*</span>}
-        </Accordion.Header>
-        <Accordion.Body>
-          <Form.Group controlId="formGridState">
-            <Form.Control
+          {isMandatory && <span className="text-red-500">&nbsp;*</span>}
+        </button>
+        {openKey === label && (
+          <div className="pt-2">
+            <input
               value={inputText}
               onChange={handleInputChange}
               type={formType}
               placeholder=""
               name={label}
+              className="w-full border rounded px-3 py-2"
             />
-          </Form.Group>
-        </Accordion.Body>
-      </Accordion.Item>
-    </Accordion>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Form, Accordion } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 const DropdownWithRadio = ({
@@ -35,43 +34,39 @@ const DropdownWithRadio = ({
   }
 
   return (
-    <Accordion
-      activeKey={openKey ?? undefined}
-      style={{ marginLeft: "-10px" }}
-      onSelect={typeof setOpenKey === "function" ? (eventKey) => setOpenKey(eventKey) : undefined}
-    >
-      <Accordion.Item eventKey={heading}>
-        <Accordion.Header>
-          {title}
-          {isMandatory && <span className="text-danger">&nbsp;*</span>}
-        </Accordion.Header>
-        <Accordion.Body
-          style={{ maxHeight: 200, overflowY: "auto", maxWidth: 472 }}
-        >
-          <div>
-            {list.length > 0 ? (
-              list.map((item, index) => (
-                <div key={`${item?.[0] ?? index}-${index}`}>
-                  <Form.Check
+    <div className="ml-[-10px]">
+      {/* Accordion header */}
+      <button
+        className="w-full text-left border-b py-2"
+        onClick={() => setOpenKey(openKey === heading ? null : heading)}
+      >
+        {title}
+        {isMandatory && <span className="text-red-500">&nbsp;*</span>}
+      </button>
+
+      {/* Accordion body */}
+      {openKey === heading && (
+        <div className="max-h-[200px] overflow-y-auto max-w-[472px]">
+          {list.length > 0 ? (
+            list.map((item, index) => (
+              <div key={`${item?.[0] ?? index}-${index}`}>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
                     type="radio"
                     name={`radio-options-${heading}`}
-                    label={`${item[0]}`}
-                    checked={
-                      convertNonArrayOrObject(selectedOption) === item[0]
-                    }
+                    checked={convertNonArrayOrObject(selectedOption) === item[0]}
                     onChange={() => handleOptionChange(item[0])}
                   />
-                </div>
-              ))
-            ) : (
-              <div className="custom-dropdown-no-results">
-                No options available
+                  <span>{item[0]}</span>
+                </label>
               </div>
-            )}
-          </div>
-        </Accordion.Body>
-      </Accordion.Item>
-    </Accordion>
+            ))
+          ) : (
+            <div className="text-gray-500">No options available</div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

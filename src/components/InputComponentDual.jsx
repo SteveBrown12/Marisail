@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Form, Accordion, Row, Col } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 function InputComponentDual({
@@ -41,79 +40,62 @@ const handleRadioChange = (e) => {
   
 
   return (
-    <Accordion
-      activeKey={openKey}
-      style={{ marginLeft: "-10px" }}
-      onSelect={(eventKey) => setOpenKey(eventKey)}
-    >
-      <Accordion.Item eventKey={label}>
-        <Accordion.Header>
-          {label}
-          {isMandatory && <span className="text-danger">&nbsp;*</span>}
-        </Accordion.Header>
-        <Accordion.Body>
-          <Form.Group controlId="formGridState">
-            <Row>
-              <Col md={8} style={{ display: "flex", alignItems: "center" }}>
-                <Form.Control
-                  value={inputText}
-                  onChange={handleInputChange}
-                  type={formType}
-                  placeholder=""
-                  name={label}
-                  style={{ flexGrow: 1 }}
-                />
-              </Col>
+    <div className="ml-[-10px]">
+      {/* Accordion header */}
+      <button
+        className="w-full text-left border-b py-2"
+        onClick={() => setOpenKey(openKey === label ? null : label)}
+      >
+        {label}
+        {isMandatory && <span className="text-red-500">&nbsp;*</span>}
+      </button>
 
-              {radioOptions.length > 0 && (
-                <Col md={4} style={{ display: "flex", alignItems: "center" }}>
-                  <div
-                    className="btn-group"
-                    role="group"
-                    aria-label="Basic radio toggle button group"
-                    style={{
-                      border: "1px solid #ccc",
-                      borderRadius: "17px",
-                      width: "65%",
-                      display: "flex",
-                      justifyContent: "space-around",
-                      gap: "0px"
-                    }}
-                  >
-                    {radioOptions.map((option) => (
-                      <div key={option.id}>
-                        <input
-                          type="radio"
-                          className="btn-check"
-                          name={`btnradio-${label}-${option.value}`}
-                          id={`btnradio-${label}-${option.value}`}
-                          value={option.value}
-                          onChange={handleRadioChange}
-                          checked={selectedRadio === option.value}
-                        />
-                        <label
-                          className="btn btn-outline-primary"
-                          htmlFor={`btnradio-${label}-${option.value}`}
-                          style={{
-                            width: "100%",
-                            padding: "5px 10px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          {option.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </Col>
-              )}
-            </Row>
-          </Form.Group>
-        </Accordion.Body>
-      </Accordion.Item>
-    </Accordion>
+      {/* Accordion body */}
+      {openKey === label && (
+        <div className="py-3">
+          <div className="flex flex-wrap gap-4">
+            {/* Input field */}
+            <div className="flex items-center flex-grow max-w-[66%]">
+              <input
+                value={inputText}
+                onChange={handleInputChange}
+                type={formType}
+                placeholder=""
+                name={label}
+                className="flex-grow border rounded px-3 py-2"
+              />
+            </div>
+
+            {/* Radio buttons */}
+            {radioOptions.length > 0 && (
+              <div className="flex items-center w-[34%]">
+                <div className="flex border border-gray-300 rounded-full justify-around w-[65%]">
+                  {radioOptions.map((option) => (
+                    <div key={option.id} className="flex">
+                      <input
+                        type="radio"
+                        id={`btnradio-${label}-${option.value}`}
+                        name={`btnradio-${label}`}
+                        value={option.value}
+                        onChange={handleRadioChange}
+                        checked={selectedRadio === option.value}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor={`btnradio-${label}-${option.value}`}
+                        className="flex-1 px-3 py-1 text-center border-r last:border-none cursor-pointer"
+                      >
+                        {option.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

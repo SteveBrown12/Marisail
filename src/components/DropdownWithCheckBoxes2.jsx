@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { Loader } from "rsuite";
 
@@ -201,7 +200,7 @@ const DropdownWithCheckBoxes = ({
                     (e.currentTarget.style.backgroundColor = "transparent")
                   }
                 >
-                  <Form.Check
+                  <input
                     type="checkbox"
                     id={`checkbox-${heading || "opt"}-${idx}`}
                     checked={isChecked}
