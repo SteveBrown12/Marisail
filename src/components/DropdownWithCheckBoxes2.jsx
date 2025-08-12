@@ -129,7 +129,7 @@ const DropdownWithCheckBoxes = ({
     <div className="dropdown w-100">
       {/* Toggle Button */}
       <button
-        className="btn btn-light dropdown-toggle w-100 text-start"
+        className="btn btn-light dropdown w-100 text-start"
         type="button"
         onClick={handleDropdownToggle}
         aria-expanded={isOpen}

@@ -160,8 +160,8 @@ export default function GenericSearch() {
       <div className="flex flex-col md:flex-row gap-4">
         
         {/* Sidebar Filters */}
-        <div className="md:w-1/4 border-r bg-white shadow-sm p-4">
-          <h4 className="mb-4 capitalize font-bold pb-2 border-b">
+        <div className="md:w-1/4 bg-white p-2">
+          <h4 className="mb-4 capitalize font-bold pb-2">
             Search {serviceName}
           </h4>
 
@@ -174,7 +174,7 @@ export default function GenericSearch() {
             a += 1;
             return (
               <div key={`${table.table_Name}-${a}`} className="mb-6">
-                <h6 className="text-blue-600 font-semibold border-b pb-1 mb-3 text-center">
+                <h6 className="text-blue-600 font-semibold pb-1 mb-3">
                   {table.section_Heading}
                 </h6>
 
@@ -186,7 +186,7 @@ export default function GenericSearch() {
                   switch (col.type) {
                     case "radio":
                       return (
-                        <div className="mb-3" key={uiKey}>
+                        <div className="m-3" key={uiKey}>
                           <DropdownWithCheckBoxes
                             title={label}
                             options={filtersData[uiKey] ? [...filtersData[uiKey]] : []}
@@ -208,7 +208,7 @@ export default function GenericSearch() {
 
                     case "number":
                       return (
-                        <div className="mb-3" key={uiKey}>
+                        <div className="m-3" key={uiKey}>
                           <RangeInput
                             title={label}
                             min={col.min || ""}
@@ -224,7 +224,7 @@ export default function GenericSearch() {
 
                     case "date":
                       return (
-                        <div className="mb-3" key={uiKey}>
+                        <div className="m-3" key={uiKey}>
                           <label className="font-medium block mb-1">{label}</label>
                           <DatePickerField
                             mode="range"
@@ -244,7 +244,7 @@ export default function GenericSearch() {
 
                     default:
                       return (
-                        <div className="mb-3" key={uiKey}>
+                        <div className="m-3" key={uiKey}>
                           <label className="font-medium block mb-1">{label}</label>
                           <input
                             type="text"
