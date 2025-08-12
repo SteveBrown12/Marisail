@@ -106,161 +106,189 @@ export default function GenericAdvert() {
   if (loading) return <Loader />;
 
   return (
-    <div className="py-10">
-      <div className="flex justify-center">
-        <div className="w-full max-w-6xl">
-          <div className="bg-white shadow-sm rounded-xl p-6">
-            <h3 className="mb-6 font-bold text-primary-600">
-              Advertise {serviceName.toUpperCase()}
-            </h3>
+    <div className="flex justify-center">
+      <div className="w-full max-w-7xl">
+        <div className="bg-white shadow-sm rounded-xl p-4">
+          <h4 className="text-[25px] capitalize font-bold pb-2 mb-2">
+            Advertise {serviceName}
+          </h4>
 
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 gap-6">
-                {serviceConfig?.tables?.map((table) => {
-                  const tableColumns = Array.isArray(table.columns)
-                    ? table.columns
-                    : table.columns
-                    ? Object.values(table.columns)
-                    : [];
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-auto">
+              {serviceConfig?.tables?.map((table) => {
+                const tableColumns = Array.isArray(table.columns)
+                  ? table.columns
+                  : table.columns
+                  ? Object.values(table.columns)
+                  : [];
 
-                  return (
-                    <div key={table.table_Name} className="mb-6">
-                      <h5 className="mt-4 mb-3 border-b pb-2 text-gray-600">
-                        {table.section_Heading}
-                      </h5>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {tableColumns.map((col) => {
-                          const fieldKey = col.column_Name;
-                          const uiKey = buildUiKey(table.table_Name, fieldKey);
-                          const label = col.display_Text || fieldKey;
+                return (
+                  <div key={table.table_Name} className="p-4">
+                    {/* Table Heading */}
+                    <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
+                      {table.section_Heading}
+                    </h6> 
 
-                          switch (col.type) {
-                            case "radio":
-                              return (
-                                <div key={uiKey}>
-                                  <DropdownWithCheckBoxes
-                                    title={label}
-                                    options={filtersData[uiKey] ? [...filtersData[uiKey]] : []}
-                                    selected={formState[uiKey] || []}
-                                    onChange={(vals) =>
-                                      setFormState((prev) => ({
-                                        ...prev,
-                                        [uiKey]: vals
-                                      }))
-                                    }
-                                    onOpen={() => {
-                                      setOpenDropdown(uiKey);
-                                      fetchDropdownData(uiKey, fieldKey);
-                                    }}
-                                    onClose={() => setOpenDropdown(null)}
-                                    open={openDropdown === uiKey}
-                                    fetching={!!fetchingOptions[uiKey]}
-                                    placeholder={`Select ${label}`}
-                                  />
-                                  {errors[uiKey] && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                      {errors[uiKey]}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            case "number":
-                              return (
-                                <div key={fieldKey}>
-                                  <RangeInput
-                                    title={label}
-                                    min={col.min || ""}
-                                    max={col.max || ""}
-                                    valueFrom={formState[fieldKey]?.from || ""}
-                                    valueTo={formState[fieldKey]?.to || ""}
-                                    onChange={(min, max) =>
-                                      setFormState((prev) => ({
-                                        ...prev,
-                                        [fieldKey]: { from: min, to: max }
-                                      }))
-                                    }
-                                  />
-                                  {errors[fieldKey] && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                      {errors[fieldKey]}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            case "date":
-                              return (
-                                <div key={fieldKey}>
-                                  <label className="block mb-1">{label}</label>
-                                  <DatePickerField
-                                    mode="single"
-                                    value={formState[fieldKey] || ""}
-                                    onChange={(iso) =>
-                                      setFormState((prev) => ({
-                                        ...prev,
-                                        [fieldKey]: iso,
-                                      }))
-                                    }
-                                    placeholder="dd-mm-yyyy"
-                                    className="w-56"
-                                  />
-                                  {errors[fieldKey] && (
-                                    <div className="text-red-500 text-sm">{errors[fieldKey]}</div>
-                                  )}
-                                </div>
-                              );
-                            default:
-                              return (
-                                <div key={fieldKey}>
-                                  <label className="font-medium block mb-1">{label}</label>
-                                  <input
-                                    type="text"
-                                    placeholder={label}
-                                    value={formState[fieldKey] || ""}
-                                    onChange={(e) =>
-                                      setFormState((prev) => ({
-                                        ...prev,
-                                        [fieldKey]: e.target.value
-                                      }))
-                                    }
-                                    className="border border-gray-300 rounded-md p-2 w-full"
-                                  />
-                                  {errors[fieldKey] && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                      {errors[fieldKey]}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                          }
-                        })}
-                      </div>
+                    {/* Cards Container */}
+                    <div>
+                      {tableColumns.map((col) => {
+                        const fieldKey = col.column_Name;
+                        const uiKey = buildUiKey(table.table_Name, fieldKey);
+                        const label = col.display_Text || fieldKey;
+
+                        return (
+                          <div
+                            key={uiKey}
+                            className="flex flex-col p-0 bg-transparent"
+                          >
+                            {/* Field Rendering */}
+                            {(() => {
+                              switch (col.type) {
+                                case "radio":
+                                  return (
+                                    <>
+                                      <DropdownWithCheckBoxes
+                                        title={label}
+                                        options={
+                                          filtersData[uiKey]
+                                            ? [...filtersData[uiKey]]
+                                            : []
+                                        }
+                                        selected={formState[uiKey] || []}
+                                        onChange={(vals) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [uiKey]: vals,
+                                          }))
+                                        }
+                                        onOpen={() => {
+                                          setOpenDropdown(uiKey);
+                                          fetchDropdownData(uiKey, fieldKey);
+                                        }}
+                                        onClose={() => setOpenDropdown(null)}
+                                        open={openDropdown === uiKey}
+                                        fetching={!!fetchingOptions[uiKey]}
+                                        placeholder={`Select ${label}`}
+                                      />
+                                      {errors[uiKey] && (
+                                        <div className="text-red-500 text-sm mt-1">
+                                          {errors[uiKey]}
+                                        </div>
+                                      )}
+                                    </>
+                                  );
+
+                                case "number":
+                                  return (
+                                    <>
+                                      <RangeInput
+                                        title={label}
+                                        min={col.min || ""}
+                                        max={col.max || ""}
+                                        valueFrom={
+                                          formState[fieldKey]?.from || ""
+                                        }
+                                        valueTo={formState[fieldKey]?.to || ""}
+                                        onChange={(min, max) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [fieldKey]: { from: min, to: max },
+                                          }))
+                                        }
+                                      />
+                                      {errors[fieldKey] && (
+                                        <div className="text-red-500 text-sm mt-1">
+                                          {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                    </>
+                                  );
+
+                                case "date":
+                                  return (
+                                    <>
+                                      <label className="block mb-1 font-medium">
+                                        {label}
+                                      </label>
+                                      <DatePickerField
+                                        mode="single"
+                                        value={formState[fieldKey] || ""}
+                                        onChange={(iso) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [fieldKey]: iso,
+                                          }))
+                                        }
+                                        placeholder="dd-mm-yyyy"
+                                        className="w-full"
+                                      />
+                                      {errors[fieldKey] && (
+                                        <div className="text-red-500 text-sm">
+                                          {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                    </>
+                                  );
+
+                                default:
+                                  return (
+                                    <>
+                                      <label className="block mb-1 font-medium">
+                                        {label}
+                                      </label>
+                                      <input
+                                        type="text"
+                                        placeholder={label}
+                                        value={formState[fieldKey] || ""}
+                                        onChange={(e) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [fieldKey]: e.target.value,
+                                          }))
+                                        }
+                                        className="border border-gray-300 rounded-md p-2 w-full"
+                                      />
+                                      {errors[fieldKey] && (
+                                        <div className="text-red-500 text-sm mt-1">
+                                          {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                    </>
+                                  );
+                              }
+                            })()}
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
+            </div>
 
-              <div className="mt-6">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-full disabled:opacity-50"
-                >
-                  {loading ? (
-                    <>
-                      <span className="inline-block animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2 align-middle" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit"
-                  )}
-                </button>
-              </div>
+            {/* Submit Button */}
+            <div className="mt-6">
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-blue-600 text-white px-6 py-2 rounded-full disabled:opacity-50 flex items-center"
+              >
+                {loading ? (
+                  <>
+                    <span className="inline-block animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2 align-middle" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit"
+                )}
+              </button>
+            </div>
 
-              {autofillLoading && (
-                <div className="text-gray-500 mt-2 italic">Autofilling...</div>
-              )}
-            </form>
-          </div>
+            {/* Autofill Status */}
+            {autofillLoading && (
+              <div className="text-gray-500 mt-2 italic">Autofilling...</div>
+            )}
+          </form>
         </div>
       </div>
     </div>
