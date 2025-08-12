@@ -114,16 +114,19 @@ export default function GenericAdvert() {
           </h4>
 
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-auto">
-              {serviceConfig?.tables?.map((table) => {
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+              {[...(serviceConfig?.tables || [])]
+                .sort((a, b) => (a.position || 0) - (b.position || 0))
+                .map((table) => {
+
                 const tableColumns = Array.isArray(table.columns)
                   ? table.columns
                   : table.columns
                   ? Object.values(table.columns)
                   : [];
-
+                  
                 return (
-                  <div key={table.table_Name} className="p-4">
+                  <div key={table.table_Name} className="p-4 break-inside-avoid">
                     {/* Table Heading */}
                     <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
                       {table.section_Heading}
