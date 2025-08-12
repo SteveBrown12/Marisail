@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./MediaUpload.scss"
+// import "./MediaUpload.scss"
 
 export default function PriceLabel() {
   const [value, setValue] = useState('');

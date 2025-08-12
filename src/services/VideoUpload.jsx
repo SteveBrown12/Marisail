@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import "./MediaUpload.scss";
+// import "./MediaUpload.scss";
 
 const VideoUploader = () => {
   const [files, setFiles] = useState([]);
