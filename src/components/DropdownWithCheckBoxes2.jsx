@@ -126,25 +126,38 @@ const DropdownWithCheckBoxes = ({
   }, [open]);
 
   return (
-    <div className="dropdown w-100">
+    <div
+      className="dropdown w-full"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
       {/* Toggle Button */}
       <button
-        className="btn btn-light dropdown-toggle w-100 text-start"
         type="button"
-        onClick={handleDropdownToggle}
         aria-expanded={isOpen}
+        className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
       >
         {title}
+        <svg
+          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
 
       {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className="dropdown-menu show w-100 p-3 shadow-lg border-0 rounded-3"
+          className="w-full mt-2 bg-white p-3"
           style={{
             maxHeight: "280px",
             overflowY: "auto",
-            backgroundColor: "#fff",
             scrollbarWidth: "thin",
             scrollbarColor: "#ccc transparent",
           }}
@@ -154,16 +167,11 @@ const DropdownWithCheckBoxes = ({
           {/* Search Box */}
           <input
             type="text"
-            className="form-control mb-3 rounded-pill px-3"
-            style={{ border: "1px solid #ddd" }}
-            placeholder={
-              defaultUnit ? `Search in ${defaultUnit}...` : "Search..."
-            }
+            className="w-full mb-3 rounded-md px-3 py-2 text-sm border border-gray-300 focus:outline-none focus:border-blue-400"
+            placeholder={defaultUnit ? `Search in ${defaultUnit}...` : "Search..."}
             value={inputText}
             onChange={handleInputChange}
           />
-
-          <hr className="my-2" style={{ borderColor: "#eee" }} />
 
           {/* Options */}
           {filteredOptions.length > 0 ? (
@@ -184,54 +192,31 @@ const DropdownWithCheckBoxes = ({
                 : false;
 
               return (
-                <div
+                <label
                   key={`${valueKey}-${idx}`}
-                  className="dropdown-item px-auto py-2 rounded-2"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    transition: "background 0.2s ease",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#f0f0f0ff")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "transparent")
-                  }
+                  className="flex justify-between items-center px-2 py-1 rounded-md cursor-pointer hover:bg-gray-100 transition"
                 >
-                  <input
-                    type="checkbox"
-                    id={`checkbox-${heading || "opt"}-${idx}`}
-                    checked={isChecked}
-                    onChange={(e) => handleOptionChange(valueKey, e)}
-                    label={
-                      <div className="d-flex justify-content-between align-items-center w-100">
-                        <span className="ms-1">{valueKey}</span>
-                        {option.occurrence_cnt !== undefined && (
-                          <span
-                            className="badge rounded-pill"
-                            style={{
-                              backgroundColor: "#f1f3f5",
-                              color: "#333",
-                              fontSize: "0.75rem",
-                            }}
-                          >
-                            {option.occurrence_cnt}
-                          </span>
-                        )}
-                      </div>
-                    }
-                    className="m-0 px-2 py-1"
-                    style={{ flexGrow: 1 }}
-                  />
-                </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={isChecked}
+                      onChange={(e) => handleOptionChange(valueKey, e)}
+                    />
+                    <span>{valueKey}</span>
+                  </div>
+                  {option.occurrence_cnt !== undefined && (
+                    <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-2">
+                      {option.occurrence_cnt}
+                    </span>
+                  )}
+                </label>
               );
             })
           ) : fetching ? (
             <Loader />
           ) : (
-            <div className="text-muted text-center p-2">No options available</div>
+            <div className="text-gray-500 text-center p-2">No options available</div>
           )}
         </div>
       )}
