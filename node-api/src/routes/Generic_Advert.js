@@ -4,7 +4,7 @@ import {  initialize_Service,  handle_Error_Response,  execute_Operation_With_Re
 } from "../utils/Common_Utils.js";
 const advert_router = Router();
 
-//* From-To normalization hook (Key #7)  * Example: [{ fromKey: 'lengthFrom', toKey: 'lengthTo', min_Variable : 'minLength', max_Variable : 'maxLength' }]
+// Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘FROM TO’ CODE
 
 const normalize_From_To_Fields = (body, pairs) => {
   const normalized_Fields = { ...body };
@@ -17,7 +17,7 @@ const normalize_From_To_Fields = (body, pairs) => {
   return normalized_Fields;
 };
 
-//  * Mandatory fields validation (Key #5)
+// Key Functionality #5 - Advert - MANDATORY FIELDS ERROR MESSAGE Code
  
 const validate_Mandatory_Fields = (request, response, next) => {
   try {
@@ -63,7 +63,7 @@ advert_router.get("/:service_name/options/:field",  initialize_Service,
   }
 );
 
-//  AUTOFILL route (Key #4) * Only applies to trailer, engine, vessel
+// Key Functionality #4 - Advert - AUTOFILL Sections Based On Section 1 (Trailer, Engine, Vessel)
 
 advert_router.post(  "/:service_name/autofill",initialize_Service,
   async (request, response) => {
@@ -90,11 +90,11 @@ advert_router.post(  "/:service_name/autofill",initialize_Service,
         return response.json({ ok: true, data: {} });
       }
       const row = rows;
-      const alias_Key = `${main_table}__${primary_key}`;
+      const safe_Keys = `${main_table}__${primary_key}`;
       if (
-        (row[primary_key] === null || row[primary_key] === undefined) &&  row[alias_Key] != null) 
-        {  row[primary_key] = row[alias_Key];}
-      delete row[alias_Key];
+        (row[primary_key] === null || row[primary_key] === undefined) &&  row[safe_Keys] != null) 
+        {  row[primary_key] = row[safe_Keys];}
+      delete row[safe_Keys];
       return response.json({ ok: true, data: row || {} });
     } catch (error) {
       return handle_Error_Response(response, `Autofill failed: ${error.message}`);
@@ -106,9 +106,12 @@ advert_router.post(  "/:service_name/autofill",initialize_Service,
  
 advert_router.post(  "/:service_name/submit",  initialize_Service,validate_Mandatory_Fields,
   async (request, response) => {
-    const fromToPairs = []; 
-    const normalizedBody = normalize_From_To_Fields(request.body || {}, fromToPairs);
-    const submit_operation = async () => {
+    const from_To_Pairs = []; 
+    
+    // Key Functionality #6 - Advert – SUBMIT BUTTON UPDATES DATABASE with form data entered and new ID.
+
+    const normalized_Body = normalize_From_To_Fields(request.body || {}, from_To_Pairs);
+    const submit_Operation = async () => {
       const connection = await db_connection.getConnection();
       try {
         await connection.beginTransaction();
@@ -119,12 +122,12 @@ advert_router.post(  "/:service_name/submit",  initialize_Service,validate_Manda
 
         // Split body data into table-specific payloads
 
-        for (const key in normalizedBody) {
+        for (const key in normalized_Body) {
           const table_Name = var_To_Table[key];
           const column_Name = var_To_Column[key];
           if (table_Name && column_Name) {
             if (!data_By_Table[table_Name]) data_By_Table[table_Name] = {};
-            data_By_Table[table_Name][column_Name] = normalizedBody[key];
+            data_By_Table[table_Name][column_Name] = normalized_Body[key];
           }
         }
 
@@ -147,21 +150,16 @@ advert_router.post(  "/:service_name/submit",  initialize_Service,validate_Manda
           }
         }
         await connection.commit();  return { new_Id };
-      } catch (error) {
-        await connection.rollback();
-        throw error;
+      } catch (error) {  await connection.rollback(); throw error;
       } finally {
         connection.release();
       }
     };
     try {
-      const { new_Id } = await execute_Operation_With_Retry(submit_operation);
-      return response
-        .status(201) .json({ ok: true, message: "Submission successful", new_Id });
+      const { new_Id } = await execute_Operation_With_Retry(submit_Operation);
+      return response.status(201) .json({ ok: true, message: "Submission successful", new_Id });
     } catch (error) {
-      return handle_Error_Response( response,
-        `Submit failed after multiple attempts: ${error.message}`
-      );
+      return handle_Error_Response( response, `Submit failed after multiple attempts: ${error.message}`);
     }
   }
 );
