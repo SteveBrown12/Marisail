@@ -1,4 +1,3 @@
-//
 import db_connection from '../config/dbConfig.js';
 import {
   SERVICES,
@@ -20,24 +19,24 @@ import {
 
 const SERVICE_MAPPINGS = {
   berth: {
-    var_to_column: berth_Var_To_Column,
-    var_to_table: berth_Var_To_Table,
-    unique_tables: berth_Unique_Table,
+    var_To_Column: berth_Var_To_Column,
+    var_To_Table: berth_Var_To_Table,
+    unique_Tables: berth_Unique_Table,
   },
   charter: {
-    var_to_column: charter_Var_To_Column,
-    var_to_table: charter_Var_To_Table,
-    unique_tables: charter_Unique_Table,
+    var_To_Column: charter_Var_To_Column,
+    var_To_Table: charter_Var_To_Table,
+    unique_Tables: charter_Unique_Table,
   },
   trailer: {
-    var_to_column: trailer_Var_To_Column,
-    var_to_table: trailer_Var_To_Table,
-    unique_tables: trailer_Unique_Table,
+    var_To_Column: trailer_Var_To_Column,
+    var_To_Table: trailer_Var_To_Table,
+    unique_Tables: trailer_Unique_Table,
   },
   transport: {
-    var_to_column: transport_Var_To_Column,
-    var_to_table: transport_Var_To_Table,
-    unique_tables: transport_Unique_Table,
+    var_To_Column: transport_Var_To_Column,
+    var_To_Table: transport_Var_To_Table,
+    unique_Tables: transport_Unique_Table,
   },
 };
 
@@ -62,13 +61,13 @@ const validate_Schema = async (config) => {
   
       // Find the table config object for column validation
 
-      const table_Config = (config.tables || []).find(t => t.table_Name === table_Name);
-      if (!table_Config) continue; // No column config to check
+      const table_Config = (config.tables || []).find(table_Config_Obj => table_Config_Obj.table_Name === table_Name);
+      if (!table_Config) continue; 
 
       // Retrieve actual columns from DB table
 
       const [db_Columns] = await connection.query(`SHOW COLUMNS FROM \`${table_Name}\``);
-      const db_Column_Names = db_Columns.map(col => col.Field);
+      const db_Column_Names = db_Columns.map(column => column.Field);
 
       // Check each configured column exists in the DB table
 
@@ -95,7 +94,7 @@ if (errors.length > 0) {
 
 // Join Table Check
 
-export const join_table_check = async (service_Config) => {
+export const join_Table_Check = async (service_Config) => {
   if (
     !service_Config?.join_tables ||
     !Array.isArray(service_Config.join_tables)
@@ -124,133 +123,158 @@ export const join_table_check = async (service_Config) => {
   }
 };
 
-export const initialize_service = async (request, response, next) => {
+
+const load_Service_Config = (service_name) => {
+  const config = SERVICES[service_name];
+  const mappings = SERVICE_MAPPINGS[service_name];
+
+  if (!config || !mappings) {
+    throw new Error(
+      `Service '${service_name}' not found. Check SERVICES and SERVICE_MAPPINGS exports.`
+    );
+  }
+
+  return { service_config: config, service_mappings: mappings };
+};
+
+export const initialize_Service = async (request, response, next) => {
   try {
     const service_name = request.params.service_name.toLowerCase();
-    const service_config = SERVICES[service_name];
-    const service_mappings = SERVICE_MAPPINGS[service_name];
-
-    // load_service_config
-    
-    if (!service_config) {
-      return handle_error_response(
-        response,
-        `Service '${service_name}' not found. Check SERVICES export.`,
-        404
-      );
-    }
-    await join_table_check(service_config);
-
-    // We validate the loaded config against the database before proceeding.
-    
+    const { service_config, service_mappings } = load_Service_Config(service_name);
+    await join_Table_Check(service_config);
     await validate_Schema(service_config);
-
     request.service_config = service_config;
     request.service_mappings = service_mappings;
-
     next();
   } catch (error) {
-
-    // This will now catch both config loading errors AND schema validation errors.
-    
-    handle_error_response(
+    handle_Error_Response(
       response,
       `Service initialization failed: ${error.message}`,
       500
     );
   }
 };
-export const handle_error_response = (response, message, status = 500) => {
+export const handle_Error_Response = (response, message, status = 500) => {
   console.error(`[Error] ${message}`);
   response.status(status).json({ ok: false, message });
 };
 
 // SHARED QUERY BUILDERS 
 
-export const build_joins = (main_table_info) => {
-  console.log('=== DEBUGGING build_joins ===');
-  console.log('main_table_info:', main_table_info);
-  console.log('join_tables:', main_table_info?.join_tables);
-  console.log( 'join_tables is array:', Array.isArray(main_table_info?.join_tables) );
-  if (!main_table_info?.join_tables) {
-    console.error('❌ join_tables is undefined in build_joins!');
+export const build_Joins = (main_Table_Info) => {
+  console.log('=== DEBUGGING build_Joins ===');
+  console.log('main_Table_Info:', main_Table_Info);
+  console.log('join_tables:', main_Table_Info?.join_tables);
+  console.log( 'join_tables is array:', Array.isArray(main_Table_Info?.join_tables) );
+  if (!main_Table_Info?.join_tables) {
+    console.error('❌ join_tables is undefined in build_Joins!');
     return '';
   }
-  return main_table_info.join_tables
+  return main_Table_Info.join_tables
     .map(
       (table) =>
-        `LEFT JOIN ${table} ON ${main_table_info.main_table}.${main_table_info.primary_key} = ${table}.${main_table_info.primary_key}`
+        `LEFT JOIN ${table} ON ${main_Table_Info.main_table}.${main_Table_Info.primary_key} = ${table}.${main_Table_Info.primary_key}`
     )
     .join('\n');
 };
+export const build_Where_Clause = (filters, mappings) => {
 
-export const build_where_clause = (filters, mappings) => {
+  // Parse filters if they come as JSON string
+  
+  if (typeof filters === "string") {
+    try { filters = JSON.parse(filters); }
+    catch (e) { console.error("Invalid filters JSON:", filters); filters = {}; }
+  }
+  const operatorMap = { eq: '=', neq: '!=', gt: '>', gte: '>=', lt: '<', lte: '<=', in: 'IN', nin: 'NOT IN' };
+  const conditions = [];
 
-  // This object maps our simple URL operators to real SQL operators.
+  // ---- KEYWORD SEARCH ----
 
-  const operator_Map = { eq: '=', neq: '!=',gt: '>',gte: '>=',lt: '<',lte: '<=', in: 'IN',nin: 'NOT IN'};
+  if (filters.keyword) {
+    const keyword_Value = `%${filters.keyword}%`;
+    const keyword_Conditions = Object.keys(mappings.var_To_Column).map((key) => {
+      const column_Name = mappings.var_To_Column[key];
+      const table_Name = mappings.var_To_Table[key];
+      return (table_Name && column_Name)
+        ? `\`${table_Name}\`.\`${column_Name}\` LIKE ${db_connection.escape(keyword_Value)}`
+        : null;
+    }).filter(Boolean);
 
-  const conditions = Object.entries(filters || {})
-    .map(([key, value]) => {
-      const column_name = mappings.var_to_column[key];
-      if (!column_name) return null; 
+    if (keyword_Conditions.length > 0) {
+      conditions.push(`(${keyword_Conditions.join(" OR ")})`);
+    }
+    delete filters.keyword;
+  }
 
-      // Check if the value is an object for complex operators
+  // ---- FROM / TO RANGE (#7) ----
 
-      if (typeof value === 'object' && !Array.isArray(value)) {
-        const operator = Object.keys(value)[0]; // e.g., 'gte'
-        const filter_Value = Object.values(value)[0]; // e.g., '1990'
-        const sql_Operator = operator_Map[operator];
-
-        if (!sql_Operator) return null; 
-        if (sql_Operator === 'IN' || sql_Operator === 'NOT IN') {
-
-          // Handle comma-separated strings for IN and NOT IN clauses
-
-          const list = filter_Value
-            .split(',')
-            .map((item) => db_connection.escape(item.trim()));
-          return `\`${column_name}\` ${sql_Operator} (${list.join(', ')})`;
-        } else {
-
-          // Handle all other operators
-
-          return `\`${column_name}\` ${sql_Operator} ${db_connection.escape(
-            filter_Value
-          )}`;
+  Object.keys(filters).forEach(key => {
+    if (key.endsWith("From") || key.endsWith("To")) {
+      const base_Key = key.replace(/(From|To)$/, "");
+      const column = mappings.var_To_Column[base_Key];
+      const table = mappings.var_To_Table[base_Key];
+      if (column && table) {
+        const qualified = `\`${table}\`.\`${column}\``;
+        const result = filters[key];
+        if (result !== "" && result !== undefined && result !== null) {
+          if (key.endsWith("From")) conditions.push(`${qualified} >= ${db_connection.escape(result)}`);
+          if (key.endsWith("To"))   conditions.push(`${qualified} <= ${db_connection.escape(result)}`);
         }
-      } else {
-        const escaped_Value = db_connection.escape(`%${value}%`);
-        return `\`${column_name}\` LIKE ${escaped_Value}`;
       }
-    })
-    .filter(Boolean);
+      delete filters[key];
+    }
+  });
 
-  return conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  // ---- ALL OTHER FILTERS ----
+
+  Object.entries(filters || {}).forEach(([key, value]) => {
+    const column = mappings.var_To_Column[key];
+    const table = mappings.var_To_Table[key];
+    if (!column || !table) return;
+
+    const qualified = `\`${table}\`.\`${column}\``;
+
+    if (typeof value === "object" && !Array.isArray(value)) {
+      const operators = Object.keys(value)[0];
+      const result = Object.values(value)[0];
+      const sqlOp = operatorMap[operators];
+      if (!sqlOp) return;
+      if (sqlOp === "IN" || sqlOp === "NOT IN") {
+        const list = result.split(',').map(item => db_connection.escape(item.trim()));
+        conditions.push(`${qualified} ${sqlOp} (${list.join(", ")})`);
+      } else {
+        conditions.push(`${qualified} ${sqlOp} ${db_connection.escape(result)}`);
+      }
+    } else {
+      const escaped = db_connection.escape(`%${value}%`);
+      conditions.push(`${qualified} LIKE ${escaped}`);
+    }
+  });
+  return conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : '';
 };
 
-export const build_range_facets = (
-  table_name,
-  column_name,
+export const build_Range_Facets = (
+  table_Name,
+  column_Name,
   bucket_Size = 1000
 ) => {
   return `
         SELECT
             CONCAT(
-                FLOOR(${column_name}/${bucket_Size})*${bucket_Size},'-',
-                FLOOR(${column_name}/${bucket_Size})*${bucket_Size} + ${bucket_Size} - 1
+                FLOOR(${column_Name}/${bucket_Size})*${bucket_Size},'-',
+                FLOOR(${column_Name}/${bucket_Size})*${bucket_Size} + ${bucket_Size} - 1
             ) AS \`range\`,
             COUNT(*) AS count
-        FROM ${table_name}
-        WHERE ${column_name} IS NOT NULL
+        FROM ${table_Name}
+        WHERE ${column_Name} IS NOT NULL
         GROUP BY 1
-        ORDER BY FLOOR(${column_name}/${bucket_Size})
+        ORDER BY FLOOR(${column_Name}/${bucket_Size})
     `;
 };
 
 // RETRY UTILITY
 
-export const execute_operation_with_retry = async (
+export const execute_Operation_With_Retry = async (
   operation,
   max_attempts = 3
 ) => {

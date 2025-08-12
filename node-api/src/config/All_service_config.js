@@ -576,18 +576,6 @@ export const Trailer_Config = {
             }
             },
             {
-            table_Name: 'Tongue', 
-            section_Heading: 'Tongue',
-            columns: {
-                tongueMaterial: { column_Name: 'Tongue_Material', display_Text: 'Tongue Material', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
-                tongueShape: { column_Name: 'Tongue_Shape', display_Text: 'Tongue Shape', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
-                jackWheel: { column_Name: 'Jack_Wheel', display_Text: 'Tongue Jack Wheel Size', type: 'dual', mandatory: true, searchable: true, radioOptions: dual_Range.cm_mm },
-                jackType: { column_Name: 'Jack_Type', display_Text: 'Tongue Jack Type', type: 'radio', mandatory: false, searchable: true, radioOptions: null },
-                tongueWeight: { column_Name: 'Tongue_Weight', display_Text: 'Tongue Weight', type: 'dual', mandatory: true, searchable: true, radioOptions: [{ label: 'Kg', value: 'Kg', id: 1 }, { label: 'Ton', value: 'Ton', id: 2 }] },
-                tongueWeightRatio: { column_Name: 'Tongue_Weight_Ratio', display_Text: 'Tongue Weight Ratio', type: 'radio', mandatory: false, searchable: false, radioOptions: null }
-            }
-            },
-            {
             table_Name: 'Documentation', 
             section_Heading: 'Documentation',
             columns: {
@@ -686,11 +674,6 @@ export const Charter_Config = {
             table_Name: "Requirements",
             section_Heading: "Customer Requirements",
             columns: {
-                // skipperIncluded: { column_Name: "Captain_Included", display_Text: "Captain Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] }, //[Error: Service: Charter,Table: Requirements, Column: Captain_Included not present in the database ]
-                // crewIncluded: { column_Name: "Crew_Included", display_Text: "Crew Included?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },           //[Error: Service: Charter, Table: Requirements, Column: Crew_Included not present in the database ]
-                // crewUniformPreferences: { column_Name: "Crew_Uniform", display_Text: "Crew Uniform Preferences", type: "radio", mandatory: true, searchable: true, radioOptions: null },   // [Error: Service: Charter, Table: Requirements, Column: Crew_Uniform not present in the database But ]
-                // localCuisinePreferences: { column_Name: "Cuisine_Preferences", display_Text: "Cuisine Preferences", type: "radio", mandatory: true, searchable: true, radioOptions: null },//[Error: Service: Charter, Table: Requirements, Column: Cuisine_Preferences not present in the database ]
-                // cateringRequired: { column_Name: "Catering_Required", display_Text: "Catering Required?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },// [Error: Service: Charter, Table: Requirements, Column: Catering_Required not present in the database ]
                 carParkingAvailable: { column_Name: "Car_Parking", display_Text: "Car Parking Available?", type: "radio", mandatory: true, searchable: true, radioOptions: ["Yes", "No"] },
                 specialRequirementsRequests: { column_Name: "Special_Requirements", display_Text: "Special Requirements", type: "radio", mandatory: true, searchable: false, radioOptions: null }
             }
@@ -751,9 +734,9 @@ export const Charter_Config = {
                 minimumNightsPolicy: { column_Name: "Minimum_Nights", display_Text: "Minimum Nights Policy", type: "radio", mandatory: true, searchable: true, radioOptions: null },
                 datesAvailable: { column_Name: "Dates_Available", display_Text: "Dates Available", type: "date", mandatory: true, searchable: true, radioOptions: null },
                 cancellationPolicy: { column_Name: "Cancellation_Policy", display_Text: "Cancellation Policy", type: "radio", mandatory: true, searchable: false, radioOptions: null },
-                // startDate: { column_Name: "Start_Date", display_Text: "Start Date", type: "date", mandatory: true, searchable: true, radioOptions: null },// [Error: Service: Charter, table : Charter_Date Column: Start_Date not present in the database]
-                // endDate: { column_Name: "End_Date", display_Text: "End Date", type: "date", mandatory: true, searchable: true, radioOptions: null }, // [Error: Service: Charter, table : Charter_Date Column: End_Date not present in the database]
-                // numberNights: { column_Name: "Number_Nights", display_Text: "Number Nights", type: "radio", mandatory: true, searchable: true, radioOptions: null }// [Error: Service: Charter, table : Charter_Date Column: Number_Nights not present in the db]
+                startDate: { column_Name: "Start_Date", display_Text: "Start Date", type: "date", mandatory: true, searchable: true, radioOptions: null },
+                endDate: { column_Name: "End_Date", display_Text: "End Date", type: "date", mandatory: true, searchable: true, radioOptions: null }, 
+                numberNights: { column_Name: "Number_Nights", display_Text: "Number Nights", type: "radio", mandatory: true, searchable: true, radioOptions: null }
             }
         },
         {
@@ -771,10 +754,8 @@ export const Charter_Config = {
             section_Heading: "Sales Information",
             columns: {
                 priceLabel: { column_Name: "Price_Label", display_Text: "Price Label", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                priceDrop: { column_Name: "Price_Drop", display_Text: "Price Drop", type: "radio", mandatory: true, searchable: true, radioOptions: null },
-                // salesCurrency: { column_Name: "Currency", display_Text: "Currency", type: "radio", mandatory: true, searchable: false, radioOptions: null },//[Error: Service: Charter, table : Sales Column: Currency not present in the database But there is a column name as Calculate]
-                // vat: { column_Name: "VAT", display_Text: "VAT", type: "radio", mandatory: false, searchable: false, radioOptions: null }                   //[Error: Service: Charter, table : Sales Column: VAT not present in the database]
-            }
+                priceDrop: { column_Name: "Price_Drop", display_Text: "Price Drop", type: "radio", mandatory: true, searchable: true, radioOptions: null }, 
+                salesCalculate: { column_Name: "Calculate", display_Text: "Calculate", type: "radio", mandatory: true, searchable: false, radioOptions: null }            }
         }
     ]
 };
