@@ -65,6 +65,9 @@ export const Berth_Config = {
     join_tables: [ "Berth", "Amenities", "Family", "Local_Area", "Berth_Features", "Accessibility", "Berth_Payment", "Berth_Sales", "Connectivity",  "Environment", "Events", "Financial", "Insurance", "Legal", "Operations", "Pricing", "Repairs", "Safety" ],
     tables: [
         {
+
+            // Table: Berth_Details Fields: 12
+
             table_Name: "Berth_Details", 
             section_Heading: "Berth Details",
             columns: {
@@ -84,6 +87,9 @@ export const Berth_Config = {
             position:1
         },
         {
+
+            // Table: Berth Fields: 13
+
             table_Name: "Berth",
             section_Heading: "General Information",
             columns: {
@@ -103,6 +109,9 @@ export const Berth_Config = {
             position:2
         },
         {
+
+             // Table: Amenities Fields: 9
+
             table_Name: "Amenities",
             section_Heading: "Amenities & Services",
             columns: {
@@ -118,6 +127,9 @@ export const Berth_Config = {
             position:3
         },
         {
+
+            // Table: Family Fields: 23
+
             table_Name: "Family",
             section_Heading: "Family Facilities",
             columns: {
@@ -148,6 +160,9 @@ export const Berth_Config = {
             position:4
         },
         {
+
+            // Table: Local_Area Fields: 9
+
             table_Name: "Local_Area",
             section_Heading: "Local Area & Attractions",
             columns: {
@@ -163,6 +178,9 @@ export const Berth_Config = {
             position:5
         },
         {
+
+            // Table: Berth_Features Fields: 7
+
             table_Name: "Berth_Features",
             section_Heading: "Additional Features",
             columns: {
@@ -176,6 +194,9 @@ export const Berth_Config = {
             position:6
         },
         {
+
+            // Table: Events Fields: 14
+
             table_Name: "Events",
             section_Heading: "Local Events",
             columns: {
@@ -196,6 +217,9 @@ export const Berth_Config = {
             position:7
         },
         {
+
+            // Table: Operations Fields: 9
+            
             table_Name: "Operations",
             section_Heading: "Marina or Harbour Services",
             columns: {
@@ -211,6 +235,9 @@ export const Berth_Config = {
             position:8
         },
         {
+            
+            // Table: Repairs Fields: 7
+
             table_Name: "Repairs",
             section_Heading: "Maintenance & Repairs",
             columns: {
@@ -224,6 +251,9 @@ export const Berth_Config = {
             position:9
         },
         {
+
+            // Table: Accessibility Fields: 10
+
             table_Name: "Accessibility",
             section_Heading: "Accessibility",
             columns: {
@@ -240,6 +270,9 @@ export const Berth_Config = {
             position:10
         },
         {
+
+            // Table: Connectivity Fields: 11
+
             table_Name: "Connectivity",
             section_Heading: "Connectivity & Transportation",
             columns: {
@@ -257,6 +290,9 @@ export const Berth_Config = {
             position:11
         },
         {
+
+            // Table: Environment Fields: 18
+
             table_Name: "Environment",
             section_Heading: "Environmental Considerations",
             columns: {
@@ -281,6 +317,10 @@ export const Berth_Config = {
             position:12
         },
         {
+
+            
+            // Table: Safety_Procedures Fields: 32
+
             table_Name: "Safety",
             section_Heading: "Safety & Security",
             columns: {
@@ -319,6 +359,9 @@ export const Berth_Config = {
             position:13
         },
         {
+
+            // Table: Legal Fields: 7
+
             table_Name: "Legal",
             section_Heading: "Legal Restrictions",
             columns: {
@@ -332,6 +375,9 @@ export const Berth_Config = {
             position:14
         },
         {
+
+            // Table: Insurance Fields: 9
+
             table_Name: "Insurance",
             section_Heading: "Insurance Regulations",
             columns: {
@@ -347,6 +393,9 @@ export const Berth_Config = {
             position:15
         },
         {
+
+            // Table: Pricing Fields: 9
+
             table_Name: "Financial",
             section_Heading: "Financial Information",
             columns: {
@@ -362,6 +411,9 @@ export const Berth_Config = {
             position:16
         },
         {
+
+            // Table: Berth_Payment Fields: 5
+
             table_Name: "Pricing",
             section_Heading: "Pricing Information",
             columns: {
@@ -376,6 +428,9 @@ export const Berth_Config = {
             position:17
         },
         {
+
+            // Table: Berth_Payment Fields: 5
+
             table_Name: "Berth_Payment",
             section_Heading: "Billing & Payment Details",
             columns: {
@@ -387,6 +442,9 @@ export const Berth_Config = {
             position:18
         },
         {
+
+            // Table: Berth_Sales Fields: 4
+
             table_Name: "Berth_Sales",
             section_Heading: "Sales Information",
             columns: {
@@ -677,6 +735,9 @@ export const Charter_Config = {
     
     tables: [
         {
+
+            // Table Accommodation Fields 9
+
             table_Name: "Accomodation",
             section_Heading: "General Information",
             columns: {
@@ -693,6 +754,9 @@ export const Charter_Config = {
             position:1
         },
         {
+
+            // Table Charter_Location Fields 9
+
             table_Name: "Charter_Location",
             section_Heading: "Charter Logistics",
             columns: {
@@ -709,6 +773,9 @@ export const Charter_Config = {
             position:2
         },
         {
+
+            // Table Requirements Fields 7
+
             table_Name: "Requirements",
             section_Heading: "Customer Requirements",
             columns: {
@@ -718,6 +785,9 @@ export const Charter_Config = {
             position:3
         },
         {
+
+            // Table Policy Fields 9
+
             table_Name: "Policy",
             section_Heading: "Policy Information",
             columns: {
@@ -734,6 +804,9 @@ export const Charter_Config = {
             position:4
         },
         {
+
+            // Table Charter_Safety Fields 8
+
             table_Name: "Charter_Safety",
             section_Heading: "Safety & Security",
             columns: {
@@ -748,6 +821,9 @@ export const Charter_Config = {
             position:5
         },
         {
+
+            // Table Charter_Costs Fields 15
+
             table_Name: "Charter_Costs",
             section_Heading: "Cost Details",
             columns: {
@@ -769,6 +845,8 @@ export const Charter_Config = {
             position:6
         },
         {
+
+            // Table Charter_Date Fields 7
           
             table_Name: "Charter_Date",
             section_Heading: "Charter Date",
@@ -783,6 +861,9 @@ export const Charter_Config = {
             position:7
         },
         {
+
+           // Table: Charter_Payment Fields: 4
+
             table_Name: "Charter_Payment",
             section_Heading: "Payment Information",
             columns: {
@@ -794,6 +875,9 @@ export const Charter_Config = {
             position:8
         },
         {
+
+            /// Table: Sales Fields: 4
+
             table_Name: "Sales",
             section_Heading: "Sales Information",
             columns: {
@@ -812,9 +896,12 @@ export const Transport_Config = {
     schema_name: 'marisail',
     main_table: 'Job',
     primary_key: 'Transport_ID',
-    join_tables: ['Compliance','Haulier', 'Questions', 'Reviews', 'Transportation_Contacts', 'Transportation_Payment', 'Transportation_Quotes', 'Transportation_Sales'],
+    join_tables: ['Compliance','Haulier','Vessel_Details', 'Questions', 'Reviews', 'Transportation_Contacts', 'Transportation_Payment', 'Transportation_Quotes', 'Transportation_Sales'],
     tables: [
         {
+
+            // Table: Job Fields: 23
+
             table_Name: 'Job',
             section_Heading: 'Job Description',
             columns: {
@@ -845,6 +932,9 @@ export const Transport_Config = {
             position:1
         },
         {
+
+            // Table: Vessel_Details Fields: 8
+
             table_Name: 'Vessel_Details',
             section_Heading: 'Vessel Details',
             columns: {
@@ -859,6 +949,9 @@ export const Transport_Config = {
             position:2
         },
         {
+
+            // Table: Transportation_Contacts Fields: 13
+
             table_Name: 'Transportation_Contacts',
             section_Heading: 'Contact Details',
             columns: {
@@ -878,6 +971,9 @@ export const Transport_Config = {
             position:3
         },
         {
+
+            // Table: Quotes Fields: 7
+
             table_Name: 'Transportation_Quotes',
             section_Heading: 'Quote Details',
             columns: {
@@ -891,6 +987,9 @@ export const Transport_Config = {
             position:4
         },
         {
+            
+            // Table: Questions Fields: 5
+
             table_Name: 'Questions',
             section_Heading: 'Customer Questions',
             columns: {
@@ -902,6 +1001,8 @@ export const Transport_Config = {
             position:5
         },
         {
+            // Table: Reviews Fields: 11
+
             table_Name: 'Reviews',
             section_Heading: 'Customer Reviews',
             columns: {
@@ -922,6 +1023,10 @@ export const Transport_Config = {
             position:6
         },
         {
+
+            
+            // Table: Haulier Fields: 18
+            
             table_Name: 'Haulier',
             section_Heading: ' (Transport Provider) Details',
             columns: {

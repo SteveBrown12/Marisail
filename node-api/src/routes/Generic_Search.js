@@ -14,20 +14,19 @@ search_Router.get("/:service_name/search-options", initialize_Service, (request,
 // Key Functionality #1 — Search – MULTI‑SEARCH Code
 // Key Functionality #7 - FROM TO range handling
 
-
 search_Router.get("/:service_name/search", initialize_Service, async (request, response) => {
   try {
     const { service_config, service_mappings } = request;
 
+    // Build WHERE clause from filters
     const where_Sql = build_Where_Clause(request.query.filters || {}, service_mappings);
 
-    // Build search query
-    
+
     const query = `
       SELECT \`${service_config.main_table}\`.*
-      FROM \`${service_config.main_table}\`
+      FROM \`${service_config.main_table}\` 
       ${build_Joins(service_config)}
-      ${where_Sql}
+      ${where_Sql} 
       ORDER BY \`${service_config.main_table}\`.\`${service_config.primary_key}\` DESC
       LIMIT 50 OFFSET 0
     `.trim().replace(/\s+/g, ' ');
@@ -35,38 +34,42 @@ search_Router.get("/:service_name/search", initialize_Service, async (request, r
     console.log("Executing Query:", query);
     const [results] = await db_connection.query(query);
 
-    // Dynamic count (#2)
+    // --- Count query  Key Functionality #2 - Search - DYNAMIC SEARCH COUNTS Code
 
     const count_Query = `
       SELECT COUNT(*) as totalCount
-      FROM \`${service_config.main_table}\`
-      ${build_Joins(service_config)}
+      FROM \`${service_config.main_table}\` 
+      ${build_Joins(service_config)} 
       ${where_Sql}
     `.trim().replace(/\s+/g, ' ');
 
     const [count_Rows] = await db_connection.query(count_Query);
 
-    response.json({ ok: true, totalCount: count_Rows[0].totalCount, data: results });
+    // Send back results and total count
+
+    response.json({
+      ok: true,
+      totalCount: count_Rows[0].totalCount,
+      data: results
+    });
 
   } catch (error) {
     handle_Error_Response(response, `Search failed: ${error.message}`);
   }
 });
 
+
 // // Key Functionality #3 - Search - DETAILED RESULTS Code (Details Panels) → Fetches a single record’s details by ID (with joined tables if applicable).
 
 search_Router.get("/:service_name/details/:id", initialize_Service, async (request, response) => {
   try {
-    const { service_config } = request;
-    const id = request.params.id;
- const main = service_config.main_table;
+const { service_config } = request;
+const id = request.params.id;
+const main = service_config.main_table;
 const primary_Key = service_config.primary_key;
 const select_List = [
-  `\`${main}\`.*`,
-  `\`${main}\`.\`${primary_Key}\` AS \`${main}__${primary_Key}\``,
-  ...(Array.isArray(service_config.join_tables)
-    ? service_config.join_tables.map(t => `\`${t}\`.*`)
-    : [])
+  `\`${main}\`.*`,`\`${main}\`.\`${primary_Key}\` AS \`${main}__${primary_Key}\``,  ...(Array.isArray(service_config.join_tables)
+    ? service_config.join_tables.map(t => `\`${t}\`.*`) : [])
 ].join(", ");
 
 const query = `
@@ -92,17 +95,17 @@ search_Router.get("/:service_name/facets/:field", initialize_Service, async (req
 
     // Use logical field name → lookup real DB column & table
 
-    const columnName = service_mappings.var_To_Column[field];
-    const tableName = service_mappings.var_To_Table[field];
+    const column_Name = service_mappings.var_To_Column[field];
+    const table_Name = service_mappings.var_To_Table[field];
 
-    if (!columnName || !tableName) {
+    if (!column_Name || !table_Name) {
       return handle_Error_Response(response, `Field '${field}' not configured`, 404);
     }
 
     // If numeric/measurement range bucket requested
 
     if (request.query.range) {
-      const query = build_Range_Facets(tableName, columnName, parseInt(request.query.range));
+      const query = build_Range_Facets(table_Name, column_Name, parseInt(request.query.range));
       const [ranges] = await db_connection.query(query);
       return response.json({ ok: true, facets: ranges });
     }
@@ -110,9 +113,9 @@ search_Router.get("/:service_name/facets/:field", initialize_Service, async (req
     // Default: return DISTINCT values like options() used to
 
     const query = `
-      SELECT DISTINCT \`${columnName}\` AS value
-      FROM \`${tableName}\`
-      WHERE \`${columnName}\` IS NOT NULL
+      SELECT DISTINCT \`${column_Name}\` AS value
+      FROM \`${table_Name}\`
+      WHERE \`${column_Name}\` IS NOT NULL
       ORDER BY value ASC
       LIMIT 200
     `;
