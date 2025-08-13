@@ -2,8 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Engines from "./pages/Engine";
-import Buy from "./pages/Buy";
-import Sell from "./pages/Sell";
 import Services from "./pages/Service";
 
 import EngineDetailPage from "./pages/detail/Engine_Detail";
@@ -11,8 +9,8 @@ import TrailerDetail from "./pages/detail/Trailer_Detail";
 import TransportDetail from "./pages/detail/Transport_Detail";
 import CharterDetail from "./pages/detail/Charter_Details";
 
-import Register from "./pages/auth/Registration";
-import Login from "./pages/auth/Login";
+import Register from "./pages/Registration";
+import Login from "./pages/Login";
 
 import GenericSearch from "./pages/Generic_Search";
 import GenericAdvert from "./pages/Generic_Advert";
@@ -31,9 +29,6 @@ function App() {
 
           <Route path="/engines" element={<Engines type="advert" />} />
           <Route path="/advert-engines" element={<Engines type="search" />} />
-
-          <Route path="/buy" element={<Buy />} />
-          <Route path="/sell" element={<Sell />} />
 
           <Route path="/services" element={<Services type="myEngines" />} />
           <Route path="/view-berth" element={<Services type="myBerth" />} />

@@ -8,8 +8,8 @@ const menuItems = [
   {
     title: "boats",
     links: [
-      { to: "/buy", label: "buy" },
-      { to: "/sell", label: "sell" },
+      { to: "/", label: "buy" },
+      { to: "/", label: "sell" },
     ],
   },
   {

@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import DropdownWithRadio from "../../components/DropdownWithRadio";
 import Loader from "../../components/Loader";
 import SubmitButton from "../../components/SubmitButton";
-import { keyToExpectedValueMap, typeDef } from "../../info/Transport_Advert_Info";
-import { makeString, convertUnitsInFormData } from "../../services/common_functions";
+import { keyToExpectedValueMap, typeDef } from "./Transport_Advert_Info";
+import { makeString, convertUnitsInFormData } from "../../utils/common_functions";
 import DatePickerField from "../../components/DatePickerField";
 import InputComponentDual from "../../components/InputComponentDual";
 

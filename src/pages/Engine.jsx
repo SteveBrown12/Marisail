@@ -13,13 +13,13 @@ import EngineCard from "../components/EngineCard";
 import Pagination from "../components/CustomPagination";
 
 // Config
-import { keyToExpectedValueMap, typeDef } from "../info/Engine_Advert_Info";
-import { varToDb, varToScreen } from "../info/Engine_Search_Info";
+import { keyToExpectedValueMap, typeDef } from "./services/Engine_Advert_Info";
+import { varToDb, varToScreen } from "./services/Engine_Search_Info";
 
 // Services
-import { makeString } from "../services/common_functions";
-import FormFieldCard from "../services/FormFieldCard";
-import { fetchColumns } from "../api/searchEngineApi";
+import { makeString } from "../utils/common_functions";
+import FormFieldCard from "../components/FormFieldCard";
+import { fetchColumns } from "../utils/searchEngineApi";
 
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;

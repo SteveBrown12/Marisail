@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react'
 import Select from 'react-select'
 import countryList from 'react-select-country-list'
 import "rsuite/dist/rsuite.css";
-import DatePickerField from "../components/DatePickerField";
+import DatePickerField from "./DatePickerField";
 import PhotoUpload from "./PhotoUpload";
 import VideoUploader from './VideoUpload';
 import PriceLabel from './PriceLabel';

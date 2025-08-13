@@ -5,7 +5,7 @@ import Loader from "../components/Loader";
 import DatePickerField from "../components/DatePickerField";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import FormUtilities from "./utils/Form_Utilities";
+import FormUtilities from "../utils/Form_Utilities";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
@@ -24,7 +24,7 @@ export default function GenericAdvert() {
   const init = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/${serviceName}/search-options`);
+      const res = await axios.get(`${API_BASE}/search/${serviceName}/search-options`);
       if (res.data.ok) {
         const { service_config, service_mappings } = res.data.data;
         setServiceConfig(service_config);
@@ -50,7 +50,7 @@ export default function GenericAdvert() {
     if (!serviceName || !fieldKey || !uiKey) return;
     setFetchingOptions((prev) => ({ ...prev, [uiKey]: true }));
     try {
-      const res = await axios.get(`${API_BASE}/${serviceName}/facets/${fieldKey}`);
+      const res = await axios.get(`${API_BASE}/search/${serviceName}/facets/${fieldKey}`);
       if (res.data.ok) {
         setFiltersData((prev) => ({
           ...prev,
