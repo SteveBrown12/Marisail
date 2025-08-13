@@ -49,14 +49,13 @@ advert_router.get("/:service_name/options/:field",  initialize_Service,
       const { field } = request.params;
       const { service_config, service_mappings } = request;
       const column_Name = service_mappings?.var_To_Column?.[field];
-      const table_name =
-        service_mappings?.var_To_Table?.[field] || service_config?.main_table;
-      if (!column_Name || !table_name) {
+      const table_Name =service_mappings?.var_To_Table?.[field] || service_config?.main_table;
+      if (!column_Name || !table_Name) {
         return handle_Error_Response(response, `Field '${field}' not configured`, 404);
       }
       const [rows] = await db_connection.query(
-        `SELECT DISTINCT \`${column_Name}\` AS value FROM \`${table_name}\` WHERE \`${column_Name}\` IS NOT NULL`      );
-      return response.json({ ok: true, options: rows.map((r) => r.value) });
+        `SELECT DISTINCT \`${column_Name}\` AS value FROM \`${table_Name}\` WHERE \`${column_Name}\` IS NOT NULL`      );
+      return response.json({ ok: true, options: rows.map((row) => row.value) });
     } catch (error) {
       return handle_Error_Response(response, `Options fetch failed: ${error.message}`);
     }
@@ -65,42 +64,73 @@ advert_router.get("/:service_name/options/:field",  initialize_Service,
 
 // Key Functionality #4 - Advert - AUTOFILL Sections Based On Section 1 (Trailer, Engine, Vessel)
 
-advert_router.post(  "/:service_name/autofill",initialize_Service,
-  async (request, response) => {
-    try {
-      const service_name = request.params.service_name.toLowerCase();
-      const { service_config } = request;
-      const { main_table, primary_key, join_tables = [] } = service_config;
-      if (!["trailer", "engine", "vessel"].includes(service_name)) {
-        return response.json({ ok: true, data: {} });
-      }
-      const { make, model, year } = request.body || {};
-      if (!make || !model || !year) {
-        return handle_Error_Response(   response,   "make, model, and year are required for autofill",   400 );
-      }
-      const select_List = [  `\`${main_table}\`.*`,  ...join_tables.map((table) => `\`${table}\`.*`),  `\`${main_table}\`.\`${primary_key}\` AS \`${main_table}__${primary_key}\``, ].join(", ");
-      const join_SQL = join_tables .map((table) =>
-            `LEFT JOIN \`${table}\`   ON \`${main_table}\`.\`${primary_key}\` = \`${table}\`.\`${primary_key}\`` ).join(" ");
-
-      // NOTE: If make/model/year column names differ, adjust below WHERE
-
-      const query = `  SELECT ${select_List} FROM \`${main_table}\` ${join_SQL} WHERE \`${main_table}\`.\`make\` = ?    AND \`${main_table}\`.\`model\` = ?     AND \`${main_table}\`.\`year\` = ?  LIMIT 1`;
-      const [rows] = await db_connection.query(query, [make, model, year]);
-      if (!rows || rows.length === 0) {
-        return response.json({ ok: true, data: {} });
-      }
-      const row = rows;
-      const safe_Keys = `${main_table}__${primary_key}`;
-      if (
-        (row[primary_key] === null || row[primary_key] === undefined) &&  row[safe_Keys] != null) 
-        {  row[primary_key] = row[safe_Keys];}
-      delete row[safe_Keys];
-      return response.json({ ok: true, data: row || {} });
-    } catch (error) {
-      return handle_Error_Response(response, `Autofill failed: ${error.message}`);
+advert_router.post("/:service_name/autofill", initialize_Service, async (request, response) => {
+  try {
+    const service_name = request.params.service_name.toLowerCase();
+    const { service_config, service_mappings } = request;
+    const { main_table, primary_key, UNIQUE_TABLE = [] } = service_config;
+    if (!["trailer", "engine", "vessel"].includes(service_name)) {
+      return response.json({ ok: true, data: {} });
     }
+    const { make, model, year } = request.body || {};
+    if (!make || !model || !year) {
+      return handle_Error_Response( response, "make, model, and year are required for autofill",400);
+    }
+
+    // Step 1: Get matching IDs from the main table
+
+    const [id_Rows] = await db_connection.query(
+      `SELECT \`${primary_key}\` AS id  FROM \`${main_table}\` WHERE make = ? AND model = ? AND year = ?`,
+      [make, model, year] );
+    if (!id_Rows.length) { console.log("No matching IDs found for given make/model/year");
+      return response.json({ ok: true, data: {} });
+    }
+    const ids = id_Rows.map(r => r.id);
+    console.log("Matched IDs:", ids);
+    const autofill_Data = {};
+
+    // Step 2: Loop through UNIQUE_TABLES
+
+    for (const table_Name of UNIQUE_TABLE) {
+      console.log(`--- Processing UNIQUE_TABLE: ${table_Name} ---`);
+      const [columns] = await db_connection.query(`SHOW COLUMNS FROM \`${table_Name}\``);
+      for (const column of columns) {
+        if (column.Field === primary_key) continue; 
+
+        // Step 3: Get most common value from this column for these IDs
+
+        const query = `
+          SELECT \`${column.Field}\` AS valFROM \`${table_Name}\`
+          WHERE \`${primary_key}\` IN (?) AND \`${column.Field}\` IS NOT NULL
+          GROUP BY val ORDER BY COUNT(*) DESC
+          LIMIT 1
+        `;
+        const [rows] = await db_connection.query(query, [ids]);
+        console.log(`Column: ${column.Field}, Query Result:`, rows);
+
+        if (rows.length) {
+
+          // Step 4: Map back to logicalFieldName using mappings
+
+          const logical_Key = Object.keys(service_mappings.var_To_Column).find(
+            key =>
+              service_mappings.var_To_Column[key] === column.Field &&
+              service_mappings.var_To_Table[key] === table_Name
+          );
+          if (logical_Key) {
+            autofill_Data[logical_Key] = rows[0].val;
+            console.log(`Mapped logical key: ${logical_Key} =>`, rows[0].val);
+          }
+        }
+      }
+    }
+
+    console.log("Final Autofill Data:", autofill_Data);
+    return response.json({ ok: true, data: autofill_Data });
+  } catch (error) {
+    return handle_Error_Response(response, `Autofill failed: ${error.message}`);
   }
-);
+});
 
 //  * SUBMIT route (Key #6) * Transactional insert with retry, supports From-To hook (Key #7)
  
@@ -137,7 +167,6 @@ advert_router.post(  "/:service_name/submit",  initialize_Service,validate_Manda
         if (!main_Data || Object.keys(main_Data).length === 0) {
           throw new Error(`No data provided for the main table: ${main_table}`);
         }
-
         const [insert_result] = await connection.query(`INSERT INTO \`${main_table}\` SET ?`,  [main_Data]);
         const new_Id = insert_result.insertId;
 

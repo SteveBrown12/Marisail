@@ -19,9 +19,8 @@ search_Router.get("/:service_name/search", initialize_Service, async (request, r
     const { service_config, service_mappings } = request;
 
     // Build WHERE clause from filters
+
     const where_Sql = build_Where_Clause(request.query.filters || {}, service_mappings);
-
-
     const query = `
       SELECT \`${service_config.main_table}\`.*
       FROM \`${service_config.main_table}\` 
@@ -30,27 +29,18 @@ search_Router.get("/:service_name/search", initialize_Service, async (request, r
       ORDER BY \`${service_config.main_table}\`.\`${service_config.primary_key}\` DESC
       LIMIT 50 OFFSET 0
     `.trim().replace(/\s+/g, ' ');
-
     console.log("Executing Query:", query);
     const [results] = await db_connection.query(query);
 
     // --- Count query  Key Functionality #2 - Search - DYNAMIC SEARCH COUNTS Code
 
     const count_Query = `
-      SELECT COUNT(*) as totalCount
-      FROM \`${service_config.main_table}\` 
-      ${build_Joins(service_config)} 
-      ${where_Sql}
-    `.trim().replace(/\s+/g, ' ');
-
+      SELECT COUNT(*) as totalCount FROM \`${service_config.main_table}\`  ${build_Joins(service_config)}   ${where_Sql}`.trim().replace(/\s+/g, ' ');
     const [count_Rows] = await db_connection.query(count_Query);
 
     // Send back results and total count
 
-    response.json({
-      ok: true,
-      totalCount: count_Rows[0].totalCount,
-      data: results
+    response.json({ok: true,totalCount: count_Rows[0].totalCount,data: results
     });
 
   } catch (error) {
@@ -92,12 +82,8 @@ search_Router.get("/:service_name/facets/:field", initialize_Service, async (req
   try {
     const { field } = request.params;
     const { service_mappings } = request;
-
-    // Use logical field name → lookup real DB column & table
-
     const column_Name = service_mappings.var_To_Column[field];
     const table_Name = service_mappings.var_To_Table[field];
-
     if (!column_Name || !table_Name) {
       return handle_Error_Response(response, `Field '${field}' not configured`, 404);
     }
@@ -113,15 +99,10 @@ search_Router.get("/:service_name/facets/:field", initialize_Service, async (req
     // Default: return DISTINCT values like options() used to
 
     const query = `
-      SELECT DISTINCT \`${column_Name}\` AS value
-      FROM \`${table_Name}\`
-      WHERE \`${column_Name}\` IS NOT NULL
-      ORDER BY value ASC
-      LIMIT 200
-    `;
+      SELECT DISTINCT \`${column_Name}\` AS value FROM \`${table_Name}\`
+      WHERE \`${column_Name}\` IS NOT NULL      ORDER BY value ASC LIMIT 200`;
     const [rows] = await db_connection.query(query);
     return response.json({ ok: true, facets: rows.map(r => r.value) });
-
   } catch (error) {
     handle_Error_Response(
       response,

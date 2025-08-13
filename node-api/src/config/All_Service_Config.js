@@ -463,12 +463,15 @@ export const Berth_Config = {
 
 export const Trailer_Config = {
     schema_name: "marisail",
-    main_table: "Trailer_ID",
+    main_table: "Trailer_Details",
     primary_key: "Trailer_ID",
     join_tables: [ "Accessories", "Axles", "Construction", "Corrosion_Resistance", "Documentation","Loading_Transport_Features", "Performance_Handling", "Regulatory","Security_Features", "Tongue", "Trailer_Features", "Trailer_Payment","Trailer_Sales", "Tyres_Brakes", "Winches_Lighting"],
     tables: [
         {
-            table_Name: "Trailer_ID",
+
+            // Table Trailer_Details Fields 12
+
+            table_Name: "Trailer_Details",
             section_Heading: "Identification",
             columns: {
                 manufacturer: { column_Name: "Manufacturer", display_Text: "Manufacturer", type: "radio", mandatory: true, searchable: true, radioOptions: null },
@@ -487,6 +490,9 @@ export const Trailer_Config = {
             position:1
         },
         {
+
+            // Table Construction Fields 16
+
             table_Name: "Construction",
             section_Heading: "Construction Materials",
             columns: {
@@ -510,6 +516,9 @@ export const Trailer_Config = {
             position:2
         },
         {
+            
+            // Table Trailer_Features Fields 14
+
             table_Name: "Trailer_Features",
             section_Heading: "Maintenance Features",
             columns: {
@@ -531,6 +540,9 @@ export const Trailer_Config = {
             position:3
         },
         {
+
+            // Table Axles Fields 9
+
          table_Name: 'Axles', 
          section_Heading: 'Axles & Suspension',
             columns: {
@@ -546,7 +558,10 @@ export const Trailer_Config = {
             },
             position:4
         },
-        {
+        { 
+
+            // Table Tyres & Brakes Fields 20
+
         table_Name: 'Tyres_Brakes',
         section_Heading: 'Tyres, Wheels, Brakes & Safety',
         columns: {
@@ -573,6 +588,9 @@ export const Trailer_Config = {
             position:5
         },
         {
+
+            // Table Winches Lighting Fields 11
+
             table_Name: 'Winches_Lighting', 
             section_Heading: 'Winch & Winch Accessories',
             columns: {
@@ -591,6 +609,9 @@ export const Trailer_Config = {
             position:6
         },
         {
+
+            // Table Winches Lighting Fields 7
+
             table_Name: 'Winches_Lighting', 
             section_Heading: 'Lighting & Electrical',
             columns: {
@@ -605,6 +626,9 @@ export const Trailer_Config = {
             position:7
         },
         {
+
+            // Table Accessories Fields 7
+
             table_Name: 'Accessories',
             section_Heading: 'Accessories',
             columns: {
@@ -620,6 +644,9 @@ export const Trailer_Config = {
             position:8
         },
         {
+            
+            // Table Loading_Transport_Features Fields 9
+
             table_Name: 'Loading_Transport_Features', 
             section_Heading: 'Loading & Transport Features',
             columns: {
@@ -636,6 +663,9 @@ export const Trailer_Config = {
             position:9
         },
         {
+
+            // Table Security Features Fields 4
+
             table_Name: 'Security_Features', 
             section_Heading: 'Security Features',
             columns: {
@@ -647,6 +677,9 @@ export const Trailer_Config = {
             position:10
         },
         {
+
+            // Table Corrosion_Resistance Fields 2
+
             table_Name: 'Corrosion_Resistance', 
             section_Heading: 'Environmental & Corrosion Resistance',
             columns: {
@@ -655,6 +688,9 @@ export const Trailer_Config = {
             },
             position:11
         },
+
+        // Table Performance Handling Fields 3
+
         {
             table_Name: 'Performance_Handling', 
             section_Heading: 'Performance & Handling',
@@ -664,6 +700,9 @@ export const Trailer_Config = {
             },
             position:12
         },
+
+        // Table Documentation Fields 2
+
         {
             table_Name: 'Documentation', 
             section_Heading: 'Documentation',
@@ -673,6 +712,9 @@ export const Trailer_Config = {
             },
             position:13
         },
+
+        // Table Regulatory Fields 4
+
         {
             table_Name: 'Regulatory', 
             section_Heading: 'Regulatory Compliance',
@@ -684,6 +726,9 @@ export const Trailer_Config = {
             },
             position:14
         },
+
+        // Table Tongue Fields 6
+
         {
             table_Name: 'Tongue', 
             section_Heading: 'Tongue',
@@ -697,6 +742,9 @@ export const Trailer_Config = {
             },
             position:15
         },
+
+        // Table Trailer_Payment Fields 4
+
         {
             table_Name: 'Trailer_Payment', 
             section_Heading: 'Payment Terms',
@@ -708,6 +756,9 @@ export const Trailer_Config = {
             },
             position:16
         },
+
+        // Table Trailer_Sales Fields 4
+
         {
             table_Name: 'Trailer_Sales',
             section_Heading: 'Trailer_Sales',
@@ -1007,7 +1058,7 @@ export const Transport_Config = {
             section_Heading: 'Customer Reviews',
             columns: {
                 customerFeedbackNotes: { column_Name: 'Customer_Feedback_Notes', display_Text: 'Customer Feedback Notes', type: 'radio', mandatory: true, searchable: false, radioOptions: null },
-                customerFeedbackScore: { column_Name: 'Customer_Feedback_Score', display_Text: 'Customer Feedback Score', type: 'radio', mandatory: false, searchable: false, radioOptions: null },//[error: Service: Transport, Table: Reviews, Column: Customer_Feedback_Score not present in the database But there is a column name as Customer_Feedback_Notes only]
+                customerFeedbackScore: { column_Name: 'Customer_Feedback_Score', display_Text: 'Customer Feedback Score', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
                 positive: { column_Name: 'Positive', display_Text: 'Positive', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
                 neutral: { column_Name: 'Neutral', display_Text: 'Neutral', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
                 negative: { column_Name: 'Negative', display_Text: 'Negative', type: 'radio', mandatory: false, searchable: false, radioOptions: null },
@@ -1052,6 +1103,9 @@ export const Transport_Config = {
             position:7
         },
         {
+
+            // Table: Compliance Fields: 13
+
             table_Name: 'Compliance',
             section_Heading: 'Safety & Regulatory Compliance',
             columns: {
@@ -1071,6 +1125,9 @@ export const Transport_Config = {
             position:8
         },
         {
+
+            // Table: Transport_Payment Fields: 16
+
             table_Name: 'Transportation_Payment',
             section_Heading: 'Payment Details',
             columns: {
@@ -1092,7 +1149,10 @@ export const Transport_Config = {
             },
             position:9
         },
-        {
+        { 
+
+            // Table: Transportation_Sales Fields: 5
+
             table_Name: 'Transportation_Sales',
             section_Heading: 'Price Details',
             columns: {
