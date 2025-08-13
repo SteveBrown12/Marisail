@@ -57,7 +57,7 @@ export default function GenericSearch() {
     if (!serviceName) return;
     setLoading(true);
     try {
-      const res = await axios.get(`${apiUrl}/${serviceName}/search-options`);
+      const res = await axios.get(`${apiUrl}/search/${serviceName}/search-options`);
       if (res.data.ok) {
         setConfig(res.data.data.service_config);
         setMapping(res.data.data.service_mappings);
@@ -76,7 +76,7 @@ export default function GenericSearch() {
     if (!serviceName || !fieldKey || !uiKey) return;
     setFetchingOptions((prev) => ({ ...prev, [uiKey]: true }));
     try {
-      const res = await axios.get(`${apiUrl}/${serviceName}/facets/${fieldKey}`);
+      const res = await axios.get(`${apiUrl}/search/${serviceName}/facets/${fieldKey}`);
       if (res.data.ok) {
         const rawFacets = res.data.facets ?? [];
         const clonedNormalized = normalizeFacets(rawFacets).map((o) => ({ ...o }));
@@ -107,7 +107,7 @@ export default function GenericSearch() {
     setLoading(true);
     try {
       const mappedFilters = mapFiltersToDbKeys(allSelectedOptions);
-      const res = await axios.get(`${apiUrl}/${serviceName}/search`, {
+      const res = await axios.get(`${apiUrl}/search/${serviceName}/search`, {
         params: { filters: mappedFilters },
       });
       if (res.data.ok) {

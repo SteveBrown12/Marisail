@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Loader from "../../components/Loader";
 import PropTypes from "prop-types";
-import { varToScreen } from "../../info/Trailer_Search_Info";
-import { varToDb, detailStateType } from "../../info/Trailer_Search_Info";
+import { varToScreen } from "../services/Trailer_Search_Info";
+import { varToDb, detailStateType } from "../services/Trailer_Search_Info";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 const URL = `${apiUrl}/search_trailer/`;

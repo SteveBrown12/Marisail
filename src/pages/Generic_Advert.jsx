@@ -5,7 +5,8 @@ import Loader from "../components/Loader";
 import DatePickerField from "../components/DatePickerField";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import FormUtilities from "./utils/Form_Utilities";
+import FormUtilities from "../utils/Form_Utilities";
+import { Section_Positions } from "../utils/Section_Position";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
@@ -24,7 +25,7 @@ export default function GenericAdvert() {
   const init = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/${serviceName}/search-options`);
+      const res = await axios.get(`${API_BASE}/search/${serviceName}/search-options`);
       if (res.data.ok) {
         const { service_config, service_mappings } = res.data.data;
         setServiceConfig(service_config);
@@ -50,7 +51,7 @@ export default function GenericAdvert() {
     if (!serviceName || !fieldKey || !uiKey) return;
     setFetchingOptions((prev) => ({ ...prev, [uiKey]: true }));
     try {
-      const res = await axios.get(`${API_BASE}/${serviceName}/facets/${fieldKey}`);
+      const res = await axios.get(`${API_BASE}/search/${serviceName}/facets/${fieldKey}`);
       if (res.data.ok) {
         setFiltersData((prev) => ({
           ...prev,
@@ -106,18 +107,21 @@ export default function GenericAdvert() {
   if (loading) return <Loader />;
 
   return (
-    <div className="flex justify-center">
-      <div className="w-full max-w-7xl">
+    <div className="flex justify-center items-center">
+      <div className="w-full p-4">
         <div className="bg-white shadow-sm rounded-xl p-4">
-          <h4 className="text-[25px] capitalize font-bold pb-2 mb-2">
+          <h4 className="text-[25px] capitalize font-bold pb-2 mb-2 pl-[60px]">
             Advertise {serviceName}
           </h4>
 
           <form onSubmit={handleSubmit}>
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-              {[...(serviceConfig?.tables || [])]
-                .sort((a, b) => (a.position || 0) - (b.position || 0))
-                .map((table) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex justify-items-center">
+              { 
+                [...(serviceConfig?.tables || [])].sort((a, b) => {
+                  const posA = Section_Positions[serviceName]?.find(t => t.table_Name === a.table_Name)?.position || 0;
+                  const posB = Section_Positions[serviceName]?.find(t => t.table_Name === b.table_Name)?.position || 0;
+                  return posA - posB; }
+                ).map((table) => {
 
                 const tableColumns = Array.isArray(table.columns)
                   ? table.columns
@@ -126,7 +130,7 @@ export default function GenericAdvert() {
                   : [];
                   
                 return (
-                  <div key={table.table_Name} className="p-4 break-inside-avoid">
+                  <div key={table.table_Name} className="p-4 min-w-[300px] w-[380px]">
                     {/* Table Heading */}
                     <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
                       {table.section_Heading}
@@ -151,7 +155,7 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <DropdownWithCheckBoxes
-                                        title={label}
+                                        title={`${label}${col.mandatory ? " *" : ""}`}
                                         options={
                                           filtersData[uiKey]
                                             ? [...filtersData[uiKey]]
@@ -185,7 +189,7 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <RangeInput
-                                        title={label}
+                                        title={`${label}${col.mandatory ? " *" : ""}`}
                                         min={col.min || ""}
                                         max={col.max || ""}
                                         valueFrom={
@@ -211,7 +215,7 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <label className="block mb-1 font-medium">
-                                        {label}
+                                        {`${label}${col.mandatory ? " *" : ""}`}
                                       </label>
                                       <DatePickerField
                                         mode="single"
@@ -237,7 +241,7 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <label className="block mb-1 font-medium">
-                                        {label}
+                                        {`${label}${col.mandatory ? " *" : ""}`}
                                       </label>
                                       <input
                                         type="text"
@@ -270,7 +274,7 @@ export default function GenericAdvert() {
             </div>
 
             {/* Submit Button */}
-            <div className="mt-6">
+            <div className="mt-6 flex justify-center">
               <button
                 type="submit"
                 disabled={loading}

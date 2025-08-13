@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Loader from "../../components/Loader";
 import PropTypes from "prop-types";
-import { varToScreen } from "../../info/Charter_Search_Info";
-import { detailStateType, varToDb } from "../../info/Charter_Search_Info";
+import { varToScreen } from "../services/Charter_Search_Info";
+import { detailStateType, varToDb } from "../services/Charter_Search_Info";
 import { format as formatDate, parseISO, isValid } from "date-fns";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;

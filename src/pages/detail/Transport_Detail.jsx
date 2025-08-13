@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { detailStateType } from "../../info/Trailer_Search_Info";
+import { detailStateType } from "../services/Trailer_Search_Info";
 import Loader from "../../components/Loader";
 import PropTypes from "prop-types";
-import { varToScreen } from "../../info/Trailer_Search_Info";
-import { varToDb } from "../../info/Transport_Search_Info";
+import { varToScreen } from "../services/Trailer_Search_Info";
+import { varToDb } from "../services/Transport_Search_Info";
 import { format as formatDate, parseISO, isValid } from "date-fns";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;

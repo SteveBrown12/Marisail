@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import DropdownWithRadio from "../../components/DropdownWithRadio";
 import Loader from "../../components/Loader";
 import SubmitButton from "../../components/SubmitButton";
-import { keyToExpectedValueMap, typeDef } from "../../info/Berth_Advert_Info";
-import { makeString } from "../../services/common_functions";
+import { keyToExpectedValueMap, typeDef } from "./Berth_Advert_Info";
+import { makeString } from "../../utils/common_functions";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function MyBerth() {
