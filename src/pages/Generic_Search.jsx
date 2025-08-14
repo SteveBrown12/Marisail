@@ -18,14 +18,18 @@ const UI_KEY_SEP = "||";
 export default function GenericSearch() {
   const { serviceName } = useParams();
 
-  const [loading, setLoading] = useState(false);
+  const [filtersLoading, setFiltersLoading] = useState(false);
+  const [filtersError, setFiltersError] = useState("");
+
+  const [resultsLoading, setResultsLoading] = useState(false);
+  const [resultsError, setResultsError] = useState("");
+
   const [fetchingOptions, setFetchingOptions] = useState({});
   const [config, setConfig] = useState(null);
   const [mapping, setMapping] = useState(null);
   const [filtersData, setFiltersData] = useState({});
   const [allSelectedOptions, setAllSelectedOptions] = useState({});
   const [results, setResults] = useState([]);
-  const [error, setError] = useState("");
   const [openDropdown, setOpenDropdown] = useState(null);
 
   const normalizeFacets = (facets) => {
@@ -60,20 +64,22 @@ export default function GenericSearch() {
 
   const fetchSearchOptions = useCallback(async () => {
     if (!serviceName) return;
-    setLoading(true);
+    setFiltersLoading(true);
+    setFiltersError("");
+
     try {
       const res = await axios.get(`${apiUrl}/search/${serviceName}/search-options`);
       if (res.data.ok) {
         setConfig(res.data.data.service_config);
         setMapping(res.data.data.service_mappings);
       } else {
-        setError("Failed to load search options");
+        setFiltersError("Failed to load search options");
       }
     } catch (err) {
       console.error(err);
-      setError("Error loading search options");
+      setFiltersError("Error loading search options");
     } finally {
-      setLoading(false);
+      setFiltersLoading(false);
     }
   }, [serviceName]);
 
@@ -109,7 +115,9 @@ export default function GenericSearch() {
 
   const fetchResults = useCallback(async () => {
     if (!serviceName || !config) return;
-    setLoading(true);
+    setResultsLoading(true);
+    setResultsError("");
+
     try {
       const mappedFilters = mapFiltersToDbKeys(allSelectedOptions);
       const res = await axios.get(`${apiUrl}/search/${serviceName}/search`, {
@@ -118,13 +126,13 @@ export default function GenericSearch() {
       if (res.data.ok) {
         setResults(res.data.data || []);
       } else {
-        setError("Search failed");
+        setResultsError("Search failed");
       }
     } catch (err) {
       console.error(err);
-      setError("Error during search");
+      setResultsError("Error during search");
     } finally {
-      setLoading(false);
+      setResultsLoading(false);
     }
   }, [allSelectedOptions, serviceName, config, mapping]);
 
@@ -151,9 +159,6 @@ export default function GenericSearch() {
     setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: value }));
   };
 
-  if (loading && !config) return <Loader />;
-  if (error) return <div className="bg-red-100 text-red-700 p-3 rounded">{error}</div>;
-
   let a = 0;
 
   return (
@@ -166,7 +171,10 @@ export default function GenericSearch() {
             Search for {serviceName}
           </h4>
 
-          {config?.tables?.map((table) => {
+          {filtersLoading && <Loader />}
+          {filtersError && <div className="bg-red-100 text-red-700 p-3 rounded">{filtersError}</div>}
+
+          {!filtersLoading && !filtersError && config?.tables?.map((table) => {
             const tableColumns = Array.isArray(table.columns)
               ? table.columns
               : table.columns
@@ -183,7 +191,6 @@ export default function GenericSearch() {
                   const uiKey = `${table.table_Name}${UI_KEY_SEP}${col.column_Name}`;
                   const backendFieldKey = col.column_Name;
                   const label = col.display_Text || backendFieldKey;
-
                   switch (col.type) {
                     case "radio":
                       return (
@@ -216,6 +223,23 @@ export default function GenericSearch() {
                             max={col.max || ""}
                             valueFrom={allSelectedOptions[uiKey]?.from || ""}
                             valueTo={allSelectedOptions[uiKey]?.to || ""}
+                            onChange={(min, max) =>
+                              handleRangeChange(table.table_Name, backendFieldKey, min, max)
+                            }
+                          />
+                        </div>
+                      );
+
+                    case "dual":
+                      return (
+                        <div className="mb-2" key={uiKey}>
+                          <RangeInput
+                            title={label}
+                            min={col.min || ""}
+                            max={col.max || ""}
+                            valueFrom={allSelectedOptions[uiKey]?.from || ""}
+                            valueTo={allSelectedOptions[uiKey]?.to || ""}
+                            radioOptions={col.radioOptions}
                             onChange={(min, max) =>
                               handleRangeChange(table.table_Name, backendFieldKey, min, max)
                             }
@@ -267,7 +291,6 @@ export default function GenericSearch() {
 
         {/* Results */}
         <div className="md:w-3/4">
-          <h4 className="font-bold mb-3">Results ({results.length})</h4>
 
           {/* Active Filters Summary */}
           {Object.keys(allSelectedOptions).length > 0 && (
@@ -326,8 +349,10 @@ export default function GenericSearch() {
             </div>
           )}
 
-          {loading && <Loader />}
-          {!loading && results.length === 0 && (
+          {resultsLoading && <Loader />}
+          {resultsError && <div className="bg-red-100 text-red-700 p-3 rounded">{resultsError}</div>}
+
+          {!resultsLoading && !resultsError && results.length === 0 && (
             <p className="text-gray-500 italic">No results found</p>
           )}
 

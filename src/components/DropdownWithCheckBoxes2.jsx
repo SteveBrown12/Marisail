@@ -137,7 +137,7 @@ const DropdownWithCheckBoxes = ({
         aria-expanded={isOpen}
         className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
       >
-        {title}
+        <span className="truncate">{title}</span>
         <svg
           className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""

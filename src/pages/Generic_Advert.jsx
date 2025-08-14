@@ -130,7 +130,7 @@ export default function GenericAdvert() {
                   : [];
                   
                 return (
-                  <div key={table.table_Name} className="p-4 min-w-[300px] w-[380px]">
+                  <div key={table.table_Name} className="p-4 min-w-[300px] w-1/3 xl:w-[380px]">
                     {/* Table Heading */}
                     <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
                       {table.section_Heading}
@@ -209,6 +209,31 @@ export default function GenericAdvert() {
                                         </div>
                                       )}
                                     </>
+                                  );
+
+                                case "dual":
+                                  return (
+                                    <div className="mb-2" key={fieldKey}>
+                                      <RangeInput
+                                        title={label}
+                                        min={col.min || ""}
+                                        max={col.max || ""}
+                                        valueFrom={formState[fieldKey]?.from || ""}
+                                        valueTo={formState[fieldKey]?.to || ""}
+                                        radioOptions={col.radioOptions}
+                                        onChange={(min, max) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [fieldKey]: { from: min, to: max },
+                                          }))
+                                        }
+                                      />
+                                      {errors[fieldKey] && (
+                                        <div className="text-red-500 text-sm mt-1">
+                                          {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                    </div>
                                   );
 
                                 case "date":

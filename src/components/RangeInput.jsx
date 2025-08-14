@@ -1,230 +1,158 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import { conversions, convertUnit } from "../utils/common_functions";
 
-const RangeInput = ({
-  // Common/simple API (used by Generic_Search)
-  title = "Range",
+const RangeDropdown = ({
+  title,
   min,
   max,
   valueFrom,
   valueTo,
   onChange,
-
-  // Back-compat API (legacy callers)
-  fromValue,
-  toValue,
-  setFromValue,
-  setToValue,
-
-  // Optional radios
-  radioOptions = [],
-  selectedRadio = "",
-  onRadioChange = () => {},
-  key2 = "range",
-
-  // Optional accordion controls
-  isOpen,
-  toggleAccordion,
+  radioOptions,
 }) => {
-  // Fallback open state if parent doesn't control accordion
-  const [isOpenInternal, setIsOpenInternal] = useState(false);
-  const open = typeof isOpen === "boolean" ? isOpen : isOpenInternal;
-  const handleToggle = toggleAccordion || (() => setIsOpenInternal((p) => !p));
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState(() => {
+    const firstValue = radioOptions?.[0]?.value;
+    if (!firstValue) return "";
+    const lower = firstValue.toLowerCase();
+    return conversions[lower]?.defaultUnit || firstValue;
+  });
 
-  const effectiveFrom = valueFrom !== undefined ? valueFrom : (fromValue ?? "");
-  const effectiveTo = valueTo !== undefined ? valueTo : (toValue ?? "");
-
-  const numMin = min !== undefined && min !== null && min !== "" ? Number(min) : undefined;
-  const numMax = max !== undefined && max !== null && max !== "" ? Number(max) : undefined;
-  const step = 1;
-
-  const clamp = (val) => {
-    if (val === "" || isNaN(Number(val))) return "";
-    let n = Number(val);
-    if (numMin !== undefined && n < numMin) n = numMin;
-    if (numMax !== undefined && n > numMax) n = numMax;
-    return n;
-  };
+  const effectiveFrom = valueFrom !== undefined ? valueFrom : "";
+  const effectiveTo = valueTo !== undefined ? valueTo : "";
 
   const handleFromChange = (e) => {
-    const value = e.target.value.replace(/[^0-9.-]/g, "");
+    const value = e.target.value.replace(/[^0-9.]/g, "");
     if (!isNaN(value) || value === "") {
-      if (typeof onChange === "function") {
-        onChange(value, effectiveTo);
-      } else if (typeof setFromValue === "function") {
-        setFromValue(value);
-      }
+      onChange(value, effectiveTo);
     }
   };
 
   const handleToChange = (e) => {
-    const value = e.target.value.replace(/[^0-9.-]/g, "");
+    const value = e.target.value.replace(/[^0-9.]/g, "");
     if (!isNaN(value) || value === "") {
-      if (typeof onChange === "function") {
-        onChange(effectiveFrom, value);
-      } else if (typeof setToValue === "function") {
-        setToValue(value);
-      }
+      onChange(effectiveFrom, value);
     }
   };
 
-  const bumpFrom = (dir) => {
-    const current = effectiveFrom === "" ? (numMin ?? 0) : Number(effectiveFrom);
-    const next = clamp(current + (dir > 0 ? step : -step));
-    const nextStr = next === "" ? "" : String(next);
-    if (typeof onChange === "function") onChange(nextStr, effectiveTo);
-    else if (typeof setFromValue === "function") setFromValue(nextStr);
-  };
+  const handleUnitChange = (unitValue) => {
 
-  const bumpTo = (dir) => {
-    const current = effectiveTo === "" ? (numMin ?? 0) : Number(effectiveTo);
-    const next = clamp(current + (dir > 0 ? step : -step));
-    const nextStr = next === "" ? "" : String(next);
-    if (typeof onChange === "function") onChange(effectiveFrom, nextStr);
-    else if (typeof setToValue === "function") setToValue(nextStr);
-  };
+    const convertedFrom =
+      effectiveFrom !== ""
+        ? Math.max(0, convertUnit(Number(effectiveFrom), selectedUnit, unitValue))
+        : "";
 
-  const handleRadioChangeInternal = (value) => {
-    onRadioChange(value);
+    const convertedTo =
+      effectiveTo !== ""
+        ? Math.max(0, convertUnit(Number(effectiveTo), selectedUnit, unitValue))
+        : "";
+
+    setSelectedUnit(unitValue);
+
+    if (typeof onChange === "function")
+      onChange(convertedFrom, convertedTo);
   };
 
   return (
-    <div className="custom-dropdown-container">
-      <div
-        className="custom-dropdown-header"
-        onClick={handleToggle}
-        aria-expanded={open}
-        aria-controls="dropdown-content"
-        style={{ marginBottom: "10px" }}
+    <div
+      className="dropdown w-full"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      {/* Toggle */}
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
       >
-        <span>{title}</span>
-        <span className={`dropdown-icon ${open ? "open" : ""}`}>
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M1 3 L5 7 L9 3"
-              fill="none"
-              stroke="black"
-              strokeWidth="1.5"
-              transform={open ? "rotate(180 5 5)" : ""}
-            />
-          </svg>
-        </span>
-      </div>
-      {open && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', background: '#fff', border: '1px solid #dee2e6', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
-            <button type="button" aria-label="Decrease from" onClick={() => bumpFrom(-1)}
-              style={{ padding: '6px 10px', border: 'none', background: 'transparent', cursor: 'pointer' }}>←</button>
+        <span className="truncate">{title}</span>
+        <svg
+          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Dropdown Content */}
+      {isOpen && (
+        <div className="w-full mt-2 bg-white p-3">
+          <div className="flex items-center gap-2">
+            {/* From Input */}
             <input
               type="text"
               inputMode="numeric"
               value={effectiveFrom}
               onChange={handleFromChange}
               placeholder="From"
-              style={{ width: 70, padding: '8px 10px', border: 'none', outline: 'none', textAlign: 'center' }}
+              className="w-[60px] px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400"
             />
-            <button type="button" aria-label="Increase from" onClick={() => bumpFrom(1)}
-              style={{ padding: '6px 10px', border: 'none', background: 'transparent', cursor: 'pointer' }}>→</button>
-          </div>
-
-          <span style={{ opacity: 0.7 }}>–</span>
-
-          <div style={{ display: 'inline-flex', alignItems: 'center', background: '#fff', border: '1px solid #dee2e6', borderRadius: 10, overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
-            <button type="button" aria-label="Decrease to" onClick={() => bumpTo(-1)}
-              style={{ padding: '6px 10px', border: 'none', background: 'transparent', cursor: 'pointer' }}>←</button>
+            <span className="text-gray-300">–</span>
+            {/* To Input */}
             <input
               type="text"
               inputMode="numeric"
               value={effectiveTo}
               onChange={handleToChange}
               placeholder="To"
-              style={{ width: 70, padding: '8px 10px', border: 'none', outline: 'none', textAlign: 'center' }}
+              className="w-[60px] px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400"
             />
-            <button type="button" aria-label="Increase to" onClick={() => bumpTo(1)}
-              style={{ padding: '6px 10px', border: 'none', background: 'transparent', cursor: 'pointer' }}>→</button>
-          </div>
 
-          {Array.isArray(radioOptions) && radioOptions.length > 0 && (
-            <div
-              className="btn-group"
-              role="group"
-              aria-label="Basic radio toggle button group"
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: "50px",
-                justifyContent: "space-around",
-                marginLeft: 10,
-              }}
-            >
-              {radioOptions.map((option) => (
-                <div key={uuidv4()}>
-                  <input
-                    data-attr={key2}
-                    type="radio"
-                    className="btn-check"
-                    name={`btnradio-${key2}-${option.label}-${option.value}`}
-                    id={`btnradio-${key2}-${option.label}-${option.value}`}
-                    value={option.value}
-                    onChange={(e) => handleRadioChangeInternal(e.target.value)}
-                    checked={selectedRadio === option.value}
-                    style={{ transform: "scale(0.8)" }}
-                  />
+            {/* Radio Options Inline */}
+            {Array.isArray(radioOptions) && radioOptions.length > 0 && (
+              <div className="flex border border-gray-300 rounded-full overflow-hidden ml-2">
+                {radioOptions.map((option) => (
                   <label
-                    className="btn btn-outline-primary"
-                    htmlFor={`btnradio-${key2}-${option.label}-${option.value}`}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 6px",
-                      borderRadius: "10px",
-                    }}
+                    key={uuidv4()}
+                    className={`px-3 py-1 text-sm cursor-pointer transition ${
+                      selectedUnit === option.value.toLowerCase()
+                        ? "bg-blue-500 text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-100"
+                    }`}
                   >
+                    <input
+                      type="radio"
+                      value={option.value.toLowerCase()}
+                      checked={selectedUnit === option.value.toLowerCase()}
+                      onChange={() => handleUnitChange(option.value.toLowerCase())}
+                      className="hidden"
+                    />
                     {option.label}
                   </label>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-RangeInput.propTypes = {
-  // Simple API
+RangeDropdown.propTypes = {
   title: PropTypes.string,
   min: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   max: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   valueFrom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   valueTo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func,
-
-  // Back-compat API
-  fromValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  toValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  setFromValue: PropTypes.func,
-  setToValue: PropTypes.func,
-
-  // Optional radios
-  selectedRadio: PropTypes.string,
-  onRadioChange: PropTypes.func,
   radioOptions: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
     })
   ),
-  key2: PropTypes.string,
-
-  // Optional accordion controls
-  isOpen: PropTypes.bool,
-  toggleAccordion: PropTypes.func,
 };
 
-export default RangeInput;
+export default RangeDropdown;
