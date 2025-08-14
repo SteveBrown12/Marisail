@@ -1,27 +1,43 @@
-// src/components/CustomCard.js
-// import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const TrailerCard = ({
-  //   image,
-  Trailer_ID,
-  make,
-  model,
-  year,
-}) => {
+const TrailerCard = ({ item }) => {
+  const {
+    Trailer_ID,
+    Make,
+    Model,
+    Year,
+  } = item;
+
   return (
-    <Link to={`/trailer/${Trailer_ID}`} className="custom-card-link">
-      <div className="custom-card" style={{ marginBottom: "30px" }}>
-        <div className="card-content">
-          <div className="card-header">
-            <span className="year">{year}</span>
-            <h3 className="title">{make}</h3>
-            <p className="price">£ 249,950 Tax Paid</p>
-            <p className="price">{model}</p>
-            {/* <p className="price">{Trailer_ID}</p> */}
-          </div>
-          <div className="card-description">{/* <p>{description}</p> */}</div>
+    <Link
+      to={`/detail/trailer/${Trailer_ID}`}
+      className="block transform transition duration-300 hover:scale-105 no-underline hover:no-underline"
+    >
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl border border-gray-100">
+        <div className="p-5">
+          {/* Year Badge */}
+          {Year && (
+            <span className="inline-block px-3 py-1 text-xs font-semibold text-white bg-yellow-600 rounded-full mb-2">
+              {Year}
+            </span>
+          )}
+
+          {/* Make */}
+          <h3 className="text-lg font-semibold text-gray-800">{Make}</h3>
+
+          {/* Price */}
+          <p className="text-xl font-bold text-green-600 mt-2">
+            £ 249,950 <span className="text-sm font-normal text-gray-500">Tax Paid</span>
+          </p>
+
+          {/* Model */}
+          <p className="text-sm text-gray-500 mt-1">{Model}</p>
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 py-3 bg-gray-50 text-sm text-blue-600 font-medium hover:text-blue-800">
+          View Details →
         </div>
       </div>
     </Link>
@@ -29,10 +45,12 @@ const TrailerCard = ({
 };
 
 TrailerCard.propTypes = {
-  Trailer_ID: PropTypes.number.isRequired,
-  make: PropTypes.string.isRequired,
-  model: PropTypes.string.isRequired,
-  year: PropTypes.string,
+  item: PropTypes.shape({
+    Trailer_ID: PropTypes.number.isRequired,
+    Make: PropTypes.string.isRequired,
+    Model: PropTypes.string.isRequired,
+    Year: PropTypes.string,
+  }).isRequired,
 };
 
 export default TrailerCard;

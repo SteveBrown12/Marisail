@@ -1,26 +1,43 @@
-// import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const CharterCard = ({
-  //   image,
-  Charter_ID,
-  Summer_Cruising_Area,
-  Category,
-  Boardingport_Time = "",
-}) => {
+const CharterCard = ({ item }) => {
+  const {
+    Charter_ID,
+    Crew_Accommodation,
+    Yacht_Decor,
+    Boardingport_Time = "",
+  } = item;
+
   return (
-    <Link to={`/charter/${Charter_ID}`} className="custom-card-link">
-      <div className="custom-card" style={{ marginBottom: "30px" }}>
-        <div className="card-content">
-          <div className="card-header">
-            <span className="year">{Boardingport_Time}</span>
-            <h3 className="title">{Category}</h3>
-            <p className="price">£ 249,950 Tax Paid</p>
-            <p className="price">{Summer_Cruising_Area}</p>
-            {/* <p className="price">{Transport_Item_ID}</p> */}
-          </div>
-          <div className="card-description">{/* <p>{description}</p> */}</div>
+    <Link
+      to={`/detail/charter/${Charter_ID}`}
+      className="block transform transition duration-300 hover:scale-105 no-underline hover:no-underline"
+    >
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl border border-gray-100">
+        <div className="p-5">
+          {/* Boarding Time Badge */}
+          {Boardingport_Time && (
+            <span className="inline-block px-3 py-1 text-xs font-semibold text-white bg-purple-600 rounded-full mb-2">
+              {Boardingport_Time}
+            </span>
+          )}
+
+          {/* Yacht_Decor */}
+          <h3 className="text-lg font-semibold text-gray-800">{Yacht_Decor}</h3>
+
+          {/* Price */}
+          <p className="text-xl font-bold text-green-600 mt-2">
+            £ 249,950 <span className="text-sm font-normal text-gray-500">Tax Paid</span>
+          </p>
+
+          {/* Crew_Accommodation */}
+          <p className="text-sm text-gray-500 mt-1">{Crew_Accommodation}</p>
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 py-3 bg-gray-50 text-sm text-blue-600 font-medium hover:text-blue-800">
+          View Details →
         </div>
       </div>
     </Link>
@@ -28,10 +45,12 @@ const CharterCard = ({
 };
 
 CharterCard.propTypes = {
-  Marisail_Berth_ID: PropTypes.number.isRequired,
-  Location: PropTypes.string.isRequired,
-  Type: PropTypes.string.isRequired,
-  year: PropTypes.string,
+  item: PropTypes.shape({
+    Charter_ID: PropTypes.number.isRequired,
+    Crew_Accommodation: PropTypes.string.isRequired,
+    Yacht_Decor: PropTypes.string.isRequired,
+    Boardingport_Time: PropTypes.string,
+  }).isRequired,
 };
 
 export default CharterCard;

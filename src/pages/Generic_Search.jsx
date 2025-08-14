@@ -1,17 +1,22 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "../components/Loader";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
 import RangeInput from "../components/RangeInput";
 import DatePickerField from "../components/DatePickerField";
 
+import BerthCard from "../components/BerthCard";
+import CharterCard from "../components/CharterCard";
+import TrailerCard from "../components/TrailerCard";
+import TransportCard from "../components/TransportCard";
+import EngineCard from "../components/EngineCard";
+
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 const UI_KEY_SEP = "||";
 
 export default function GenericSearch() {
   const { serviceName } = useParams();
-  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [fetchingOptions, setFetchingOptions] = useState({});
@@ -146,10 +151,6 @@ export default function GenericSearch() {
     setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: value }));
   };
 
-  const handleDetailsClick = (id) => {
-    navigate(`/details/${serviceName}/${id}`);
-  };
-
   if (loading && !config) return <Loader />;
   if (error) return <div className="bg-red-100 text-red-700 p-3 rounded">{error}</div>;
 
@@ -160,7 +161,7 @@ export default function GenericSearch() {
       <div className="flex flex-col md:flex-row gap-4">
         
         {/* Sidebar Filters */}
-        <div className="md:w-1/4 bg-white p-4">
+        <div className="md:w-1/5 min-w-[300px] bg-white p-4">
           <h4 className="text-[25px] capitalize font-bold pb-2 mb-2">
             Search for {serviceName}
           </h4>
@@ -331,21 +332,20 @@ export default function GenericSearch() {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {results.map((item, idx) => (
-              <div
-                className="bg-white border rounded shadow-sm p-4 hover:shadow-md transition cursor-pointer"
-                key={item.id || idx}
-                onClick={() => handleDetailsClick(item.id)}
-              >
-                {Object.entries(item).slice(0, 5).map(([key, value]) =>
-                  value ? (
-                    <p key={key} className="mb-1">
-                      <strong className="capitalize">{key}:</strong> {String(value)}
-                    </p>
-                  ) : null
-                )}
-              </div>
-            ))}
+            {results.map((item, idx) => {
+              if (serviceName === 'berth') {
+                return <BerthCard key={idx} item={item} />;
+              } else if (serviceName === 'transport') {
+                return <TransportCard key={idx} item={item} />;
+              } else if (serviceName === 'charter') {
+                return <CharterCard key={idx} item={item} />;
+              } else if (serviceName === 'trailer') {
+                return <TrailerCard key={idx} item={item} />;
+              } else if (serviceName === 'engine') {
+                return <EngineCard key={idx} item={item} />;
+              }
+              return null; // in case no condition matches
+            })}
           </div>
         </div>
       </div>
