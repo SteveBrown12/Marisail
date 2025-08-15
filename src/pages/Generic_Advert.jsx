@@ -176,6 +176,7 @@ export default function GenericAdvert() {
                                         open={openDropdown === uiKey}
                                         fetching={!!fetchingOptions[uiKey]}
                                         placeholder={`Select ${label}`}
+                                        advert={true}
                                       />
                                       {errors[uiKey] && (
                                         <div className="text-red-500 text-sm mt-1">

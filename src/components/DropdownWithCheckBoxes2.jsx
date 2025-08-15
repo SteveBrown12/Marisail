@@ -16,7 +16,8 @@ const DropdownWithCheckBoxes = ({
   setSelectedOptions,
   onOpen,
   fetching = false,
-  open
+  open,
+  advert
 }) => {
   const [isOpen, setIsOpen] = useState(open);
   const [inputText, setInputText] = useState("");
@@ -33,14 +34,6 @@ const DropdownWithCheckBoxes = ({
         Array.isArray(selectedOptions[heading])
         ? selectedOptions[heading]
         : []);
-
-  // Toggle dropdown
-  const handleDropdownToggle = () => {
-    setIsOpen((prev) => !prev);
-    if (!isOpen) {
-      safeOnOpen(inputText, offSet);
-    }
-  };
 
   // Scroll handler
   const handleScroll = () => {
@@ -82,8 +75,50 @@ const DropdownWithCheckBoxes = ({
   };
 
   // Checkbox change
+  // const handleOptionChange = (value, e) => {
+  //   e.stopPropagation();
+  //   if (Array.isArray(selected) && typeof onChange === "function") {
+  //     const exists = selected.includes(value);
+  //     const updated = exists
+  //       ? selected.filter((v) => v !== value)
+  //       : [...selected, value];
+  //     onChange(updated);
+  //     return;
+  //   }
+  //   if (typeof setSelectedOptions === "function" && heading) {
+  //     setSelectedOptions((prev) => {
+  //       const currentSelections = (prev && prev[heading]) || [];
+  //       const updatedSelections = currentSelections.includes(value)
+  //         ? currentSelections.filter((item) => item !== value)
+  //         : [...currentSelections, value];
+  //       return {
+  //         ...(prev || {}),
+  //         [heading]: updatedSelections,
+  //       };
+  //     });
+  //   }
+  // };
+
   const handleOptionChange = (value, e) => {
     e.stopPropagation();
+
+    if (advert) {
+      // Single-select mode
+      if (Array.isArray(selected) && typeof onChange === "function") {
+        // Always replace the entire selection with only the clicked value
+        onChange([value]);
+        return;
+      }
+      if (typeof setSelectedOptions === "function" && heading) {
+        setSelectedOptions((prev) => ({
+          ...(prev || {}),
+          [heading]: [value],
+        }));
+      }
+      return;
+    }
+
+    // Multi-select mode (default)
     if (Array.isArray(selected) && typeof onChange === "function") {
       const exists = selected.includes(value);
       const updated = exists
@@ -105,6 +140,33 @@ const DropdownWithCheckBoxes = ({
       });
     }
   };
+
+  const handleAddOption = () => {
+    if (!inputText.trim()) return;
+
+    const newOption = inputText.trim();
+
+    // Prevent duplicates
+    if (options.includes(newOption)) return;
+
+    // Add new option to both full and filtered lists
+    const updatedOptions = [...options, newOption];
+    setFilteredOptions(updatedOptions);
+
+    // Select only the new option (single-select behavior)
+    if (Array.isArray(selected) && typeof onChange === "function") {
+      onChange([newOption]);
+    } else if (typeof setSelectedOptions === "function" && heading) {
+      setSelectedOptions((prev) => ({
+        ...(prev || {}),
+        [heading]: [newOption],
+      }));
+    }
+
+    // Clear input
+    setInputText("");
+  };
+
 
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -215,6 +277,13 @@ const DropdownWithCheckBoxes = ({
             })
           ) : fetching ? (
             <Loader />
+          ) : advert && inputText.trim() && !options.includes(inputText.trim()) ? ( 
+            <div
+              className="text-gray-500 text-center p-2 cursor-pointer hover:bg-gray-100"
+              onClick={handleAddOption}
+            >
+              Add {inputText}
+            </div>  
           ) : (
             <div className="text-gray-500 text-center p-2">No options available</div>
           )}
