@@ -63,17 +63,24 @@ const select_List = [
 ].join(", ");
 
 const query = `
- SELECT ${select_List}FROM \`${main}\` ${build_Joins(service_config)}WHERE \`${main}\`.\`${primary_Key}\` = ?LIMIT 1
+ SELECT ${select_List} FROM \`${main}\` ${build_Joins(service_config)} WHERE \`${main}\`.\`${primary_Key}\` = ? LIMIT 1
 `;
     console.log("Details query:", query, "with id:", id);
     const [results] = await db_connection.query(query, [id]);
     if (results.length === 0) {
       return handle_Error_Response(response, 'Record not found', 404);
     }
+        let row = results[0];
+    const safe_Key = `${main}__${primary_Key}`;
+    if ((row[primary_Key] === null || row[primary_Key] === undefined) && row[safe_Key] != null) {
+      row[primary_Key] = row[safe_Key];
+    }
+    delete row[safe_Key];
     response.json({ ok: true, data: results[0] });
   } catch (error) {
     handle_Error_Response(response, `Details fetch failed: ${error.message}`);
   }
+  
 });
 
 // → Returns unique values (or numeric range buckets if ?range= provided) for a given field in the service’s mapping.
