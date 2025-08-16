@@ -89,32 +89,53 @@ search_Router.get("/:service_name/facets/:field", initialize_Service, async (req
   try {
     const { field } = request.params;
     const { service_mappings } = request;
-    const column_Name = service_mappings.var_To_Column[field];
-    const table_Name = service_mappings.var_To_Table[field];
+
+    let column_Name = service_mappings.var_To_Column[field];
+    let table_Name = service_mappings.var_To_Table[field];
+    if (!column_Name || !table_Name) {
+      for (const [key, cell] of Object.entries(service_mappings.var_To_Column)) {
+        if (cell.toLowerCase() === field.toLowerCase()) {
+          column_Name = cell;
+          table_Name = service_mappings.var_To_Table[key];
+          break;
+        }
+      }
+    }
+
     if (!column_Name || !table_Name) {
       return handle_Error_Response(response, `Field '${field}' not configured`, 404);
     }
-
-    // If numeric/measurement range bucket requested
-
     if (request.query.range) {
       const query = build_Range_Facets(table_Name, column_Name, parseInt(request.query.range));
       const [ranges] = await db_connection.query(query);
       return response.json({ ok: true, facets: ranges });
     }
 
-    // Default: return DISTINCT values like options() used to
+    // Query to get counts of each distinct value
+    
+    const facets_Query = `
+      SELECT \`${column_Name}\` AS value, COUNT(*) AS count
+      FROM \`${table_Name}\`
+      WHERE \`${column_Name}\` IS NOT NULL
+      GROUP BY \`${column_Name}\`
+      ORDER BY value ASC
+    `;
+    const [facets] = await db_connection.query(facets_Query);
 
-    const query = `
-      SELECT DISTINCT \`${column_Name}\` AS value FROM \`${table_Name}\`
-      WHERE \`${column_Name}\` IS NOT NULL      ORDER BY value ASC LIMIT 200`;
-    const [rows] = await db_connection.query(query);
-    return response.json({ ok: true, facets: rows.map(r => r.value) });
+    // Query to get total count of records where column NOT NULL
+
+    const totalCountQuery = `
+      SELECT COUNT(*) AS totalCount
+      FROM \`${table_Name}\`
+      WHERE \`${column_Name}\` IS NOT NULL
+    `;
+    const [total_Rows] = await db_connection.query(totalCountQuery);
+    const total_Count = total_Rows[0]?.totalCount ?? 0;
+
+    return response.json({ ok: true,   total_Count,facets });
   } catch (error) {
-    handle_Error_Response(
-      response,
-      `Facets failed for field '${request.params.field}': ${error.message}`
-    );
+    handle_Error_Response( response, `Facets failed for field '${request.params.field}': ${error.message}`  );
   }
 });
+
 export default search_Router;
