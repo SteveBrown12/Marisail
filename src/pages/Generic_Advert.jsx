@@ -177,6 +177,16 @@ export default function GenericAdvert() {
                                         fetching={!!fetchingOptions[uiKey]}
                                         placeholder={`Select ${label}`}
                                         advert={true}
+                                        onAddOption={(newOpt) => {
+                                          setFiltersData((prev) => ({
+                                            ...prev,
+                                            [uiKey]: [...(prev[uiKey] || []), newOpt],
+                                          }));
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [uiKey]: [...(prev[uiKey] || []), newOpt.value], // auto-select string value
+                                          }));
+                                        }}
                                       />
                                       {errors[uiKey] && (
                                         <div className="text-red-500 text-sm mt-1">

@@ -17,7 +17,8 @@ const DropdownWithCheckBoxes = ({
   onOpen,
   fetching = false,
   open,
-  advert
+  advert,
+  onAddOption
 }) => {
   const [isOpen, setIsOpen] = useState(open);
   const [inputText, setInputText] = useState("");
@@ -74,31 +75,6 @@ const DropdownWithCheckBoxes = ({
     }
   };
 
-  // Checkbox change
-  // const handleOptionChange = (value, e) => {
-  //   e.stopPropagation();
-  //   if (Array.isArray(selected) && typeof onChange === "function") {
-  //     const exists = selected.includes(value);
-  //     const updated = exists
-  //       ? selected.filter((v) => v !== value)
-  //       : [...selected, value];
-  //     onChange(updated);
-  //     return;
-  //   }
-  //   if (typeof setSelectedOptions === "function" && heading) {
-  //     setSelectedOptions((prev) => {
-  //       const currentSelections = (prev && prev[heading]) || [];
-  //       const updatedSelections = currentSelections.includes(value)
-  //         ? currentSelections.filter((item) => item !== value)
-  //         : [...currentSelections, value];
-  //       return {
-  //         ...(prev || {}),
-  //         [heading]: updatedSelections,
-  //       };
-  //     });
-  //   }
-  // };
-
   const handleOptionChange = (value, e) => {
     e.stopPropagation();
 
@@ -144,22 +120,31 @@ const DropdownWithCheckBoxes = ({
   const handleAddOption = () => {
     if (!inputText.trim()) return;
 
-    const newOption = inputText.trim();
+    const newValue = inputText.trim();
+    const newOption = { value: newValue, count: 0 };
 
     // Prevent duplicates
-    if (options.includes(newOption)) return;
+    const exists = options.some(
+      (opt) => (typeof opt === "object" ? opt.value : opt) === newValue
+    );
+    if (exists) return;
 
-    // Add new option to both full and filtered lists
+    // Call parent to update its options state
+    if (typeof onAddOption === "function") {
+      onAddOption(newOption);
+    }
+
+    // Also reflect locally so dropdown updates immediately
     const updatedOptions = [...options, newOption];
     setFilteredOptions(updatedOptions);
 
-    // Select only the new option (single-select behavior)
+    // Select only the new option (single-select behavior for advert)
     if (Array.isArray(selected) && typeof onChange === "function") {
-      onChange([newOption]);
+      onChange([newValue]);
     } else if (typeof setSelectedOptions === "function" && heading) {
       setSelectedOptions((prev) => ({
         ...(prev || {}),
-        [heading]: [newOption],
+        [heading]: [newValue],
       }));
     }
 
@@ -267,9 +252,9 @@ const DropdownWithCheckBoxes = ({
                     />
                     <span>{valueKey}</span>
                   </div>
-                  {option.occurrence_cnt !== undefined && (
+                  {option.count !== undefined && (
                     <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-2">
-                      {option.occurrence_cnt}
+                      {option.count}
                     </span>
                   )}
                 </label>
