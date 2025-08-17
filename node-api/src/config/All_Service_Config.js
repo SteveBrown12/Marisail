@@ -450,11 +450,12 @@ export const Trailer_Config = {
     tables: [
         {
 
-            // Table Trailer_Details Fields 12
+            // Table Trailer_Details Fields 13
 
             table_Name: "Trailer_Details",
             section_Heading: "Identification",
             columns: {
+                TrailerId:{column_Name: "Trailer_ID", display_Text: "Trailer ID", type: "radio", mandatory: true, searchable: true, radioOptions: null },
                 manufacturer: { column_Name: "Manufacturer", display_Text: "Manufacturer", type: "radio", mandatory: true, searchable: true, radioOptions: null },
                 make: { column_Name: "Make", display_Text: "Make", type: "radio", mandatory: true, searchable: true, radioOptions: null },
                 model: { column_Name: "Model", display_Text: "Model", type: "radio", mandatory: true, searchable: true, radioOptions: null },
