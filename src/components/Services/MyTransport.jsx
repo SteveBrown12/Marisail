@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import DropdownWithRadio from "../DropdownWithRadio";
 import Loader from "../Loader";
 import SubmitButton from "../SubmitButton";
-import { keyToExpectedValueMap, typeDef } from "../Transport/TransportAdvertInfo";
+import { keyToExpectedValueMap, typeDef } from "../Transport/Transport_Advert_Info";
 import { makeString, convertUnitsInFormData } from "../../services/common_functions";
 import DatePickerComponent from "../DatePickerComponent";
 import InputComponentDual from "../InputComponentDual";
@@ -178,35 +178,6 @@ export default function MyTransport() {
         vat: advertiseTransportData?.paymentTerms?.vat?.value || "",
     });
     
-    /*const checkRequired = () => {
-        const errors = {};
-        Object.keys(typeDef).forEach((sectionKey) => {
-            const section = typeDef[sectionKey];
-            const sectionData = sections[sectionKey];
-            Object.keys(section).forEach((fieldKey) => {
-                const field = section[fieldKey];
-                if (field.mandatory) {
-                    const fieldValue = sectionData[fieldKey];
-                    if (field.type === "radio") {
-                        if (!field.value || String(field.value).trim() === "") {
-                            errors[`${fieldKey}`] = true;
-                        }
-                    } else if (field.type === "number") {
-                        if (
-                            fieldValue === undefined ||
-                            fieldValue === "" ||
-                            isNaN(fieldValue)
-                        ) {
-                            errors[`${fieldKey}`] = true;
-                        }
-                    }
-                }
-            });
-        });
-
-        setError(errors);
-        return Object.keys(errors).length === 0;
-    };*/
 
     const sections = {
         jobDescription,

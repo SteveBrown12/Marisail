@@ -9,7 +9,6 @@ const SearchBar = ({ selectedTags, removeTag, resetTags, onChange }) => {
           width: "80%",
         }}
       >
-        {/* <h3 className="h3-0">Your Engine Search</h3> */}
         {selectedTags.length > 0 && (
           <span
             onClick={resetTags}

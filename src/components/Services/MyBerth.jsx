@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import DropdownWithRadio from "../DropdownWithRadio";
 import Loader from "../Loader";
 import SubmitButton from "../SubmitButton";
-import { keyToExpectedValueMap, typeDef } from "../Berth/BerthAdvertInfo";
+import { keyToExpectedValueMap, typeDef } from "../Berth/Berth_Advert_Info";
 import { makeString } from "../../services/common_functions";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 

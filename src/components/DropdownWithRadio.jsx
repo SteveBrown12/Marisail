@@ -15,7 +15,7 @@ const DropdownWithRadio = ({
   const [list] = useState(options);
   // console.log("001 List--",list);
   // console.log("001 Selected Value--",selectedOption);
-  
+
   // if (typeof options === Number){
   //   console.log("001 Number Title--",title);
   // }
@@ -27,7 +27,7 @@ const DropdownWithRadio = ({
   };
 
   function convertNonArrayOrObject(value) {
-    if (!Array.isArray(value) && typeof value !== 'object') {
+    if (!Array.isArray(value) && typeof value !== "object") {
       return [value]?.[0];
     } else {
       return value?.[0];
@@ -36,7 +36,8 @@ const DropdownWithRadio = ({
 
   return (
     <Accordion
-      activeKey={openKey} style={{marginLeft:'-10px'}}
+      activeKey={openKey}
+      style={{ marginLeft: "-10px" }}
       onSelect={(eventKey) => setOpenKey(eventKey)}
     >
       <Accordion.Item eventKey={heading}>
@@ -44,7 +45,9 @@ const DropdownWithRadio = ({
           {title}
           {isMandatory && <span className="text-danger">&nbsp;*</span>}
         </Accordion.Header>
-        <Accordion.Body style={{ maxHeight: 200, overflowY: "auto", maxWidth: 472 }}>
+        <Accordion.Body
+          style={{ maxHeight: 200, overflowY: "auto", maxWidth: 472 }}
+        >
           <div>
             {list.length > 0 ? (
               list.map((item, index) => (
@@ -53,13 +56,17 @@ const DropdownWithRadio = ({
                     type="radio"
                     name={`radio-options-${heading}`}
                     label={`${item[0]}`}
-                    checked={convertNonArrayOrObject(selectedOption)=== item[0]}
+                    checked={
+                      convertNonArrayOrObject(selectedOption) === item[0]
+                    }
                     onChange={() => handleOptionChange(item[0])}
                   />
                 </div>
               ))
             ) : (
-              <div className="custom-dropdown-no-results">No options available</div>
+              <div className="custom-dropdown-no-results">
+                No options available
+              </div>
             )}
           </div>
         </Accordion.Body>
@@ -75,7 +82,7 @@ DropdownWithRadio.propTypes = {
   selectedOption: PropTypes.oneOfType([
     PropTypes.string.isRequired,
     PropTypes.number.isRequired,
-    PropTypes.object.isRequired
+    PropTypes.object.isRequired,
   ]),
   setSelectedOption: PropTypes.func.isRequired,
   isMandatory: PropTypes.bool.isRequired,

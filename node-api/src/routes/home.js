@@ -20,7 +20,7 @@ homeRouter.get("/sponsors/", async (req, res) => {
   try {
     connection = await dbConnection.getConnection();
     const [rows] = await connection.query(
-      "SELECT * FROM sponsers ORDER BY Payment DESC LIMIT 30"
+      "SELECT * FROM Sponsers ORDER BY Payment DESC LIMIT 30"
     );
     return res.status(200).json({ ok: true, result: rows });
   } catch (err) {

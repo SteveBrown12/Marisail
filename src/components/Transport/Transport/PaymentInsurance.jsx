@@ -83,20 +83,3 @@ export default function PaymentInsurance({props, setProps}) {
   );
 }
 
-// const [paymentInsurance, setPaymentInsurance] = useState({
-//     paymentTerms: "",
-//     serviceLegalAgreement: "",
-//     acceptedPaymentMethods: "",
-//     cancellationPolicy: "",
-//     currency: "",
-//     invoiceTime: "",
-//     latePaymentFee: "",
-//     billingContactInformation: "",
-//     disputeResolutionTerms: "",
-//     liabilityCoverage: "",
-//     insurancePolicy: "",
-//     insuranceCoverage: "",
-//     insuranceProvider: "",
-//     insuranceClaimProcess: "",
-// });
-

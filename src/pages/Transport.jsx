@@ -1,5 +1,5 @@
-import TransportAdvert from "../components/Transport/TransportAdvert";
-import TransportSearch from "../components/Transport/TransportSearch";
+import TransportAdvert from "../components/Transport/Transport_Advert";
+import TransportSearch from "../components/Transport/Transport_Search";
 import PropTypes from "prop-types";
 
 

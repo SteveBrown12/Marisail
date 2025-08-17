@@ -2,6 +2,7 @@
 //Eg. Input: "engineBlock", Output: "Engine Block"
 
 export const makeString = (str, keyToExpectedValueMap) => {
+  console.log('inside make string', str, keyToExpectedValueMap)
   if (str in keyToExpectedValueMap) {
     return keyToExpectedValueMap[str];
   }

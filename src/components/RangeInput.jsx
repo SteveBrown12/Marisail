@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const RangeInput = ({
   title,
@@ -8,16 +8,12 @@ const RangeInput = ({
   setFromValue,
   setToValue,
   radioOptions,
+  selectedRadio,
+  onRadioChange,
+  key2,
+  isOpen,
+  toggleAccordion,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedRadio, setSelectedRadio] = useState(
-    radioOptions.length > 0 ? radioOptions[0].value : ""
-  );
-
-  const handleDropdownToggle = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   const handleFromChange = (e) => {
     const value = e.target.value;
     if (!isNaN(value) || value === "") {
@@ -32,15 +28,15 @@ const RangeInput = ({
     }
   };
 
-  const handleRadioChange = (e) => {
-    setSelectedRadio(e.target.value);
+  const handleRadioChangeInternal = (value) => {
+    onRadioChange(value);
   };
 
   return (
     <div className="custom-dropdown-container">
       <div
         className="custom-dropdown-header"
-        onClick={handleDropdownToggle}
+        onClick={toggleAccordion}
         aria-expanded={isOpen}
         aria-controls="dropdown-content"
         style={{ marginBottom: "10px" }}
@@ -111,21 +107,22 @@ const RangeInput = ({
                 marginLeft: 10,
               }}
             >
-              {radioOptions.map((option, index) => (
-                <div key={index}>
+              {radioOptions.map((option) => (
+                <div key={uuidv4()}>
                   <input
+                    data-attr={key2}
                     type="radio"
                     className="btn-check"
-                    name={`btnradio-${option.label}-${option.value}`}
-                    id={`btnradio-${option.label}-${option.value}`}
+                    name={`btnradio-${key2}-${option.label}-${option.value}`}
+                    id={`btnradio-${key2}-${option.label}-${option.value}`}
                     value={option.value}
-                    onChange={handleRadioChange}
+                    onChange={(e) => handleRadioChangeInternal(e.target.value)}
                     checked={selectedRadio === option.value}
                     style={{ transform: "scale(0.8)" }}
                   />
                   <label
                     className="btn btn-outline-primary"
-                    htmlFor={`btnradio-${option.label}-${option.value}`}
+                    htmlFor={`btnradio-${key2}-${option.label}-${option.value}`}
                     style={{
                       fontSize: "12px",
                       padding: "4px 6px",
@@ -150,12 +147,17 @@ RangeInput.propTypes = {
   setFromValue: PropTypes.func.isRequired,
   setToValue: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
+  selectedRadio: PropTypes.string,
+  onRadioChange: PropTypes.func.isRequired,
   radioOptions: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
     })
   ),
+  key2: PropTypes.string.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  toggleAccordion: PropTypes.func.isRequired,
 };
 
 export default RangeInput;

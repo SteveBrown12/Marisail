@@ -1,0 +1,30 @@
+FROM node:20-alpine as base
+
+WORKDIR /app
+
+COPY package.json ./
+
+COPY . .  
+
+RUN npm install 
+
+RUN npm run build
+
+EXPOSE 4173
+
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
+
+# RUN npm run build
+
+# # nginx image
+# FROM nginx:alpine
+
+# RUN rm /etc/nginx/conf.d/default.conf
+
+# COPY frontend.conf /etc/nginx/conf.d/default.conf
+
+# COPY --from=base /app/dist /usr/share/nginx/html
+
+# EXPOSE 5173
+
+# CMD ["nginx", "-g", "daemon off;"]

@@ -3,24 +3,24 @@ import { Link } from "react-router-dom";
 
 const EngineCard = ({
   image,
-  engine_modelyear,
-  engine_model,
+  Engine_Model_Year,
+  Engine_Model,
   asking_price,
   engine_id,
-  engine_make,
+  Engine_Make,
 }) => {
   return (
     <Link to={`/engines/${engine_id}`} className="custom-card-link">
       <div className="custom-card" style={{ marginBottom: "30px" }}>
         <div className="card-image">
-          <img src="./images/engine.jpg" alt={`${engine_model}`} />
+          <img src="./images/engine.jpg" alt={`${Engine_Model}`} />
         </div>
         <div className="card-content">
           <div className="card-header">
-            <span className="year">{engine_modelyear}</span>
-            <h3 className="title">{engine_model}</h3>
+            <span className="year">{Engine_Model_Year}</span>
+            <h3 className="title">{Engine_Model}</h3>
             <p className="price">£ 249,950 Tax Paid</p>
-            <p className="price">{engine_make}</p>
+            <p className="price">{Engine_Make}</p>
           </div>
           <div className="card-description">{/* <p>{description}</p> */}</div>
         </div>

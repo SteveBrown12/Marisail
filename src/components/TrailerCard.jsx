@@ -32,7 +32,7 @@ TrailerCard.propTypes = {
   Trailer_ID: PropTypes.number.isRequired,
   make: PropTypes.string.isRequired,
   model: PropTypes.string.isRequired,
-  year: PropTypes.number.isRequired,
+  year: PropTypes.string,
 };
 
 export default TrailerCard;

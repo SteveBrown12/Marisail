@@ -12,13 +12,7 @@ function SelectComponent({
   options,
   isMandatory,
 }) {
-  {/* const clearSelection = (e) => {
-    e.stopPropagation();
-    setValue("");
-  };*/}
-  // if(options == undefined) {
-  //   console.log("001 Options--",typeof options, label, options);
-  // }
+  
   
   return (
     <Accordion
@@ -30,13 +24,6 @@ function SelectComponent({
         <Accordion.Header>
           {label}
           {isMandatory && <span className="text-danger">&nbsp;*</span>}
-          {/* Clear Selection at section level */}
-          {/* <span style={{position: 'absolute', right: 35,  top: '50%', transform: 'translateY(-50%)'}}
-            onClick={clearSelection}
-            className="clear-selection-x"
-          >
-            X
-          </span> */}
         </Accordion.Header>
         <Accordion.Body style={{ maxHeight: 200, overflowY: "auto" }}>
           {options && options.map((item, index) => (
@@ -59,20 +46,6 @@ function SelectComponent({
                 onChange={() => setValue(item)}
                 label={item}
               />
-              {/* {item === value && (
-                <span
-                  style={{
-                    color: "#193e77",
-                    cursor: "pointer",
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent the Accordion from toggling
-                    setValue(""); // Clear the selected value
-                  }}
-                >
-                  X
-                </span>
-              )} */}
             </div>
           ))}
         </Accordion.Body>

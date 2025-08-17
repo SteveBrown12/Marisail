@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-node-api/src/config/dbConfig.js
+# node-api/src/config/dbConfig.js
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +24,9 @@ node-api/src/config/dbConfig.js
 *.njsproj
 *.sln
 *.sw?
+
+.env
+.env.production
+.env.development
+
+package-lock.json
