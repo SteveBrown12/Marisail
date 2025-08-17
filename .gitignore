@@ -24,3 +24,6 @@ node-api/src/config/dbConfig.js
 *.njsproj
 *.sln
 *.sw?
+.env.example
+*.development
+*.json
