@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import { format as formatDate, parseISO, isValid } from "date-fns";
 import axios from "axios";
+import image from "/images/engine.jpg"
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -52,9 +53,18 @@ const GenericDetail = () => {
   if (loading) return <Loader />;
   if (error) return <p className="text-red-600">Error: {error}</p>;
   if (!details || Object.keys(details).length === 0) return <p>No details available.</p>;
-
+  
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-7xl mx-auto">
+      {/* Image Section */}
+      <div className="mb-6 rounded-2xl overflow-hidden shadow-md">
+        <img
+          src={image}
+          alt="Detail Preview"
+          className="w-full h-64 md:h-80 object-cover"
+        />
+      </div>
+        
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         {Object.entries(details).map(([key, value]) => (
           <div
