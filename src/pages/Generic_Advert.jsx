@@ -155,7 +155,8 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <DropdownWithCheckBoxes
-                                        title={`${label}${col.mandatory ? " *" : ""}`}
+                                        title={label}
+                                        mandatory={col.mandatory}
                                         options={
                                           filtersData[uiKey]
                                             ? [...filtersData[uiKey]]
@@ -200,7 +201,8 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <RangeInput
-                                        title={`${label}${col.mandatory ? " *" : ""}`}
+                                        title={label}
+                                        mandatory={col.mandatory}
                                         min={col.min || ""}
                                         max={col.max || ""}
                                         valueFrom={
@@ -227,6 +229,7 @@ export default function GenericAdvert() {
                                     <div className="mb-2" key={fieldKey}>
                                       <RangeInput
                                         title={label}
+                                        mandatory={col.mandatory}
                                         min={col.min || ""}
                                         max={col.max || ""}
                                         valueFrom={formState[fieldKey]?.from || ""}
@@ -251,7 +254,10 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <label className="block mb-1 font-medium">
-                                        {`${label}${col.mandatory ? " *" : ""}`}
+                                        <span className="truncate">
+                                          {label}
+                                          {col.mandatory && <span className="text-red-500 ml-1">*</span>}
+                                        </span>
                                       </label>
                                       <DatePickerField
                                         mode="single"
@@ -277,7 +283,10 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <label className="block mb-1 font-medium">
-                                        {`${label}${col.mandatory ? " *" : ""}`}
+                                        <span className="truncate">
+                                          {label}
+                                          {col.mandatory && <span className="text-red-500 ml-1">*</span>}
+                                        </span>
                                       </label>
                                       <input
                                         type="text"
