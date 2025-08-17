@@ -144,6 +144,8 @@ export default function GenericSearch() {
     if (config) fetchResults();
   }, [allSelectedOptions, fetchResults, config]);
 
+  // Requirement #2 - Drop Down Menus Multi-Choice Functionality
+  // Key Functionality #1 - Search - MULTI-SEARCH Code
   const handleMultiSelectChange = (tableName, field, selectedValues) => {
     const uiKey = `${tableName}${UI_KEY_SEP}${field}`;
     setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: selectedValues }));
@@ -213,8 +215,10 @@ export default function GenericSearch() {
                           />
                         </div>
                       );
-
-                    case "number":
+                    
+                    case "number": 
+                      // Requirement #5 - Numeric Value Fields Now Come Back As Ranges Of Values [From To] For Search
+                      // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
                       return (
                         <div className="mb-2" key={uiKey}>
                           <RangeInput
@@ -231,6 +235,9 @@ export default function GenericSearch() {
                       );
 
                     case "dual":
+                      // Requirement #6 - Dual Values For Real-Numbers And Measurement Fields Get Converted By Calculation
+                      // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
+                      // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
                       return (
                         <div className="mb-2" key={uiKey}>
                           <RangeInput

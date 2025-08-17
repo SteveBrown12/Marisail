@@ -198,6 +198,8 @@ export default function GenericAdvert() {
                                   );
 
                                 case "number":
+                                  // Requirement #5 - Numeric Value Fields Now Come Back As Ranges Of Values [From To] For Search
+                                  // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
                                   return (
                                     <>
                                       <RangeInput
@@ -225,6 +227,9 @@ export default function GenericAdvert() {
                                   );
 
                                 case "dual":
+                                  // Requirement #6 - Dual Values For Real-Numbers And Measurement Fields Get Converted By Calculation
+                                  // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
+                                  // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
                                   return (
                                     <div className="mb-2" key={fieldKey}>
                                       <RangeInput

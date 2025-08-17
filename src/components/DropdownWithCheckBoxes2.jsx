@@ -256,6 +256,8 @@ const DropdownWithCheckBoxes = ({
                     />
                     <span>{valueKey}</span>
                   </div>
+                  {/* // Requirement #1 - Dynamic Search Counts */}
+                  {/* // Key Functionality #2 - Search - DYNAMIC SEARCH COUNTS Code */}
                   {option.count !== undefined && (
                     <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-2">
                       {option.count}

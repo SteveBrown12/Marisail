@@ -25,6 +25,8 @@ const formatDisplayValue = (value) => {
   return value;
 };
 
+// Requirement #3 - Detailed Search Results Page – Optimize Styling.
+// Key Functionality #3 - Search - DETAILED RESULTS Code (Details Panels)
 const GenericDetail = () => {
   const { serviceName, id } = useParams();
   const [details, setDetails] = useState(null);
