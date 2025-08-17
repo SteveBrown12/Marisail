@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import image from "/images/engine.jpg"
 
 const CharterCard = ({ item }) => {
   const {
@@ -15,6 +16,12 @@ const CharterCard = ({ item }) => {
       className="block transform transition duration-300 hover:scale-105 no-underline hover:no-underline"
     >
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl border border-gray-100">
+        {/* Image */}
+        <img
+          src={image}
+          className="w-full h-48 object-cover"
+        />
+        
         <div className="p-5">
           {/* Boarding Time Badge */}
           {Boardingport_Time && (

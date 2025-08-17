@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import image from "/images/engine.jpg"
 
 const EngineCard = ({ item }) => {
   const {
@@ -18,16 +19,12 @@ const EngineCard = ({ item }) => {
     >
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl border border-gray-100">
         
-        {/* Engine Image */}
-        <div className="w-full h-48 overflow-hidden">
-          <img
-            src={image || "/images/engine.jpg"}
-            alt={Engine_Model}
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        {/* Card Content */}
+        {/* Image */}
+        <img
+          src={image}
+          className="w-full h-48 object-cover"
+        />
+        
         <div className="p-5">
           {/* Year Badge */}
           {Engine_Model_Year && (
