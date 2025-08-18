@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
-import RangeInput from "../components/RangeInput";
+import InputComponent from "../components/InputComponent";
 import Loader from "../components/Loader";
 import DatePickerField from "../components/DatePickerField";
 import axios from "axios";
@@ -25,10 +25,10 @@ export default function GenericAdvert() {
   const init = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/search/${serviceName}/search-options`);
+      const res = await axios.get(`${API_BASE}/advert/${serviceName}/search-options`);
       if (res.data.ok) {
-        const { service_config, service_mappings } = res.data.data;
-        setServiceConfig(service_config);
+        const { data , service_mappings } = res.data;
+        setServiceConfig(data);
         setServiceMappings(service_mappings);
         setFormState({});
       }
@@ -202,19 +202,17 @@ export default function GenericAdvert() {
                                   // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
                                   return (
                                     <>
-                                      <RangeInput
+                                      <InputComponent
                                         title={label}
                                         mandatory={col.mandatory}
                                         min={col.min || ""}
                                         max={col.max || ""}
-                                        valueFrom={
-                                          formState[fieldKey]?.from || ""
-                                        }
-                                        valueTo={formState[fieldKey]?.to || ""}
-                                        onChange={(min, max) =>
+                                        radioOptions={col.radioOptions || col.radio_Options}
+                                        value={formState[fieldKey]?.value || ""}
+                                        onChange={(value) =>
                                           setFormState((prev) => ({
                                             ...prev,
-                                            [fieldKey]: { from: min, to: max },
+                                            [fieldKey]: { value: value },
                                           }))
                                         }
                                       />
@@ -232,18 +230,17 @@ export default function GenericAdvert() {
                                   // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
                                   return (
                                     <div className="mb-2" key={fieldKey}>
-                                      <RangeInput
+                                      <InputComponent
                                         title={label}
                                         mandatory={col.mandatory}
                                         min={col.min || ""}
                                         max={col.max || ""}
-                                        valueFrom={formState[fieldKey]?.from || ""}
-                                        valueTo={formState[fieldKey]?.to || ""}
-                                        radioOptions={col.radioOptions}
-                                        onChange={(min, max) =>
+                                        value={formState[fieldKey]?.value || ""}
+                                        radioOptions={col.radioOptions || col.radio_Options}
+                                        onChange={(value) =>
                                           setFormState((prev) => ({
                                             ...prev,
-                                            [fieldKey]: { from: min, to: max },
+                                            [fieldKey]: { value: value },
                                           }))
                                         }
                                       />
