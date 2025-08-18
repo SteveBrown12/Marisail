@@ -25,10 +25,10 @@ export default function GenericAdvert() {
   const init = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/search/${serviceName}/search-options`);
+      const res = await axios.get(`${API_BASE}/advert/${serviceName}/search-options`);
       if (res.data.ok) {
-        const { service_config, service_mappings } = res.data.data;
-        setServiceConfig(service_config);
+        const { data , service_mappings } = res.data;
+        setServiceConfig(data);
         setServiceMappings(service_mappings);
         setFormState({});
       }
