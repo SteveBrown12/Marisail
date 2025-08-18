@@ -225,6 +225,7 @@ export default function GenericSearch() {
                             title={label}
                             min={col.min || ""}
                             max={col.max || ""}
+                            radioOptions={col.radioOptions || col.radio_Options}
                             valueFrom={allSelectedOptions[uiKey]?.from || ""}
                             valueTo={allSelectedOptions[uiKey]?.to || ""}
                             onChange={(min, max) =>
@@ -246,7 +247,7 @@ export default function GenericSearch() {
                             max={col.max || ""}
                             valueFrom={allSelectedOptions[uiKey]?.from || ""}
                             valueTo={allSelectedOptions[uiKey]?.to || ""}
-                            radioOptions={col.radioOptions}
+                            radioOptions={col.radioOptions || col.radio_Options}
                             onChange={(min, max) =>
                               handleRangeChange(table.table_Name, backendFieldKey, min, max)
                             }
