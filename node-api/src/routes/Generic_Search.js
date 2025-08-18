@@ -51,37 +51,99 @@ search_Router.get("/:service_name/search", initialize_Service, async (request, r
 
 // // Key Functionality #3 - Search - DETAILED RESULTS Code (Details Panels) → Fetches a single record’s details by ID (with joined tables if applicable).
 
+// search_Router.get("/:service_name/details/:id", initialize_Service, async (request, response) => {
+//   try {
+// const { service_config } = request;
+// const id = request.params.id;
+// const main = service_config.main_table;
+// const primary_Key = service_config.primary_key;
+// const select_List = [
+//   `\`${main}\`.*`,`\`${main}\`.\`${primary_Key}\` AS \`${main}__${primary_Key}\``,  ...(Array.isArray(service_config.join_tables)
+//     ? service_config.join_tables.map(t => `\`${t}\`.*`) : [])
+// ].join(", ");
+
+// const query = `
+//  SELECT ${select_List} FROM \`${main}\` ${build_Joins(service_config)} WHERE \`${main}\`.\`${primary_Key}\` = ? LIMIT 1
+// `;
+//     console.log("Details query:", query, "with id:", id);
+//     const [results] = await db_connection.query(query, [id]);
+//     if (results.length === 0) {
+//       return handle_Error_Response(response, 'Record not found', 404);
+//     }
+//         let row = results[0];
+//     const safe_Key = `${main}__${primary_Key}`;
+//     if ((row[primary_Key] === null || row[primary_Key] === undefined) && row[safe_Key] != null) {
+//       row[primary_Key] = row[safe_Key];
+//     }
+//     delete row[safe_Key];
+//     response.json({ ok: true, data: results[0] });
+//   } catch (error) {
+//     handle_Error_Response(response, `Details fetch failed: ${error.message}`);
+//   }
+  
+// });
+
 search_Router.get("/:service_name/details/:id", initialize_Service, async (request, response) => {
   try {
-const { service_config } = request;
-const id = request.params.id;
-const main = service_config.main_table;
-const primary_Key = service_config.primary_key;
-const select_List = [
-  `\`${main}\`.*`,`\`${main}\`.\`${primary_Key}\` AS \`${main}__${primary_Key}\``,  ...(Array.isArray(service_config.join_tables)
-    ? service_config.join_tables.map(t => `\`${t}\`.*`) : [])
-].join(", ");
+    const { service_config, service_mappings } = request;
+    const id = request.params.id;
+    const main = service_config.main_table;
+    const primary_Key = service_config.primary_key;
 
-const query = `
- SELECT ${select_List} FROM \`${main}\` ${build_Joins(service_config)} WHERE \`${main}\`.\`${primary_Key}\` = ? LIMIT 1
-`;
+    // Build select list: main table fields + alias for primary key + join tables
+    const select_List = [
+      `\`${main}\`.*`,
+      `\`${main}\`.\`${primary_Key}\` AS \`${main}__${primary_Key}\``,
+      ...(Array.isArray(service_config.join_tables) ? service_config.join_tables.map(t => `\`${t}\`.*`) : [])
+    ].join(", ");
+
+    const query = `
+      SELECT ${select_List}
+      FROM \`${main}\`
+      ${build_Joins(service_config)}
+      WHERE \`${main}\`.\`${primary_Key}\` = ?
+      LIMIT 1
+    `;
     console.log("Details query:", query, "with id:", id);
     const [results] = await db_connection.query(query, [id]);
     if (results.length === 0) {
       return handle_Error_Response(response, 'Record not found', 404);
     }
-        let row = results[0];
+
+    const flat_Row = results[0];
     const safe_Key = `${main}__${primary_Key}`;
-    if ((row[primary_Key] === null || row[primary_Key] === undefined) && row[safe_Key] != null) {
-      row[primary_Key] = row[safe_Key];
+
+    // Restore PK if overwritten by join tables
+    if ((flat_Row[primary_Key] === null || flat_Row[primary_Key] === undefined) && flat_Row[safe_Key] != null) {
+      flat_Row[primary_Key] = flat_Row[safe_Key];
     }
-    delete row[safe_Key];
-    response.json({ ok: true, data: results[0] });
+    delete flat_Row[safe_Key];
+
+    // Structure response grouped by tables using your config
+    const structured_Data = {};
+
+    (service_config.tables || []).forEach(table => {
+      const table_Name = table.table_Name;
+      structured_Data[table_Name] = {};
+
+      // Get columns as array whether originally object or array
+      const collumns = Array.isArray(table.columns) ? table.columns : Object.values(table.columns || {});
+
+      collumns.forEach(col => {
+        const collumn_Name = col.column_Name;
+        if (flat_Row.hasOwnProperty(collumn_Name)) {
+          structured_Data[table_Name][collumn_Name] = flat_Row[collumn_Name];
+        }
+      });
+    });
+
+    return response.json({ ok: true, data: structured_Data });
+
   } catch (error) {
     handle_Error_Response(response, `Details fetch failed: ${error.message}`);
   }
-  
 });
+
 
 // → Returns unique values (or numeric range buckets if ?range= provided) for a given field in the service’s mapping.
 
