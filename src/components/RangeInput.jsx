@@ -11,6 +11,7 @@ const RangeDropdown = ({
   valueTo,
   onChange,
   radioOptions,
+  mandatory,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState(() => {
@@ -67,7 +68,10 @@ const RangeDropdown = ({
         aria-expanded={isOpen}
         className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
       >
-        <span className="truncate">{title}</span>
+        <span className="truncate">
+          {title}
+          {mandatory && <span className="text-red-500 ml-1">*</span>}
+        </span>
         <svg
           className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""

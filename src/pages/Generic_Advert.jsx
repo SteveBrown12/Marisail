@@ -155,7 +155,8 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <DropdownWithCheckBoxes
-                                        title={`${label}${col.mandatory ? " *" : ""}`}
+                                        title={label}
+                                        mandatory={col.mandatory}
                                         options={
                                           filtersData[uiKey]
                                             ? [...filtersData[uiKey]]
@@ -197,10 +198,13 @@ export default function GenericAdvert() {
                                   );
 
                                 case "number":
+                                  // Requirement #5 - Numeric Value Fields Now Come Back As Ranges Of Values [From To] For Search
+                                  // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
                                   return (
                                     <>
                                       <RangeInput
-                                        title={`${label}${col.mandatory ? " *" : ""}`}
+                                        title={label}
+                                        mandatory={col.mandatory}
                                         min={col.min || ""}
                                         max={col.max || ""}
                                         valueFrom={
@@ -223,10 +227,14 @@ export default function GenericAdvert() {
                                   );
 
                                 case "dual":
+                                  // Requirement #6 - Dual Values For Real-Numbers And Measurement Fields Get Converted By Calculation
+                                  // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
+                                  // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
                                   return (
                                     <div className="mb-2" key={fieldKey}>
                                       <RangeInput
                                         title={label}
+                                        mandatory={col.mandatory}
                                         min={col.min || ""}
                                         max={col.max || ""}
                                         valueFrom={formState[fieldKey]?.from || ""}
@@ -251,7 +259,10 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <label className="block mb-1 font-medium">
-                                        {`${label}${col.mandatory ? " *" : ""}`}
+                                        <span className="truncate">
+                                          {label}
+                                          {col.mandatory && <span className="text-red-500 ml-1">*</span>}
+                                        </span>
                                       </label>
                                       <DatePickerField
                                         mode="single"
@@ -277,7 +288,10 @@ export default function GenericAdvert() {
                                   return (
                                     <>
                                       <label className="block mb-1 font-medium">
-                                        {`${label}${col.mandatory ? " *" : ""}`}
+                                        <span className="truncate">
+                                          {label}
+                                          {col.mandatory && <span className="text-red-500 ml-1">*</span>}
+                                        </span>
                                       </label>
                                       <input
                                         type="text"

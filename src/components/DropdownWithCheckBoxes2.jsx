@@ -7,6 +7,7 @@ const DropdownWithCheckBoxes = ({
   varToDb = {},
   heading,
   title,
+  mandatory,
   options = [],
   // Backwards-compat props (simple API)
   selected,
@@ -184,7 +185,10 @@ const DropdownWithCheckBoxes = ({
         aria-expanded={isOpen}
         className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
       >
-        <span className="truncate">{title}</span>
+        <span className="truncate">
+          {title}
+          {mandatory && <span className="text-red-500 ml-1">*</span>}
+        </span>
         <svg
           className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -252,6 +256,8 @@ const DropdownWithCheckBoxes = ({
                     />
                     <span>{valueKey}</span>
                   </div>
+                  {/* // Requirement #1 - Dynamic Search Counts */}
+                  {/* // Key Functionality #2 - Search - DYNAMIC SEARCH COUNTS Code */}
                   {option.count !== undefined && (
                     <span className="text-xs bg-gray-100 text-gray-800 rounded-full px-2">
                       {option.count}
