@@ -43,24 +43,44 @@ const validate_Mandatory_Fields = (request, response, next) => {
 
 //  * OPTIONS route (for select/dropdown lists)
  
-advert_router.get("/:service_name/options/:field",  initialize_Service,
-  async (request, response) => {
-    try {
-      const { field } = request.params;
-      const { service_config, service_mappings } = request;
-      const column_Name = service_mappings?.var_To_Column?.[field];
-      const table_Name =service_mappings?.var_To_Table?.[field] || service_config?.main_table;
-      if (!column_Name || !table_Name) {
-        return handle_Error_Response(response, `Field '${field}' not configured`, 404);
+advert_router.get("/:service_name/search-options", initialize_Service, (request, response) => {
+  try {
+    const { service_config, service_mappings } = request;
+ console.log("Service config and mappings:", service_config, service_mappings);
+    const sorted_Tables = (service_config.tables || []).map(table => {
+      let columns_Object = table.columns || {};
+      let columns_Array = Array.isArray(columns_Object) ? columns_Object : Object.values(columns_Object);
+      columns_Array = columns_Array.sort((a, b) => {
+        if (a.mandatory && !b.mandatory) return -1;
+        if (!a.mandatory && b.mandatory) return 1;
+        if (a.display_Text && b.display_Text) {
+          return a.display_Text.localeCompare(b.display_Text);
+        }
+        return 0;
+      });
+      if (!Array.isArray(table.columns)) {
+        const sorted_Object = {};
+        columns_Array.forEach(col => {
+          const origKey = Object.keys(table.columns)
+            .find(k => table.columns[k] === col);
+          if (origKey) sorted_Object[origKey] = col;
+        });
+        return { ...table, columns: sorted_Object };
       }
-      const [rows] = await db_connection.query(
-        `SELECT DISTINCT \`${column_Name}\` AS value FROM \`${table_Name}\` WHERE \`${column_Name}\` IS NOT NULL`      );
-      return response.json({ ok: true, options: rows.map((row) => row.value) });
-    } catch (error) {
-      return handle_Error_Response(response, `Options fetch failed: ${error.message}`);
-    }
+      return { ...table, columns: columns_Array };
+    });
+    response.json({
+      ok: true,
+      data: {
+        ...service_config,
+        tables: sorted_Tables
+      },
+      service_mappings
+    });
+  } catch (err) {
+    handle_Error_Response(response, `Config fetch failed: ${err.message}`);
   }
-);
+});
 
 // Key Functionality #4 - Advert - AUTOFILL Sections Based On Section 1 (Trailer, Engine, Vessel)
 
