@@ -4,6 +4,7 @@ import Loader from "../components/Loader";
 import { format as formatDate, parseISO, isValid } from "date-fns";
 import axios from "axios";
 import image from "/images/engine.jpg"
+import {Section_Positions} from "../utils/Section_Position";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -38,6 +39,7 @@ const GenericDetail = () => {
       try {
         const res = await axios.get(`${apiUrl}/search/${serviceName}/details/${id}`);
         setDetails(res.data.data); // expecting an object
+        console.log(res.data.data)
       } catch (err) {
         setError(err.message);
       } finally {
@@ -68,19 +70,38 @@ const GenericDetail = () => {
       </div>
         
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        {Object.entries(details).map(([key, value]) => (
-          <div
-            key={key}
-            className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 p-4 border border-gray-100"
-          >
-            <h6 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-              {key.replace(/_/g, " ")}
-            </h6>
-            <p className="text-gray-900 text-sm font-medium break-words">
-              {formatDisplayValue(value)}
-            </p>
-          </div>
-        ))}
+        {Object.entries(details)
+          .sort((a, b) => {
+            const posA =
+              Section_Positions[serviceName]?.find(
+                (t) => t.table_Name === a[0]
+              )?.position || 0;
+            const posB =
+              Section_Positions[serviceName]?.find(
+                (t) => t.table_Name === b[0]
+              )?.position || 0;
+            return posA - posB;
+          })
+          .map(([tableName, valuesObject]) => (
+            <div
+              key={tableName}
+              className="p-4"
+            >
+              <h6 className="text-md font-semibold text-blue-500 uppercase tracking-wide mb-5">
+                {tableName.replace(/_/g, " ")}
+              </h6>
+
+              {Object.entries(valuesObject).map(([key, value]) => (
+                <p
+                  key={key}
+                  className="text-gray-900 text-sm break-words mb-2"
+                >
+                  <span>{key.replace(/_/g, " ")}:</span>{" "}
+                  {formatDisplayValue(value)}
+                </p>
+              ))}
+            </div>
+          ))}
       </div>
     </div>
   );
