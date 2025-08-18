@@ -39,7 +39,6 @@ const GenericDetail = () => {
       try {
         const res = await axios.get(`${apiUrl}/search/${serviceName}/details/${id}`);
         setDetails(res.data.data); // expecting an object
-        console.log(res.data.data)
       } catch (err) {
         setError(err.message);
       } finally {
