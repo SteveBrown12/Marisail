@@ -55,6 +55,7 @@ const menuItems = [
       { to: "/view-trailer", label: "My Trailers" },
       { to: "/view-berth", label: "My Berths" },
       { to: "/view-transport", label: "My Transport" },
+      { to: "/become-sponsor", label: "Become Sponsor" },
     ],
   },
 ];
@@ -67,7 +68,7 @@ const HeaderNavbar = ({ navbarRef }) => {
       ref={navbarRef}
       className="bg-white shadow-sm sticky top-0 z-50 font-medium uppercase"
     >
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <NavLink

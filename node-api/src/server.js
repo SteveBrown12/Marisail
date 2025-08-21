@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import authRoutes from "./index.js";
 import dotenv from 'dotenv';
+import path from "path";
+
 dotenv.config();
 
 import './testDB.js'; // for testing db connection
@@ -15,6 +17,7 @@ server.use(logger("dev"));
 server.use(json());
 server.use(urlencoded({ extended: false }));
 server.use(cookieParser());
+server.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 server.use("/api", authRoutes);
 
 // catch 404 and forward to error handler

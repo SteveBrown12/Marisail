@@ -1,6 +1,6 @@
 import { Router } from "express";
 import db_connection from "../config/dbConfig.js";
-import { initialize_Service, handle_Error_Response, build_Joins, build_Where_Clause, build_Range_Facets } from "../utils/Common_Utils.js"
+import { initialize_Service, handle_Error_Response, build_Joins, build_Where_Clause, build_Range_Facets } from "../utils/common_Utils.js"
 const search_Router = Router();
 
 // → Returns the service configuration & field mappings so the UI can build a search form.

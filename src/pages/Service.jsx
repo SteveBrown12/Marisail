@@ -4,6 +4,7 @@ import MyBerth from "./services/MyBerth";
 import MyTrailer from "./services/MyTrailer";
 import MyTransport from "./services/MyTransport";
 import MyCharter from "./services/MyCharter";
+import BecomeSponsor from "../pages/BecomeSponsor";
 
 const Services = ({ type }) => {
   // Example user object
@@ -34,10 +35,11 @@ const Services = ({ type }) => {
         <MyTransport />
       ) : type === "myTrailer" ? (
         <MyTrailer />
-      ): (
+      ) : type === "Sponsor" ? (
+        <BecomeSponsor />
+      ) : (
         <MyCharter />
       )}
-
     </main>
   );
 };
