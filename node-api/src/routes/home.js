@@ -4,12 +4,14 @@ import dbConnection from "../config/dbConfig.js";
 const homeRouter = Router();
 
 //API call from frontend - http://localhost:3001/api/home/
+
 homeRouter.get("/", (req, res) => {
   console.log("Inside home...");
   res.json({ message: "Home route" });
 });
 
 //API call from frontend - http://localhost:3001/api/main/
+
 homeRouter.get("/main/", (req, res) => {
     console.log("Inside home amin page...");
     res.json({ message: "Home main page route" });

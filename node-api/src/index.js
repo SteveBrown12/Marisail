@@ -3,12 +3,16 @@
 import { Router } from "express";
 import homeRouter from "./routes/home.js";
 
-import handler from "./routes/upload-media.js";
+// import handler from "./routes/upload-media.js";
 
 
 
 import search_router from "./routes/Generic_search.js"; 
 import advert_router from "./routes/Generic_Advert.js"; 
+
+// upload routes
+
+import upload_Router from "./routes/Upload-Media.js"
 
 import authRouter from "./routes/auth.js";
 
@@ -27,6 +31,7 @@ router.use("/search", search_router);
 router.use("/advert", advert_router); 
 
 
-router.use("/upload-media", handler);
+
+router.use("/media", upload_Router);
 
 export default router;
