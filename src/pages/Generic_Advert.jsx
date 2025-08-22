@@ -20,6 +20,7 @@ export default function GenericAdvert() {
   const [errors, setErrors] = useState({});
   const [filtersData, setFiltersData] = useState({});
   const [autofillLoading, setAutofillLoading] = useState(false);
+  const [mmYKeys, setMmYKeys] = useState({ make: null, model: null, year: null });
   const [openDropdown, setOpenDropdown] = useState(null);
 
   const init = useCallback(async () => {
@@ -31,6 +32,18 @@ export default function GenericAdvert() {
         setServiceConfig(data);
         setServiceMappings(service_mappings);
         setFormState({});
+
+        // Derive varNames for make, model, year to power autofill
+        const mm = { make: null, model: null, year: null };
+        const v2c = service_mappings?.var_To_Column || {};
+        Object.keys(v2c).forEach((vn) => {
+          const vnl = vn.toLowerCase();
+          const col = String(v2c[vn] || "").toLowerCase();
+          if (!mm.make && (vnl === "make" || col === "make")) mm.make = vn;
+          if (!mm.model && (vnl === "model" || col === "model")) mm.model = vn;
+          if (!mm.year && (vnl === "year" || col === "year")) mm.year = vn;
+        });
+        setMmYKeys(mm);
       }
     } catch (e) {
       console.error("Init error", e);
@@ -68,6 +81,67 @@ export default function GenericAdvert() {
     }
   };
 
+  // Helper to get field type by varName from config
+  const getFieldType = useCallback((varName) => {
+    for (const table of serviceConfig?.tables || []) {
+      if (table?.columns && table.columns[varName]) return table.columns[varName].type;
+    }
+    return null;
+  }, [serviceConfig]);
+
+  // Trigger autofill when make, model, and year are present
+  useEffect(() => {
+    const allowed = ["engine", "trailer", "vessel"];
+    if (!allowed.includes(String(serviceName || "").toLowerCase())) return;
+    if (!mmYKeys.make || !mmYKeys.model || !mmYKeys.year) return;
+    const rawMake = formState[mmYKeys.make];
+    const rawModel = formState[mmYKeys.model];
+    const rawYear = formState[mmYKeys.year];
+    if (!rawMake || !rawModel || !rawYear) return;
+
+    // Normalize values for backend
+    const make = Array.isArray(rawMake) ? rawMake[0] : rawMake;
+    const model = Array.isArray(rawModel) ? rawModel[0] : rawModel;
+    const year = typeof rawYear === "object" && rawYear !== null && "value" in rawYear ? rawYear.value : (Array.isArray(rawYear) ? rawYear[0] : rawYear);
+    if (!make || !model || !year) return;
+
+    let cancelled = false;
+    const doAutofill = async () => {
+      setAutofillLoading(true);
+      try {
+        const res = await fetch(`${API_BASE}/advert/${serviceName}/autofill`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ make, model, year })
+        });
+        const js = await res.json();
+        if (cancelled) return;
+        if (js?.ok && js.data) {
+          setFormState((prev) => {
+            const updates = { ...prev };
+            Object.entries(js.data).forEach(([vn, v]) => {
+              const t = getFieldType(vn);
+              if (t === "radio") {
+                updates[vn] = Array.isArray(v) ? v : [v];
+              } else if (t === "dual" || t === "number") {
+                updates[vn] = typeof v === "object" && v && "value" in v ? v : { value: v };
+              } else if (v !== undefined) {
+                updates[vn] = v;
+              }
+            });
+            return updates;
+          });
+        }
+      } catch (err) {
+        console.error("autofill error", err);
+      } finally {
+        if (!cancelled) setAutofillLoading(false);
+      }
+    };
+    const timer = setTimeout(doAutofill, 300);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [serviceName, mmYKeys, formState, getFieldType]);
+
   const validate = () => {
     if (!serviceConfig) return true;
     const errs = FormUtilities.validateMandatoryFields(
@@ -94,7 +168,7 @@ export default function GenericAdvert() {
       });
       const js = await res.json();
       if (!js.ok) throw new Error(js.message || "submit failed");
-      const newId = js.new_id || js.data?.new_id;
+      const newId = js.new_Id || js.new_id || js.data?.new_Id || js.data?.new_id;
       window.location.href = `/details/${serviceName}/${newId}`;
     } catch (err) {
       console.error("submit error", err);
@@ -123,11 +197,7 @@ export default function GenericAdvert() {
                   return posA - posB; }
                 ).map((table) => {
 
-                const tableColumns = Array.isArray(table.columns)
-                  ? table.columns
-                  : table.columns
-                  ? Object.values(table.columns)
-                  : [];
+                const tableEntries = table.columns ? Object.entries(table.columns) : [];
                   
                 return (
                   <div key={table.table_Name} className="p-4 min-w-[300px] w-1/3 xl:w-[380px]">
@@ -138,8 +208,8 @@ export default function GenericAdvert() {
 
                     {/* Cards Container */}
                     <div>
-                      {tableColumns.map((col) => {
-                        const fieldKey = col.column_Name;
+                      {tableEntries.map(([varName, col]) => {
+                        const fieldKey = varName; // use varName as the frontend key
                         const uiKey = buildUiKey(table.table_Name, fieldKey);
                         const label = col.display_Text || fieldKey;
 
@@ -162,11 +232,11 @@ export default function GenericAdvert() {
                                             ? [...filtersData[uiKey]]
                                             : []
                                         }
-                                        selected={formState[uiKey] || []}
+                                        selected={formState[fieldKey] || []}
                                         onChange={(vals) =>
                                           setFormState((prev) => ({
                                             ...prev,
-                                            [uiKey]: vals,
+                                            [fieldKey]: vals,
                                           }))
                                         }
                                         onOpen={() => {
@@ -185,13 +255,13 @@ export default function GenericAdvert() {
                                           }));
                                           setFormState((prev) => ({
                                             ...prev,
-                                            [uiKey]: [...(prev[uiKey] || []), newOpt.value], // auto-select string value
+                                            [fieldKey]: [...(prev[fieldKey] || []), newOpt.value],
                                           }));
                                         }}
                                       />
-                                      {errors[uiKey] && (
+                                      {errors[fieldKey] && (
                                         <div className="text-red-500 text-sm mt-1">
-                                          {errors[uiKey]}
+                                          {errors[fieldKey]}
                                         </div>
                                       )}
                                     </>
