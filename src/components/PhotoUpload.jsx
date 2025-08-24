@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
-// import "./MediaUpload.scss";
 
 const PhotoUploader = () => {
   const [files, setFiles] = useState([]);

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "../components/Loader";
-import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
+import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes";
 import RangeInput from "../components/RangeInput";
 import DatePickerField from "../components/DatePickerField";
 
@@ -258,8 +258,28 @@ export default function GenericSearch() {
                     case "date":
                       return (
                         <div className="mb-2" key={uiKey}>
-                          <label className="font-medium block mb-1">{label}</label>
                           <DatePickerField
+                            title={label}
+                            mode="range"
+                            value={allSelectedOptions[uiKey] || {}}
+                            onChange={(range) =>
+                              handleRangeChange(
+                                table.table_Name,
+                                backendFieldKey,
+                                range?.from || "",
+                                range?.to || ""
+                              )
+                            }
+                            className="w-full"
+                          />
+                        </div>
+                      );
+
+                    case "timestamp":
+                      return (
+                        <div className="mb-2" key={uiKey}>
+                          <DatePickerField
+                            title={label}
                             mode="range"
                             value={allSelectedOptions[uiKey] || {}}
                             onChange={(range) =>
@@ -276,18 +296,10 @@ export default function GenericSearch() {
                       );
 
                     default:
+                      // label for unknown types, could be extended for text inputs etc.
                       return (
                         <div className="mb-2" key={uiKey}>
                           <label className="font-medium block mb-1">{label}</label>
-                          <input
-                            type="text"
-                            className="border border-gray-300 rounded p-2 text-sm w-full"
-                            placeholder={label}
-                            value={allSelectedOptions[uiKey] || ""}
-                            onChange={(e) =>
-                              handleTextChange(table.table_Name, backendFieldKey, e.target.value)
-                            }
-                          />
                         </div>
                       );
                   }

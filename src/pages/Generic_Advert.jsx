@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
+import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes";
 import InputComponent from "../components/InputComponent";
 import Loader from "../components/Loader";
 import DatePickerField from "../components/DatePickerField";
@@ -299,7 +299,7 @@ export default function GenericAdvert() {
                                   // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
                                   // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
                                   return (
-                                    <div className="mb-2" key={fieldKey}>
+                                    <>
                                       <InputComponent
                                         title={label}
                                         mandatory={col.mandatory}
@@ -319,19 +319,40 @@ export default function GenericAdvert() {
                                           {errors[fieldKey]}
                                         </div>
                                       )}
-                                    </div>
+                                    </>
                                   );
 
                                 case "date":
                                   return (
                                     <>
-                                      <label className="block mb-1 font-medium">
-                                        <span className="truncate">
-                                          {label}
-                                          {col.mandatory && <span className="text-red-500 ml-1">*</span>}
-                                        </span>
-                                      </label>
                                       <DatePickerField
+                                        title={label}
+                                        mandatory={col.mandatory}
+                                        mode="single"
+                                        value={formState[fieldKey] || ""}
+                                        onChange={(iso) =>
+                                          setFormState((prev) => ({
+                                            ...prev,
+                                            [fieldKey]: iso,
+                                          }))
+                                        }
+                                        placeholder="dd-mm-yyyy"
+                                        className="w-full"
+                                      />
+                                      {errors[fieldKey] && (
+                                        <div className="text-red-500 text-sm">
+                                          {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                    </>
+                                  );
+
+                                case "timestamp":
+                                  return (
+                                    <>
+                                      <DatePickerField
+                                        title={label}
+                                        mandatory={col.mandatory}
                                         mode="single"
                                         value={formState[fieldKey] || ""}
                                         onChange={(iso) =>
@@ -352,6 +373,7 @@ export default function GenericAdvert() {
                                   );
 
                                 default:
+                                  //only label for unknown types
                                   return (
                                     <>
                                       <label className="block mb-1 font-medium">
@@ -360,18 +382,7 @@ export default function GenericAdvert() {
                                           {col.mandatory && <span className="text-red-500 ml-1">*</span>}
                                         </span>
                                       </label>
-                                      <input
-                                        type="text"
-                                        placeholder={label}
-                                        value={formState[fieldKey] || ""}
-                                        onChange={(e) =>
-                                          setFormState((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: e.target.value,
-                                          }))
-                                        }
-                                        className="border border-gray-300 rounded-md p-2 w-full"
-                                      />
+
                                       {errors[fieldKey] && (
                                         <div className="text-red-500 text-sm mt-1">
                                           {errors[fieldKey]}

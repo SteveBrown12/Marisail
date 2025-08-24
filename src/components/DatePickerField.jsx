@@ -4,15 +4,12 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { format as formatDate, parseISO, isValid } from "date-fns";
 
-// Utility to normalize incoming date-like values to Date or undefined
 function toDate(val) {
   if (!val) return undefined;
   if (val instanceof Date) return isValid(val) ? val : undefined;
   if (typeof val === "string") {
-    // try ISO first
     const d = parseISO(val);
     if (isValid(d)) return d;
-    // fallback: attempt Date constructor
     const d2 = new Date(val);
     return isValid(d2) ? d2 : undefined;
   }
@@ -29,28 +26,20 @@ function toISO(val) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-const inputBaseStyle = {
-  width: "100%",
-  padding: "8px 12px",
-  border: "1px solid #ced4da",
-  borderRadius: 4,
-  backgroundColor: "#fff",
-  lineHeight: 1.4,
-};
-
 export default function DatePickerField({
-  mode = "single", // 'single' | 'range' | 'multiple'
+  mode = "single",
   value,
   onChange,
   placeholder = "dd MMM yyyy",
   displayFormat = "dd MMM yyyy",
   className = "",
   style = {},
+  title = "Select Date",
+  mandatory = false,
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  // Close on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
@@ -121,31 +110,40 @@ export default function DatePickerField({
   };
 
   return (
-    <div
-      className={className}
-      style={{ position: "relative", width: 220, ...style }}
-      ref={ref}
-    >
-      <div
-        className="form-control d-flex align-items-center justify-content-between"
-        style={inputBaseStyle}
+    <div className={`dropdown w-full ${className}`} style={{ ...style }} ref={ref}>
+      {/* Toggle Button */}
+      <button
+        type="button"
+        aria-expanded={open}
         onClick={() => setOpen((p) => !p)}
+        className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
       >
-        <span style={{ color: displayText ? "#212529" : "#6c757d" }}>
-          {displayText || placeholder}
+        <span className="truncate text-left">
+          {title}
+          {mandatory && <span className="text-red-500 ml-1">*</span>}
         </span>
-        <span className="ms-2" aria-hidden>📅</span>
-      </div>
+        <svg
+          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
 
+      {/* Dropdown Menu */}
       {open && (
         <div
+          className="w-full mt-2 bg-white p-3"
           style={{
-            position: "absolute",
-            zIndex: 1000,
-            background: "#fff",
+            maxHeight: "320px",
+            overflowY: "auto",
             boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
             borderRadius: 8,
-            marginTop: 8,
           }}
         >
           <DayPicker
@@ -155,7 +153,7 @@ export default function DatePickerField({
             numberOfMonths={1}
             styles={{
               caption: { fontWeight: 600 },
-              day_selected: { backgroundColor: "#0d6efd" },
+              day_selected: { backgroundColor: "#0d6efd", color: "#fff" },
             }}
           />
         </div>
@@ -172,4 +170,6 @@ DatePickerField.propTypes = {
   displayFormat: PropTypes.string,
   className: PropTypes.string,
   style: PropTypes.object,
+  title: PropTypes.string,
+  mandatory: PropTypes.bool,
 };
