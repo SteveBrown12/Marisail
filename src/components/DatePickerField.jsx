@@ -32,8 +32,6 @@ export default function DatePickerField({
   onChange,
   placeholder = "dd MMM yyyy",
   displayFormat = "dd MMM yyyy",
-  className = "",
-  style = {},
   title = "Select Date",
   mandatory = false,
 }) {
@@ -110,12 +108,16 @@ export default function DatePickerField({
   };
 
   return (
-    <div className={`dropdown w-full ${className}`} style={{ ...style }} ref={ref}>
+    <div 
+      className={`dropdown w-full`}
+      ref={ref}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
       {/* Toggle Button */}
       <button
         type="button"
         aria-expanded={open}
-        onClick={() => setOpen((p) => !p)}
         className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
       >
         <span className="truncate text-left">
@@ -137,15 +139,7 @@ export default function DatePickerField({
 
       {/* Dropdown Menu */}
       {open && (
-        <div
-          className="w-full mt-2 bg-white p-3"
-          style={{
-            maxHeight: "320px",
-            overflowY: "auto",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
-            borderRadius: 8,
-          }}
-        >
+        <div className="w-full mt-2 bg-white p-3">
           <DayPicker
             mode={mode}
             selected={selected}

@@ -337,7 +337,6 @@ export default function GenericAdvert() {
                                           }))
                                         }
                                         placeholder="dd-mm-yyyy"
-                                        className="w-full"
                                       />
                                       {errors[fieldKey] && (
                                         <div className="text-red-500 text-sm">
@@ -362,7 +361,6 @@ export default function GenericAdvert() {
                                           }))
                                         }
                                         placeholder="dd-mm-yyyy"
-                                        className="w-full"
                                       />
                                       {errors[fieldKey] && (
                                         <div className="text-red-500 text-sm">

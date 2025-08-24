@@ -270,7 +270,6 @@ export default function GenericSearch() {
                                 range?.to || ""
                               )
                             }
-                            className="w-full"
                           />
                         </div>
                       );
@@ -290,7 +289,6 @@ export default function GenericSearch() {
                                 range?.to || ""
                               )
                             }
-                            className="w-full"
                           />
                         </div>
                       );
