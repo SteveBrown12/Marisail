@@ -16,11 +16,12 @@ function toDate(val) {
   return undefined;
 }
 
-function toISO(val) {
+// ✅ Convert to MySQL DATETIME format
+function toMySQL(val) {
   if (!val) return "";
   const d = toDate(val);
   if (!d) return "";
-  return d.toISOString(); // full ISO with date + time
+  return formatDate(d, "yyyy-MM-dd HH:mm:ss");
 }
 
 export default function DateTimePickerField({
@@ -95,19 +96,19 @@ export default function DateTimePickerField({
         d.setHours(parseInt(time.hours, 10));
         d.setMinutes(parseInt(time.minutes, 10));
       }
-      onChange && onChange(d ? toISO(d) : "");
+      onChange && onChange(d ? toMySQL(d) : "");
       setOpen(false);
     } else if (mode === "range") {
-      const iso = {
-        from: sel?.from ? toISO(sel.from) : "",
-        to: sel?.to ? toISO(sel.to) : "",
+      const mysql = {
+        from: sel?.from ? toMySQL(sel.from) : "",
+        to: sel?.to ? toMySQL(sel.to) : "",
       };
-      onChange && onChange(iso);
+      onChange && onChange(mysql);
     } else if (mode === "multiple") {
-      const isoArr = (Array.isArray(sel) ? sel : [])
-        .map((d) => toISO(d))
+      const mysqlArr = (Array.isArray(sel) ? sel : [])
+        .map((d) => toMySQL(d))
         .filter(Boolean);
-      onChange && onChange(isoArr);
+      onChange && onChange(mysqlArr);
     }
   };
 
@@ -119,7 +120,7 @@ export default function DateTimePickerField({
       let d = new Date(selected);
       d.setHours(name === "hours" ? parseInt(value, 10) : parseInt(time.hours, 10));
       d.setMinutes(name === "minutes" ? parseInt(value, 10) : parseInt(time.minutes, 10));
-      onChange && onChange(toISO(d));
+      onChange && onChange(toMySQL(d));
     }
   };
 
