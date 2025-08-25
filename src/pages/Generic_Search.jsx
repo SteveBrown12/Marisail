@@ -5,6 +5,7 @@ import Loader from "../components/Loader";
 import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes";
 import RangeInput from "../components/RangeInput";
 import DatePickerField from "../components/DatePickerField";
+import DateTimePickerField from "../components/DateTimePickerField";
 
 import BerthCard from "../components/BerthCard";
 import CharterCard from "../components/CharterCard";
@@ -260,14 +261,12 @@ export default function GenericSearch() {
                         <div className="mb-2" key={uiKey}>
                           <DatePickerField
                             title={label}
-                            mode="range"
                             value={allSelectedOptions[uiKey] || {}}
                             onChange={(range) =>
-                              handleRangeChange(
+                              handleTextChange(
                                 table.table_Name,
                                 backendFieldKey,
-                                range?.from || "",
-                                range?.to || ""
+                                range
                               )
                             }
                           />
@@ -277,16 +276,14 @@ export default function GenericSearch() {
                     case "timestamp":
                       return (
                         <div className="mb-2" key={uiKey}>
-                          <DatePickerField
+                          <DateTimePickerField
                             title={label}
-                            mode="range"
                             value={allSelectedOptions[uiKey] || {}}
                             onChange={(range) =>
-                              handleRangeChange(
+                              handleTextChange(
                                 table.table_Name,
                                 backendFieldKey,
-                                range?.from || "",
-                                range?.to || ""
+                                range
                               )
                             }
                           />

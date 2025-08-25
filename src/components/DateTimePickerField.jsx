@@ -25,7 +25,6 @@ function toMySQL(val) {
 }
 
 export default function DateTimePickerField({
-  mode = "single",
   value,
   onChange,
   placeholder = "dd MMM yyyy HH:mm",
@@ -36,7 +35,7 @@ export default function DateTimePickerField({
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  // separate state for time
+  // state for time
   const [time, setTime] = useState({ hours: "00", minutes: "00" });
 
   useEffect(() => {
@@ -47,76 +46,32 @@ export default function DateTimePickerField({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const selected = useMemo(() => {
-    if (mode === "single") return toDate(value);
-    if (mode === "range") {
-      const from = value?.from ? toDate(value.from) : undefined;
-      const to = value?.to ? toDate(value.to) : undefined;
-      return { from, to };
-    }
-    if (mode === "multiple") {
-      const arr = Array.isArray(value) ? value : [];
-      return arr.map((v) => toDate(v)).filter(Boolean);
-    }
-    return undefined;
-  }, [value, mode]);
+  const selected = useMemo(() => toDate(value), [value]);
 
   const displayText = useMemo(() => {
     try {
-      if (mode === "single") {
-        const d = toDate(value);
-        return d ? formatDate(d, displayFormat) : "";
-      }
-      if (mode === "range") {
-        const from = toDate(value?.from);
-        const to = toDate(value?.to);
-        if (!from && !to) return "";
-        const left = from ? formatDate(from, displayFormat) : "";
-        const right = to ? formatDate(to, displayFormat) : "";
-        return `${left}${left || right ? " - " : ""}${right}`;
-      }
-      if (mode === "multiple") {
-        const arr = Array.isArray(value) ? value : [];
-        const formatted = arr
-          .map((v) => toDate(v))
-          .filter(Boolean)
-          .map((d) => formatDate(d, displayFormat));
-        return formatted.join(", ");
-      }
-      return "";
+      const d = toDate(value);
+      return d ? formatDate(d, displayFormat) : "";
     } catch {
       return "";
     }
-  }, [value, mode, displayFormat]);
+  }, [value, displayFormat]);
 
   const handleSelect = (sel) => {
-    if (mode === "single") {
-      let d = toDate(sel);
-      if (d) {
-        d.setHours(parseInt(time.hours, 10));
-        d.setMinutes(parseInt(time.minutes, 10));
-      }
-      onChange && onChange(d ? toMySQL(d) : "");
-      setOpen(false);
-    } else if (mode === "range") {
-      const mysql = {
-        from: sel?.from ? toMySQL(sel.from) : "",
-        to: sel?.to ? toMySQL(sel.to) : "",
-      };
-      onChange && onChange(mysql);
-    } else if (mode === "multiple") {
-      const mysqlArr = (Array.isArray(sel) ? sel : [])
-        .map((d) => toMySQL(d))
-        .filter(Boolean);
-      onChange && onChange(mysqlArr);
+    let d = toDate(sel);
+    if (d) {
+      d.setHours(parseInt(time.hours, 10));
+      d.setMinutes(parseInt(time.minutes, 10));
     }
+    onChange && onChange(d ? toMySQL(d) : "");
+    setOpen(false);
   };
 
   const handleTimeChange = (e) => {
     const { name, value } = e.target;
     setTime((prev) => ({ ...prev, [name]: value }));
 
-    if (mode === "single" && selected) {
+    if (selected) {
       let d = new Date(selected);
       d.setHours(name === "hours" ? parseInt(value, 10) : parseInt(time.hours, 10));
       d.setMinutes(name === "minutes" ? parseInt(value, 10) : parseInt(time.minutes, 10));
@@ -158,7 +113,7 @@ export default function DateTimePickerField({
       {open && (
         <div className="w-full mt-2 bg-white p-3 space-y-4">
           <DayPicker
-            mode={mode}
+            mode="single"
             selected={selected}
             onSelect={handleSelect}
             numberOfMonths={1}
@@ -169,35 +124,33 @@ export default function DateTimePickerField({
           />
 
           {/* Time Picker */}
-          {mode === "single" && (
-            <div className="flex gap-2">
-              <select
-                name="hours"
-                value={time.hours}
-                onChange={handleTimeChange}
-                className="border rounded px-2 py-1"
-              >
-                {Array.from({ length: 24 }, (_, i) => (
-                  <option key={i} value={String(i).padStart(2, "0")}>
-                    {String(i).padStart(2, "0")}
-                  </option>
-                ))}
-              </select>
-              <span>:</span>
-              <select
-                name="minutes"
-                value={time.minutes}
-                onChange={handleTimeChange}
-                className="border rounded px-2 py-1"
-              >
-                {Array.from({ length: 60 }, (_, i) => (
-                  <option key={i} value={String(i).padStart(2, "0")}>
-                    {String(i).padStart(2, "0")}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="flex gap-2">
+            <select
+              name="hours"
+              value={time.hours}
+              onChange={handleTimeChange}
+              className="border rounded px-2 py-1"
+            >
+              {Array.from({ length: 24 }, (_, i) => (
+                <option key={i} value={String(i).padStart(2, "0")}>
+                  {String(i).padStart(2, "0")}
+                </option>
+              ))}
+            </select>
+            <span>:</span>
+            <select
+              name="minutes"
+              value={time.minutes}
+              onChange={handleTimeChange}
+              className="border rounded px-2 py-1"
+            >
+              {Array.from({ length: 60 }, (_, i) => (
+                <option key={i} value={String(i).padStart(2, "0")}>
+                  {String(i).padStart(2, "0")}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       )}
     </div>
@@ -205,7 +158,6 @@ export default function DateTimePickerField({
 }
 
 DateTimePickerField.propTypes = {
-  mode: PropTypes.oneOf(["single", "range", "multiple"]),
   value: PropTypes.any,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,

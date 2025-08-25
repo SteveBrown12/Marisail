@@ -16,6 +16,7 @@ function toDate(val) {
   return undefined;
 }
 
+// ✅ Convert to ISO (yyyy-MM-dd)
 function toISO(val) {
   if (!val) return "";
   const d = toDate(val);
@@ -27,7 +28,6 @@ function toISO(val) {
 }
 
 export default function DatePickerField({
-  mode = "single",
   value,
   onChange,
   placeholder = "dd MMM yyyy",
@@ -46,70 +46,26 @@ export default function DatePickerField({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const selected = useMemo(() => {
-    if (mode === "single") return toDate(value);
-    if (mode === "range") {
-      const from = value?.from ? toDate(value.from) : undefined;
-      const to = value?.to ? toDate(value.to) : undefined;
-      return { from, to };
-    }
-    if (mode === "multiple") {
-      const arr = Array.isArray(value) ? value : [];
-      return arr.map((v) => toDate(v)).filter(Boolean);
-    }
-    return undefined;
-  }, [value, mode]);
+  const selected = useMemo(() => toDate(value), [value]);
 
   const displayText = useMemo(() => {
     try {
-      if (mode === "single") {
-        const d = toDate(value);
-        return d ? formatDate(d, displayFormat) : "";
-      }
-      if (mode === "range") {
-        const from = toDate(value?.from);
-        const to = toDate(value?.to);
-        if (!from && !to) return "";
-        const left = from ? formatDate(from, displayFormat) : "";
-        const right = to ? formatDate(to, displayFormat) : "";
-        return `${left}${left || right ? " - " : ""}${right}`;
-      }
-      if (mode === "multiple") {
-        const arr = Array.isArray(value) ? value : [];
-        const formatted = arr
-          .map((v) => toDate(v))
-          .filter(Boolean)
-          .map((d) => formatDate(d, displayFormat));
-        return formatted.join(", ");
-      }
-      return "";
+      const d = toDate(value);
+      return d ? formatDate(d, displayFormat) : "";
     } catch {
       return "";
     }
-  }, [value, mode, displayFormat]);
+  }, [value, displayFormat]);
 
   const handleSelect = (sel) => {
-    if (mode === "single") {
-      const iso = toISO(sel);
-      onChange && onChange(iso);
-      setOpen(false);
-    } else if (mode === "range") {
-      const iso = {
-        from: sel?.from ? toISO(sel.from) : "",
-        to: sel?.to ? toISO(sel.to) : "",
-      };
-      onChange && onChange(iso);
-    } else if (mode === "multiple") {
-      const isoArr = (Array.isArray(sel) ? sel : [])
-        .map((d) => toISO(d))
-        .filter(Boolean);
-      onChange && onChange(isoArr);
-    }
+    const iso = toISO(sel);
+    onChange && onChange(iso);
+    setOpen(false);
   };
 
   return (
-    <div 
-      className={`dropdown w-full`}
+    <div
+      className="dropdown w-full"
       ref={ref}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
@@ -141,7 +97,7 @@ export default function DatePickerField({
       {open && (
         <div className="w-full mt-2 bg-white p-3">
           <DayPicker
-            mode={mode}
+            mode="single"
             selected={selected}
             onSelect={handleSelect}
             numberOfMonths={1}
@@ -157,7 +113,6 @@ export default function DatePickerField({
 }
 
 DatePickerField.propTypes = {
-  mode: PropTypes.oneOf(["single", "range", "multiple"]),
   value: PropTypes.any,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
