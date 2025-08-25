@@ -3,6 +3,7 @@ import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes";
 import InputComponent from "../components/InputComponent";
 import Loader from "../components/Loader";
 import DatePickerField from "../components/DatePickerField";
+import DateTimePickerField from "../components/DateTimePickerField";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import FormUtilities from "../utils/Form_Utilities";
@@ -135,12 +136,12 @@ export default function GenericAdvert() {
       } catch (err) {
         console.error("autofill error", err);
       } finally {
-        if (!cancelled) setAutofillLoading(false);
+        setAutofillLoading(false);
       }
     };
     const timer = setTimeout(doAutofill, 300);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [serviceName, mmYKeys, formState, getFieldType]);
+  }, [serviceName, mmYKeys, getFieldType]);
 
   const validate = () => {
     if (!serviceConfig) return true;
@@ -169,7 +170,7 @@ export default function GenericAdvert() {
       const js = await res.json();
       if (!js.ok) throw new Error(js.message || "submit failed");
       const newId = js.new_Id || js.new_id || js.data?.new_Id || js.data?.new_id;
-      window.location.href = `/details/${serviceName}/${newId}`;
+      window.location.href = `/detail/${serviceName}/${newId}`;
     } catch (err) {
       console.error("submit error", err);
       alert("Submit failed. Check console for error.");
@@ -349,7 +350,7 @@ export default function GenericAdvert() {
                                 case "timestamp":
                                   return (
                                     <>
-                                      <DatePickerField
+                                      <DateTimePickerField
                                         title={label}
                                         mandatory={col.mandatory}
                                         mode="single"
