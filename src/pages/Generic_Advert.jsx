@@ -90,7 +90,8 @@ export default function GenericAdvert() {
     return null;
   }, [serviceConfig]);
 
-  // Trigger autofill when make, model, and year are present
+  // Key Functionality #4 - Advert - AUTOFILL Sections Based On Section 1 (Trailer, Engine, Vessel)
+  // Requirement #7 - Autofill – Code Automatically Tries To Autocomplete The Entire Form - For Engine, Trailer, Vessel With Have Make, Model, Year.
   useEffect(() => {
     const allowed = ["engine", "trailer", "vessel"];
     if (!allowed.includes(String(serviceName || "").toLowerCase())) return;
@@ -143,6 +144,8 @@ export default function GenericAdvert() {
     return () => { cancelled = true; clearTimeout(timer); };
   }, [serviceName, mmYKeys, getFieldType]);
 
+  // Key Functionality #5 - Advert - MANDATORY FIELDS ERROR MESSAGE Code
+  // Requirement #9 - Mandatory Fields (For Advertising) Marked – With Error Message.
   const validate = () => {
     if (!serviceConfig) return true;
     const errs = FormUtilities.validateMandatoryFields(
@@ -153,6 +156,8 @@ export default function GenericAdvert() {
     return Object.keys(errs).length === 0;
   };
 
+  // Key Functionality #6 - Advert – SUBMIT BUTTON UPDATES DATABASE with form data entered and new ID.
+  // Requirement #8 - Submit Buttons Actually Updates Db Properly.
   const handleSubmit = async (e) => {
     e && e.preventDefault();
     if (!validate()) return window.scrollTo({ top: 0, behavior: "smooth" });
