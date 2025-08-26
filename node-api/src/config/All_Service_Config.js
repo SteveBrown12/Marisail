@@ -1019,7 +1019,7 @@ export const Transport_Config = {
                 leftBy: { column_Name: 'Left_By', display_Text: 'Left By', type: 'radio', mandatory: false, searchable: false, radio_Options: null },
                 comments: { column_Name: 'Comments', display_Text: 'Comments', type: 'radio', mandatory: false, searchable: false, radio_Options: null },
                 date: { column_Name: 'Date', display_Text: 'Date', type: 'date', mandatory: false, searchable: false, radio_Options: null },
-                jobDoneCustomer: { column_Name: 'Job_Done_Customer', display_Text: 'Job Done Date', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
+                jobDoneCustomer: { column_Name: 'Job_Done_Customer', display_Text: 'Job Done Date', type: 'radio', mandatory: true, searchable: true, radio_Options: null },
                 jobDoneDateCustomer: { column_Name: 'Job_Done_Date_Customer', display_Text: 'Job Done Date', type: 'date', mandatory: false, searchable: true, radio_Options: null }
             },
         },
@@ -1029,13 +1029,13 @@ export const Transport_Config = {
             // Table: Haulier Fields: 18
             
             table_Name: 'Haulier',
-            section_Heading: ' (Transport Provider) Details',
+            section_Heading: 'Haulier Details',
             columns: {
                 ID: { column_Name: 'Haulier_ID', display_Text: ' ID', type: 'radio', mandatory: true, searchable: false, radio_Options: null },
                 Name: { column_Name: 'Haulier_Name', display_Text: ' Name', type: 'radio', mandatory: true, searchable: false, radio_Options: null },
                 Address: { column_Name: 'Haulier_Address', display_Text: ' Address', type: 'radio', mandatory: true, searchable: false, radio_Options: null },
                 NumberJobs: { column_Name: 'Haulier_Number_Jobs', display_Text: ' Number Jobs', type: 'number', mandatory: true, searchable: false, radio_Options: null },
-                registeredSince: { column_Name: 'Registered_Since', display_Text: 'Registered Since', type: 'radio', mandatory: true, searchable: false, radio_Options: null },
+                registeredSince: { column_Name: 'Registered_Since', display_Text: 'Registered Since', type: 'timestamp', mandatory: true, searchable: false, radio_Options: null },
                 numberVehicles: { column_Name: 'Number_Vehicles', display_Text: 'Number Vehicles', type: 'number', mandatory: true, searchable: false, radio_Options: null },
                 numberDrivers: { column_Name: 'Number_Drivers', display_Text: 'Number Drivers', type: 'number', mandatory: true, searchable: false, radio_Options: null },
                 verified: { column_Name: 'Verified', display_Text: 'Verified', type: 'radio', mandatory: true, searchable: false, radio_Options: null },

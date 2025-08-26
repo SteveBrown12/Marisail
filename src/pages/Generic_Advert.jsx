@@ -24,6 +24,9 @@ export default function GenericAdvert() {
   const [mmYKeys, setMmYKeys] = useState({ make: null, model: null, year: null });
   const [openDropdown, setOpenDropdown] = useState(null);
 
+  const UI_KEY_SEP = "||";
+  const buildUiKey = (tableName, fieldKey) => `${tableName}${UI_KEY_SEP}${fieldKey}`;
+
   const init = useCallback(async () => {
     setLoading(true);
     try {
@@ -57,9 +60,6 @@ export default function GenericAdvert() {
     if (!serviceName) return;
     init();
   }, [serviceName, init]);
-
-  const UI_KEY_SEP = "||";
-  const buildUiKey = (tableName, fieldKey) => `${tableName}${UI_KEY_SEP}${fieldKey}`;
 
   const fetchDropdownData = async (uiKey, fieldKey) => {
     if (!serviceName || !fieldKey || !uiKey) return;
@@ -222,7 +222,7 @@ export default function GenericAdvert() {
                         return (
                           <div
                             key={uiKey}
-                            className="flex flex-col p-0 bg-transparent"
+                            className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden"
                           >
                             {/* Field Rendering */}
                             {(() => {
@@ -266,8 +266,13 @@ export default function GenericAdvert() {
                                         }}
                                       />
                                       {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mt-1">
+                                        <div className="text-red-500 text-sm mb-2">
                                           {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                      {formState[fieldKey] && (
+                                        <div className="text-green-800 text-[16px] font-bold mb-2">
+                                          {formState[fieldKey]}
                                         </div>
                                       )}
                                     </>
@@ -293,8 +298,13 @@ export default function GenericAdvert() {
                                         }
                                       />
                                       {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mt-1">
+                                        <div className="text-red-500 text-sm mb-2">
                                           {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                      {formState[fieldKey]?.value && (
+                                        <div className="text-green-800 text-[16px] font-bold mb-2">
+                                          {formState[fieldKey].value}
                                         </div>
                                       )}
                                     </>
@@ -321,8 +331,13 @@ export default function GenericAdvert() {
                                         }
                                       />
                                       {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mt-1">
+                                        <div className="text-red-500 text-sm mb-2">
                                           {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                      {formState[fieldKey]?.value && (
+                                        <div className="text-green-800 text-[16px] font-bold mb-2">
+                                          {formState[fieldKey].value}
                                         </div>
                                       )}
                                     </>
@@ -345,8 +360,13 @@ export default function GenericAdvert() {
                                         placeholder="dd-mm-yyyy"
                                       />
                                       {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm">
+                                        <div className="text-red-500 text-sm mb-2">
                                           {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                      {formState[fieldKey] && (
+                                        <div className="text-green-800 text-[16px] font-bold mb-2">
+                                          {formState[fieldKey]}
                                         </div>
                                       )}
                                     </>
@@ -369,8 +389,13 @@ export default function GenericAdvert() {
                                         placeholder="dd-mm-yyyy"
                                       />
                                       {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm">
+                                        <div className="text-red-500 text-sm mb-2">
                                           {errors[fieldKey]}
+                                        </div>
+                                      )}
+                                      {formState[fieldKey] && (
+                                        <div className="text-green-800 text-[16px] font-bold mb-2">
+                                          {formState[fieldKey]}
                                         </div>
                                       )}
                                     </>
@@ -386,9 +411,8 @@ export default function GenericAdvert() {
                                           {col.mandatory && <span className="text-red-500 ml-1">*</span>}
                                         </span>
                                       </label>
-
                                       {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mt-1">
+                                        <div className="text-red-500 text-sm mb-2">
                                           {errors[fieldKey]}
                                         </div>
                                       )}

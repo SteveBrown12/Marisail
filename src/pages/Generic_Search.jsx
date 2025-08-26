@@ -14,7 +14,6 @@ import TransportCard from "../components/TransportCard";
 import EngineCard from "../components/EngineCard";
 
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
-const UI_KEY_SEP = "||";
 
 export default function GenericSearch() {
   const { serviceName } = useParams();
@@ -32,6 +31,9 @@ export default function GenericSearch() {
   const [allSelectedOptions, setAllSelectedOptions] = useState({});
   const [results, setResults] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
+
+  const UI_KEY_SEP = "||";
+  const buildUiKey = (tableName, fieldKey) => `${tableName}${UI_KEY_SEP}${fieldKey}`;
 
   const normalizeFacets = (facets) => {
     if (!Array.isArray(facets)) return [];
@@ -191,13 +193,14 @@ export default function GenericSearch() {
                 </h6>
 
                 {tableColumns.map((col) => {
-                  const uiKey = `${table.table_Name}${UI_KEY_SEP}${col.column_Name}`;
                   const backendFieldKey = col.column_Name;
+                  const uiKey = buildUiKey(table.table_Name, backendFieldKey);
                   const label = col.display_Text || backendFieldKey;
+                  
                   switch (col.type) {
                     case "radio":
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={uiKey}>
                           <DropdownWithCheckBoxes
                             title={label}
                             options={filtersData[uiKey] ? [...filtersData[uiKey]] : []}
@@ -221,7 +224,7 @@ export default function GenericSearch() {
                       // Requirement #5 - Numeric Value Fields Now Come Back As Ranges Of Values [From To] For Search
                       // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={uiKey}>
                           <RangeInput
                             title={label}
                             min={col.min || ""}
@@ -241,7 +244,7 @@ export default function GenericSearch() {
                       // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
                       // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={uiKey}>
                           <RangeInput
                             title={label}
                             min={col.min || ""}
@@ -258,7 +261,7 @@ export default function GenericSearch() {
 
                     case "date":
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={uiKey}>
                           <DatePickerField
                             title={label}
                             value={allSelectedOptions[uiKey] || {}}
@@ -275,7 +278,7 @@ export default function GenericSearch() {
 
                     case "timestamp":
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={uiKey}>
                           <DateTimePickerField
                             title={label}
                             value={allSelectedOptions[uiKey] || {}}
