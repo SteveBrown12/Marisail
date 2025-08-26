@@ -8,8 +8,8 @@ const menuItems = [
   {
     title: "boats",
     links: [
-      { to: "/", label: "buy" },
-      { to: "/", label: "sell" },
+      { to: "/find/boat", label: "find a boat" },
+      { to: "/advert/boat", label: "advertise a boat" },
     ],
   },
   {
@@ -22,8 +22,8 @@ const menuItems = [
   {
     title: "engines",
     links: [
-      { to: "/engines", label: "find an engine" },
-      { to: "/advert-engines", label: "advertise an engine" },
+      { to: "/find/engine", label: "find an engine" },
+      { to: "/advert/engine", label: "advertise an engine" },
     ],
   },
   {
@@ -55,6 +55,7 @@ const menuItems = [
       { to: "/view-trailer", label: "My Trailers" },
       { to: "/view-berth", label: "My Berths" },
       { to: "/view-transport", label: "My Transport" },
+      { to: "/become-sponsor", label: "Become Sponsor" },
     ],
   },
 ];
@@ -72,7 +73,7 @@ const HeaderNavbar = ({ navbarRef }) => {
           {/* Brand */}
           <NavLink
             to="/"
-            className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            className="flex items-center space-x-2 no-underline hover:no-underline hover:opacity-80 transition-opacity"
           >
             <BrandIcon />
             <h1 className="text-lg tracking-wide">Marisail</h1>
@@ -121,7 +122,7 @@ const HeaderNavbar = ({ navbarRef }) => {
                     <NavLink
                       key={link.to}
                       to={link.to}
-                      className="block px-4 py-2 text-sm capitalize hover:bg-blue-50 hover:text-blue-600"
+                      className="block px-4 py-2 text-sm capitalize no-underline hover:no-underline hover:bg-blue-50 hover:text-blue-600"
                     >
                       {link.label}
                     </NavLink>
@@ -149,7 +150,7 @@ const HeaderNavbar = ({ navbarRef }) => {
                     <NavLink
                       key={link.to}
                       to={link.to}
-                      className="text-sm capitalize hover:text-blue-600"
+                      className="text-sm capitalize no-underline hover:no-underline hover:text-blue-600"
                       onClick={() => setMobileOpen(false)}
                     >
                       {link.label}

@@ -7,7 +7,7 @@ const FormUtilities = {
       Object.entries(table.columns).forEach(([varName, cfg]) => {
         if (cfg.mandatory) {
           const val = formState[varName];
-          const label = cfg.displayText || varName;
+          const label = cfg.display_Text || cfg.displayText || varName;
           // Type-aware mandatory checks
           if (cfg.type === "dual") {
             // Expect object { value, unit }; value must be non-empty
@@ -48,6 +48,12 @@ const FormUtilities = {
         } else {
           normalized[k] = Number(v.value);
         }
+      } else if (v && typeof v === "object" && v.value !== undefined) {
+        // plain number/dual with only { value }
+        normalized[k] = Number(v.value);
+      } else if (Array.isArray(v)) {
+        // For advert submit, use first selection if multiple picked
+        normalized[k] = v.length > 0 ? v[0] : null;
       } else {
         normalized[k] = v;
       }

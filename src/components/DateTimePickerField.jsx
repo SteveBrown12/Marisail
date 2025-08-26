@@ -16,27 +16,27 @@ function toDate(val) {
   return undefined;
 }
 
-// ✅ Convert to ISO (yyyy-MM-dd)
-function toISO(val) {
+// ✅ Convert to MySQL DATETIME format
+function toMySQL(val) {
   if (!val) return "";
   const d = toDate(val);
   if (!d) return "";
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+  return formatDate(d, "yyyy-MM-dd HH:mm:ss");
 }
 
-export default function DatePickerField({
+export default function DateTimePickerField({
   value,
   onChange,
-  placeholder = "dd MMM yyyy",
-  displayFormat = "dd MMM yyyy",
-  title = "Select Date",
+  placeholder = "dd MMM yyyy HH:mm",
+  displayFormat = "dd MMM yyyy HH:mm",
+  title = "Select Date & Time",
   mandatory = false,
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+
+  // state for time
+  const [time, setTime] = useState({ hours: "00", minutes: "00" });
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -58,9 +58,25 @@ export default function DatePickerField({
   }, [value, displayFormat]);
 
   const handleSelect = (sel) => {
-    const iso = toISO(sel);
-    onChange && onChange(iso);
+    let d = toDate(sel);
+    if (d) {
+      d.setHours(parseInt(time.hours, 10));
+      d.setMinutes(parseInt(time.minutes, 10));
+    }
+    onChange && onChange(d ? toMySQL(d) : "");
     setOpen(false);
+  };
+
+  const handleTimeChange = (e) => {
+    const { name, value } = e.target;
+    setTime((prev) => ({ ...prev, [name]: value }));
+
+    if (selected) {
+      let d = new Date(selected);
+      d.setHours(name === "hours" ? parseInt(value, 10) : parseInt(time.hours, 10));
+      d.setMinutes(name === "minutes" ? parseInt(value, 10) : parseInt(time.minutes, 10));
+      onChange && onChange(toMySQL(d));
+    }
   };
 
   return (
@@ -95,7 +111,7 @@ export default function DatePickerField({
 
       {/* Dropdown Menu */}
       {open && (
-        <div className="w-full mt-2 bg-white p-3">
+        <div className="w-full mt-2 bg-white p-3 space-y-4">
           <DayPicker
             mode="single"
             selected={selected}
@@ -106,13 +122,42 @@ export default function DatePickerField({
               day_selected: { backgroundColor: "#0d6efd", color: "#fff" },
             }}
           />
+
+          {/* Time Picker */}
+          <div className="flex gap-2">
+            <select
+              name="hours"
+              value={time.hours}
+              onChange={handleTimeChange}
+              className="border rounded px-2 py-1"
+            >
+              {Array.from({ length: 24 }, (_, i) => (
+                <option key={i} value={String(i).padStart(2, "0")}>
+                  {String(i).padStart(2, "0")}
+                </option>
+              ))}
+            </select>
+            <span>:</span>
+            <select
+              name="minutes"
+              value={time.minutes}
+              onChange={handleTimeChange}
+              className="border rounded px-2 py-1"
+            >
+              {Array.from({ length: 60 }, (_, i) => (
+                <option key={i} value={String(i).padStart(2, "0")}>
+                  {String(i).padStart(2, "0")}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-DatePickerField.propTypes = {
+DateTimePickerField.propTypes = {
   value: PropTypes.any,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,

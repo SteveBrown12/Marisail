@@ -1,68 +1,101 @@
 import { Router } from "express";
 import multer from "multer";
-import { createConnection } from "mysql2";
-import { v4 as uuidv4 } from "uuid"; // For generating random keys
-import connection from "../config/dbConfig.js";
+import path from "path";
+import fs from "fs";
+import { v4 as uuidv4 } from "uuid";
+import { fileURLToPath } from "url";
+import ffmpeg from "fluent-ffmpeg";
 
-const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const upload_Router = Router();
+const image_Types = [  "image/jpeg", "image/png", "image/gif", "image/webp", "image/bmp", "image/svg+xml"];
+const video_Types = [  "video/mp4", "video/webm", "video/ogg", "video/quicktime", "video/x-msvideo"];
 
-// const upload = multer({
-//   storage: multer.diskStorage({
-//     destination: "public/uploads", // Adjusted path
-//     filename: (req, file, cb) => {
-//       const randomKey = uuidv4(); // Generate a random key
-//       const fileName = `${randomKey}-${file.originalname}`; // Create a unique file name
-//       cb(null, fileName);
-//     },
-//   }),
-// });
+// Utility to create multer storage for a given folder
 
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, path.join(__dirname, "public", "uploads")); // Set upload destination
-    },
-    filename: (req, file, cb) => {
-      const randomKey = uuidv4(); // Generate a random file name
-      const fileName = `${randomKey}-${file.originalname}`; // Unique file name
-      cb(null, fileName);
-    },
-  }),
-});
-
-// Handle file uploads
-router.post("/upload-media", upload.array("payloads"), async (req, res) => {
-  try {
-    const { previews } = req.body; // Get the array of previews from the request body
-    const files = req.files; // Get the uploaded files
-
-    // Parse the previews from JSON string
-    const previewUrls = Array.isArray(previews)
-      ? previews
-      : JSON.parse(previews);
-
-    if (!previewUrls || files.length === 0) {
-      return res.status(400).json({ message: "Invalid input" });
-    }
-
-
-    // Prepare the SQL statement
-    const sql = "INSERT INTO media_uploads (url, file_location) VALUES (?, ?)";
-    const promises = files.map((file, index) => {
-      const fileLocation = `/uploads/${file.filename}`; // File location
-      const url = previewUrls[index]; // Corresponding preview URL
-      return connection.execute(sql, [url, fileLocation]);
-    });
-
-
-    res.status(200).json({
-      message: "Files uploaded and data saved successfully",
-      data: previewUrls,
-    });
-  } catch (error) {
-    console.error("Database error:", error);
-    res.status(500).json({ message: "Internal server error" });
+const create_Storage = folder_Name => multer.diskStorage({
+  destination: (request, file, call_Back) => {
+    const upload_Directory  = path.join(__dirname, "../../public/uploads", folder_Name);
+    fs.mkdirSync(upload_Directory , { recursive: true });
+    call_Back(null, upload_Directory );
+  },
+  filename: (request, file, call_Back) => {
+    call_Back(null, `${uuidv4()}-${file.originalname}`);
   }
 });
 
-export default router;
+// Multer upload instances per type
+
+const image_Upload = multer({
+  storage: create_Storage("images"),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for images
+  fileFilter: (request, file, call_Back) => {
+    if (image_Types.includes(file.mimetype)) call_Back(null, true);
+    else call_Back(new Error("Unsupported image file type"), false);
+  }
+});
+
+const video_Upload = multer({
+  storage: create_Storage("videos"),
+  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB limit for videos
+  fileFilter: (request, file, call_Back) => {
+    if (video_Types.includes(file.mimetype)) call_Back(null, true);
+    else call_Back(new Error("Unsupported video file type"), false);
+  }
+});
+
+// Image upload route
+
+upload_Router.post("/upload-images", image_Upload.array("images", 10), (request, res) => {
+  if (!request.files || request.files.length === 0) {
+    return res.status(400).json({ ok: false, error: "No images uploaded" });
+  }
+  const files_Data = request.files.map(file => ({
+    filename: file.filename,
+    originalname: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size,
+    url: `/uploads/images/${file.filename}`
+  }));
+  res.status(201).json({ ok: true, files: files_Data });
+});
+
+// Video upload route with duration check (max 3 min)
+
+upload_Router.post("/upload-videos", video_Upload.array("videos", 5), async (request, res) => {
+  if (!request.files || request.files.length === 0) {
+    return res.status(400).json({ ok: false, error: "No videos uploaded" });
+  }
+
+  // Duration check for each video
+  try {
+    for (const file of request.files) {
+      await new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(file.path, function(err, metadata) {
+          if (err) return reject(new Error("Could not analyze video"));
+          if (metadata.format.duration > 180) { // 3 min = 180 sec
+            fs.unlinkSync(file.path); // Delete over-long video
+            return reject(new Error(`Video '${file.originalname}' exceeds 3 minutes`));
+          }
+          resolve();
+        });
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({ ok: false, error: error.message });
+  }
+
+  // Prepare file data if all checks pass
+  const files_Data = request.files.map(file => ({
+    filename: file.filename,
+    originalname: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size,
+    url: `/uploads/videos/${file.filename}`
+  }));
+  res.status(201).json({ ok: true, files: files_Data });
+});
+
+
+export default upload_Router;

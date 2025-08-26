@@ -7,7 +7,7 @@ import Loader from "../components/Loader";
 import SubmitButton from "../components/SubmitButton";
 import ResetBar from "../components/ResetBar";
 import DropdownWithRadio from "../components/DropdownWithRadio";
-import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes2";
+import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes";
 import InputComponentDynamic from "../components/InputComponentDynamic";
 import EngineCard from "../components/EngineCard";
 import Pagination from "../components/CustomPagination";

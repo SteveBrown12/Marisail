@@ -3,7 +3,7 @@ import Select from 'react-select'
 import countryList from 'react-select-country-list'
 import "rsuite/dist/rsuite.css";
 import DatePickerField from "./DatePickerField";
-import PhotoUpload from "./PhotoUpload";
+import PhotoUploader from "./PhotoUpload";
 import VideoUploader from './VideoUpload';
 import PriceLabel from './PriceLabel';
 
@@ -25,7 +25,7 @@ export default function FormFieldCard({dateVisible, countryVisible}) {
     return (
         <div className='mt-3 col-md-6' style={{padding:'0 20px'}}>
             
-            <PhotoUpload />
+            <PhotoUploader />
             <VideoUploader />
             <div className="mt-2 w-80 pr-5">
                 {countryVisible && CountrySelector()}

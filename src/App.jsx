@@ -1,16 +1,25 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 
-import Home from "./pages/Home";
 import Engines from "./pages/Engine";
 import Services from "./pages/Service";
-
-import GenericDetail from "./pages/Generic_Detail";
-
 import Register from "./pages/Registration";
 import Login from "./pages/Login";
 
+import Landing from "./pages/Landing"; 
 import GenericSearch from "./pages/Generic_Search";
 import GenericAdvert from "./pages/Generic_Advert";
+import GenericDetail from "./pages/Generic_Detail";
+
+import HeaderNavbar from "./components/HeaderNavbar";
+
+const Home = () => {  
+  return (
+    <main>
+      <HeaderNavbar />
+      <Outlet/>
+    </main>
+  );
+};
 
 function App() {
   return (
@@ -19,7 +28,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
 
-        <Route path="/" element={<Home />}>
+        <Route path="/" element={<Home />} >
+          <Route index element={<Landing />} />
 
           <Route path="/advert/:serviceName" element={<GenericAdvert />} />
           <Route path="/find/:serviceName" element={<GenericSearch />} />
@@ -29,12 +39,12 @@ function App() {
 
           <Route path="/services" element={<Services type="myEngines" />} />
           <Route path="/view-berth" element={<Services type="myBerth" />} />
-          <Route path="/view-transport" element={<Services type="myTransport" />}/>
+          <Route path="/view-transport" element={<Services type="myTransport" />} />
           <Route path="/view-charter" element={<Services type="myCharter" />} />
           <Route path="/view-trailer" element={<Services type="myTrailer" />} />
+          <Route path="/become-sponsor" element={<Services type="Sponsor" />} />
 
           <Route path="/detail/:serviceName/:id" element={<GenericDetail />} />
-
         </Route>
       </Routes>
     </BrowserRouter>
