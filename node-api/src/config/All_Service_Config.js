@@ -1020,7 +1020,7 @@ export const Transport_Config = {
                 comments: { column_Name: 'Comments', display_Text: 'Comments', type: 'radio', mandatory: false, searchable: false, radio_Options: null },
                 date: { column_Name: 'Date', display_Text: 'Date', type: 'date', mandatory: false, searchable: false, radio_Options: null },
                 jobDoneCustomer: { column_Name: 'Job_Done_Customer', display_Text: 'Job Done Date', type: 'radio', mandatory: true, searchable: true, radio_Options: null },
-                jobDoneDateCustomer: { column_Name: 'Job_Done_Date_Customer', display_Text: 'Job Done Date', type: 'date', mandatory: false, searchable: true, radio_Options: null }
+                jobDoneDateCustomer: { column_Name: 'Job_Done_Date_Customer', display_Text: 'Job Done Date', type: 'date', mandatory: true, searchable: true, radio_Options: null }
             },
         },
         {
@@ -1031,7 +1031,7 @@ export const Transport_Config = {
             table_Name: 'Haulier',
             section_Heading: 'Haulier Details',
             columns: {
-                ID: { column_Name: 'Haulier_ID', display_Text: ' ID', type: 'radio', mandatory: true, searchable: false, radio_Options: null },
+                ID: { column_Name: 'Haulier_ID', display_Text: ' ID', type: 'radio', mandatory: false, searchable: false, radio_Options: null },
                 Name: { column_Name: 'Haulier_Name', display_Text: ' Name', type: 'radio', mandatory: true, searchable: false, radio_Options: null },
                 Address: { column_Name: 'Haulier_Address', display_Text: ' Address', type: 'radio', mandatory: true, searchable: false, radio_Options: null },
                 NumberJobs: { column_Name: 'Haulier_Number_Jobs', display_Text: ' Number Jobs', type: 'number', mandatory: true, searchable: false, radio_Options: null },
