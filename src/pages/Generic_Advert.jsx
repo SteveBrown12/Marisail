@@ -12,175 +12,164 @@ import { Section_Positions } from "../utils/Section_Position";
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 export default function GenericAdvert() {
-  const { serviceName } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [fetchingOptions, setFetchingOptions] = useState({});
-  const [serviceConfig, setServiceConfig] = useState(null);
-  const [serviceMappings, setServiceMappings] = useState(null);
-  const [formState, setFormState] = useState({});
-  const [errors, setErrors] = useState({});
-  const [filtersData, setFiltersData] = useState({});
-  const [autofillLoading, setAutofillLoading] = useState(false);
-  const [mmYKeys, setMmYKeys] = useState({ make: null, model: null, year: null });
-  const [openDropdown, setOpenDropdown] = useState(null);
+  const { serviceName: service_Name } = useParams();
+  const [loading, set_Loading] = useState(true);
+  const [fetching_Options, set_Fetching_Options] = useState({});
+  const [service_Config, set_Service_Config] = useState(null);
+  const [service_Mappings, set_Service_Mappings] = useState(null);
+  const [form_State, set_Form_State] = useState({});
+  const [errors, set_Errors] = useState({});
+  const [filters_Data, set_Filters_Data] = useState({});
+  const [autofill_Loading, set_Autofill_Loading] = useState(false);
+  const [make_Model_Year_Keys, set_Make_Model_Year_Keys] = useState({ make: null, model: null, year: null });
+  const [open_Dropdown, set_Open_Dropdown] = useState(null);
 
   const UI_KEY_SEP = "||";
-  const buildUiKey = (tableName, fieldKey) => `${tableName}${UI_KEY_SEP}${fieldKey}`;
+  const build_Ui_Key = (table_Name, field_Key) => `${table_Name}${UI_KEY_SEP}${field_Key}`;
 
-  const init = useCallback(async () => {
-    setLoading(true);
+  const initialize_Component = useCallback(async () => {
+    set_Loading(true);
     try {
-      const res = await axios.get(`${API_BASE}/advert/${serviceName}/search-options`);
-      if (res.data.ok) {
-        const { data , service_mappings } = res.data;
-        setServiceConfig(data);
-        setServiceMappings(service_mappings);
-        setFormState({});
+      const response = await axios.get(`${API_BASE}/advert/${service_Name}/search-options`);
+      if (response.data.ok) {
+        const { data: service_Data, service_mappings } = response.data;
+        set_Service_Config(service_Data);
+        set_Service_Mappings(service_mappings);
+        set_Form_State({});
 
-        // Derive varNames for make, model, year to power autofill
-        const mm = { make: null, model: null, year: null };
-        const v2c = service_mappings?.var_To_Column || {};
-        Object.keys(v2c).forEach((vn) => {
-          const vnl = vn.toLowerCase();
-          const col = String(v2c[vn] || "").toLowerCase();
-          if (!mm.make && (vnl === "make" || col === "make")) mm.make = vn;
-          if (!mm.model && (vnl === "model" || col === "model")) mm.model = vn;
-          if (!mm.year && (vnl === "year" || col === "year")) mm.year = vn;
+        const make_Model_Year_Object = { make: null, model: null, year: null };
+        const variable_To_Column_Map = service_mappings?.var_To_Column || {};
+        Object.keys(variable_To_Column_Map).forEach((variable_Name) => {
+          const variable_Name_Lowercase = variable_Name.toLowerCase();
+          const column_Name = String(variable_To_Column_Map[variable_Name] || "").toLowerCase();
+          if (!make_Model_Year_Object.make && (variable_Name_Lowercase === "make" || column_Name === "make")) make_Model_Year_Object.make = variable_Name;
+          if (!make_Model_Year_Object.model && (variable_Name_Lowercase === "model" || column_Name === "model")) make_Model_Year_Object.model = variable_Name;
+          if (!make_Model_Year_Object.year && (variable_Name_Lowercase === "year" || column_Name === "year")) make_Model_Year_Object.year = variable_Name;
         });
-        setMmYKeys(mm);
+        set_Make_Model_Year_Keys(make_Model_Year_Object);
       }
-    } catch (e) {
-      console.error("Init error", e);
+    } catch (error) {
+      console.error("Init error", error);
     } finally {
-      setLoading(false);
+      set_Loading(false);
     }
-  }, [serviceName]);
+  }, [service_Name]);
 
-  useEffect(() => {
-    if (!serviceName) return;
-    init();
-  }, [serviceName, init]);
+  useEffect(() => { if (service_Name) initialize_Component(); }, [service_Name, initialize_Component]);
 
-  const fetchDropdownData = async (uiKey, fieldKey) => {
-    if (!serviceName || !fieldKey || !uiKey) return;
-    setFetchingOptions((prev) => ({ ...prev, [uiKey]: true }));
+  const fetch_Dropdown_Data = async (ui_Key, field_Key) => {
+    if (!service_Name || !field_Key || !ui_Key) return;
+    set_Fetching_Options((previous_State) => ({ ...previous_State, [ui_Key]: true }));
     try {
-      const res = await axios.get(`${API_BASE}/search/${serviceName}/facets/${fieldKey}`);
-      if (res.data.ok) {
-        setFiltersData((prev) => ({
-          ...prev,
-          [uiKey]: [...(res.data.facets || [])],
+      const response = await axios.get(`${API_BASE}/search/${service_Name}/facets/${field_Key}`);
+      if (response.data.ok) {
+        set_Filters_Data((previous_State) => ({
+          ...previous_State,
+          [ui_Key]: [...(response.data.facets || [])],
         }));
       } else {
-        setFiltersData((prev) => ({ ...prev, [uiKey]: [] }));
+        set_Filters_Data((previous_State) => ({ ...previous_State, [ui_Key]: [] }));
       }
-    } catch (err) {
-      console.error(`Error fetching facets for ${fieldKey}:`, err);
-      setFiltersData((prev) => ({ ...prev, [uiKey]: [] }));
+    } catch (error) {
+      console.error(`Error fetching facets for ${field_Key}:`, error);
+      set_Filters_Data((previous_State) => ({ ...previous_State, [ui_Key]: [] }));
     } finally {
-      setFetchingOptions((prev) => ({ ...prev, [uiKey]: false }));
+      set_Fetching_Options((previous_State) => ({ ...previous_State, [ui_Key]: false }));
     }
   };
 
-  // Helper to get field type by varName from config
-  const getFieldType = useCallback((varName) => {
-    for (const table of serviceConfig?.tables || []) {
-      if (table?.columns && table.columns[varName]) return table.columns[varName].type;
+  const get_Field_Type = useCallback((variable_Name) => {
+    for (const table of service_Config?.tables || []) {
+      if (table?.columns && table.columns[variable_Name]) return table.columns[variable_Name].type;
     }
     return null;
-  }, [serviceConfig]);
+  }, [service_Config]);
 
-  // Key Functionality #4 - Advert - AUTOFILL Sections Based On Section 1 (Trailer, Engine, Vessel)
-  // Requirement #7 - Autofill – Code Automatically Tries To Autocomplete The Entire Form - For Engine, Trailer, Vessel With Have Make, Model, Year.
   useEffect(() => {
-    const allowed = ["engine", "trailer", "vessel"];
-    if (!allowed.includes(String(serviceName || "").toLowerCase())) return;
-    if (!mmYKeys.make || !mmYKeys.model || !mmYKeys.year) return;
-    const rawMake = formState[mmYKeys.make];
-    const rawModel = formState[mmYKeys.model];
-    const rawYear = formState[mmYKeys.year];
-    if (!rawMake || !rawModel || !rawYear) return;
+    const autofill_Allowed_Services = ["engine", "trailer", "vessel"];
+    if (!autofill_Allowed_Services.includes(String(service_Name || "").toLowerCase())) return;
+    if (!make_Model_Year_Keys.make || !make_Model_Year_Keys.model || !make_Model_Year_Keys.year) return;
+    
+    const raw_Make = form_State[make_Model_Year_Keys.make];
+    const raw_Model = form_State[make_Model_Year_Keys.model];
+    const raw_Year = form_State[make_Model_Year_Keys.year];
+    if (!raw_Make || !raw_Model || !raw_Year) return;
 
-    // Normalize values for backend
-    const make = Array.isArray(rawMake) ? rawMake[0] : rawMake;
-    const model = Array.isArray(rawModel) ? rawModel[0] : rawModel;
-    const year = typeof rawYear === "object" && rawYear !== null && "value" in rawYear ? rawYear.value : (Array.isArray(rawYear) ? rawYear[0] : rawYear);
-    if (!make || !model || !year) return;
+    const normalized_Make = Array.isArray(raw_Make) ? raw_Make[0] : raw_Make;
+    const normalized_Model = Array.isArray(raw_Model) ? raw_Model[0] : raw_Model;
+    const normalized_Year = typeof raw_Year === "object" && raw_Year !== null && "value" in raw_Year ? raw_Year.value : (Array.isArray(raw_Year) ? raw_Year[0] : raw_Year);
+    if (!normalized_Make || !normalized_Model || !normalized_Year) return;
 
-    let cancelled = false;
-    const doAutofill = async () => {
-      setAutofillLoading(true);
+    let is_Cancelled = false;
+    const execute_Autofill = async () => {
+      set_Autofill_Loading(true);
       try {
-        const res = await fetch(`${API_BASE}/advert/${serviceName}/autofill`, {
+        const response = await fetch(`${API_BASE}/advert/${service_Name}/autofill`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ make, model, year })
+          body: JSON.stringify({ make: normalized_Make, model: normalized_Model, year: normalized_Year })
         });
-        const js = await res.json();
-        if (cancelled) return;
-        if (js?.ok && js.data) {
-          setFormState((prev) => {
-            const updates = { ...prev };
-            Object.entries(js.data).forEach(([vn, v]) => {
-              const t = getFieldType(vn);
-              if (t === "radio") {
-                updates[vn] = Array.isArray(v) ? v : [v];
-              } else if (t === "dual" || t === "number") {
-                updates[vn] = typeof v === "object" && v && "value" in v ? v : { value: v };
-              } else if (v !== undefined) {
-                updates[vn] = v;
+        const json_Response = await response.json();
+        if (is_Cancelled) return;
+        if (json_Response?.ok && json_Response.data) {
+          set_Form_State((previous_State) => {
+            const updated_Form_State = { ...previous_State };
+            Object.entries(json_Response.data).forEach(([variable_Name, value]) => {
+              const field_Type = get_Field_Type(variable_Name);
+              if (field_Type === "radio") {
+                updated_Form_State[variable_Name] = Array.isArray(value) ? value : [value];
+              } else if (field_Type === "dual" || field_Type === "number") {
+                updated_Form_State[variable_Name] = typeof value === "object" && value && "value" in value ? value : { value: value };
+              } else if (value !== undefined) {
+                updated_Form_State[variable_Name] = value;
               }
             });
-            return updates;
+            return updated_Form_State;
           });
         }
-      } catch (err) {
-        console.error("autofill error", err);
+      } catch (error) {
+        console.error("autofill error", error);
       } finally {
-        setAutofillLoading(false);
+        set_Autofill_Loading(false);
       }
     };
-    const timer = setTimeout(doAutofill, 300);
-    return () => { cancelled = true; clearTimeout(timer); };
-  }, [serviceName, mmYKeys, getFieldType]);
+    const autofill_Timer = setTimeout(execute_Autofill, 300);
+    return () => { is_Cancelled = true; clearTimeout(autofill_Timer); };
+  }, [service_Name, make_Model_Year_Keys, get_Field_Type, form_State]);
 
-  // Key Functionality #5 - Advert - MANDATORY FIELDS ERROR MESSAGE Code
-  // Requirement #9 - Mandatory Fields (For Advertising) Marked – With Error Message.
-  const validate = () => {
-    if (!serviceConfig) return true;
-    const errs = FormUtilities.validateMandatoryFields(
-      serviceConfig.tables,
-      formState
+  const validate_Form = () => {
+    if (!service_Config) return true;
+    const errors_Object = FormUtilities.validateMandatoryFields(
+      service_Config.tables,
+      form_State
     );
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
+    set_Errors(errors_Object);
+    return Object.keys(errors_Object).length === 0;
   };
 
-  // Key Functionality #6 - Advert – SUBMIT BUTTON UPDATES DATABASE with form data entered and new ID.
-  // Requirement #8 - Submit Buttons Actually Updates Db Properly.
-  const handleSubmit = async (e) => {
-    e && e.preventDefault();
-    if (!validate()) return window.scrollTo({ top: 0, behavior: "smooth" });
-    setLoading(true);
+  const handle_Submit = async (event) => {
+    if (event) event.preventDefault();
+    if (!validate_Form()) return window.scrollTo({ top: 0, behavior: "smooth" });
+    set_Loading(true);
     try {
-      const normalized = FormUtilities.normalizeFormForSubmit(
-        formState,
-        serviceMappings
+      const normalized_Form_Data = FormUtilities.normalizeFormForSubmit(
+        form_State,
+        service_Mappings
       );
-      const res = await fetch(`${API_BASE}/advert/${serviceName}/submit`, {
+      const response = await fetch(`${API_BASE}/advert/${service_Name}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(normalized),
+        body: JSON.stringify(normalized_Form_Data),
       });
-      const js = await res.json();
-      if (!js.ok) throw new Error(js.message || "submit failed");
-      const newId = js.new_Id || js.new_id || js.data?.new_Id || js.data?.new_id;
-      window.location.href = `/detail/${serviceName}/${newId}`;
-    } catch (err) {
-      console.error("submit error", err);
+      const json_Response = await response.json();
+      if (!json_Response.ok) throw new Error(json_Response.message || "submit failed");
+      const new_Advert_Id = json_Response.new_Id || json_Response.new_id || json_Response.data?.new_Id || json_Response.data?.new_id;
+      window.location.href = `/detail/${service_Name}/${new_Advert_Id}`;
+    } catch (error) {
+      console.error("submit error", error);
       alert("Submit failed. Check console for error.");
     } finally {
-      setLoading(false);
+      set_Loading(false);
     }
   };
 
@@ -191,245 +180,169 @@ export default function GenericAdvert() {
       <div className="w-full p-4">
         <div className="bg-white shadow-sm rounded-xl p-4">
           <h4 className="text-[25px] capitalize font-bold pb-2 mb-2 pl-[60px]">
-            Advertise {serviceName}
+            Advertise {service_Name}
           </h4>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handle_Submit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex justify-items-center">
-              { 
-                [...(serviceConfig?.tables || [])].sort((a, b) => {
-                  const posA = Section_Positions[serviceName]?.find(t => t.table_Name === a.table_Name)?.position || 0;
-                  const posB = Section_Positions[serviceName]?.find(t => t.table_Name === b.table_Name)?.position || 0;
-                  return posA - posB; }
-                ).map((table) => {
-
-                const tableEntries = table.columns ? Object.entries(table.columns) : [];
+              {[...(service_Config?.tables || [])]
+                .sort((table_A, table_B) => {
+                  const position_A = Section_Positions[service_Name]?.find(t => t.table_Name === table_A.table_Name)?.position || 0;
+                  const position_B = Section_Positions[service_Name]?.find(t => t.table_Name === table_B.table_Name)?.position || 0;
+                  return position_A - position_B;
+                })
+                .map((table) => {
+                  const table_Entries = table.columns ? Object.entries(table.columns) : [];
                   
-                return (
-                  <div key={table.table_Name} className="p-4 min-w-[300px] w-1/3 xl:w-[380px]">
-                    {/* Table Heading */}
-                    <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
-                      {table.section_Heading}
-                    </h6> 
+                  return (
+                    <div key={table.table_Name} className="p-4 min-w-[300px] w-1/3 xl:w-[380px]">
+                      <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
+                        {table.section_Heading}
+                      </h6> 
 
-                    {/* Cards Container */}
-                    <div>
-                      {tableEntries.map(([varName, col]) => {
-                        const fieldKey = varName; // use varName as the frontend key
-                        const uiKey = buildUiKey(table.table_Name, fieldKey);
-                        const label = col.display_Text || fieldKey;
+                      <div>
+                        {table_Entries.map(([variable_Name, column_Config]) => {
+                          const field_Key = variable_Name;
+                          const ui_Key = build_Ui_Key(table.table_Name, field_Key);
+                          const display_Label = column_Config.display_Text || field_Key;
 
-                        return (
-                          <div
-                            key={uiKey}
-                            className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden"
-                          >
-                            {/* Field Rendering */}
-                            {(() => {
-                              switch (col.type) {
-                                case "radio":
-                                  return (
-                                    <>
-                                      <DropdownWithCheckBoxes
-                                        title={label}
-                                        mandatory={col.mandatory}
-                                        options={
-                                          filtersData[uiKey]
-                                            ? [...filtersData[uiKey]]
-                                            : []
-                                        }
-                                        selected={formState[fieldKey] || []}
-                                        onChange={(vals) =>
-                                          setFormState((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: vals,
-                                          }))
-                                        }
-                                        onOpen={() => {
-                                          setOpenDropdown(uiKey);
-                                          fetchDropdownData(uiKey, fieldKey);
-                                        }}
-                                        onClose={() => setOpenDropdown(null)}
-                                        open={openDropdown === uiKey}
-                                        fetching={!!fetchingOptions[uiKey]}
-                                        placeholder={`Select ${label}`}
-                                        advert={true}
-                                        onAddOption={(newOpt) => {
-                                          setFiltersData((prev) => ({
-                                            ...prev,
-                                            [uiKey]: [...(prev[uiKey] || []), newOpt],
-                                          }));
-                                          setFormState((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: [...(prev[fieldKey] || []), newOpt.value],
-                                          }));
-                                        }}
-                                      />
-                                      {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mb-2">
-                                          {errors[fieldKey]}
-                                        </div>
-                                      )}
-                                      {formState[fieldKey] && (
-                                        <div className="text-green-800 text-[16px] font-bold mb-2">
-                                          {formState[fieldKey]}
-                                        </div>
-                                      )}
-                                    </>
-                                  );
+                          return (
+                            <div key={ui_Key} className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden">
+                              {(() => {
+                                switch (column_Config.type) {
+                                  case "radio":
+                                    return (
+                                      <>
+                                        <DropdownWithCheckBoxes
+                                          title={display_Label}
+                                          mandatory={column_Config.mandatory}
+                                          options={filters_Data[ui_Key] ? [...filters_Data[ui_Key]] : []}
+                                          selected={form_State[field_Key] || []}
+                                          onChange={(values) =>
+                                            set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: values }))
+                                          }
+                                          onOpen={() => {
+                                            set_Open_Dropdown(ui_Key);
+                                            fetch_Dropdown_Data(ui_Key, field_Key);
+                                          }}
+                                          onClose={() => set_Open_Dropdown(null)}
+                                          open={open_Dropdown === ui_Key}
+                                          fetching={!!fetching_Options[ui_Key]}
+                                          placeholder={`Select ${display_Label}`}
+                                          advert={true}
+                                          onAddOption={(new_Option) => {
+                                            set_Filters_Data((previous_State) => ({
+                                              ...previous_State,
+                                              [ui_Key]: [...(previous_State[ui_Key] || []), new_Option],
+                                            }));
+                                            set_Form_State((previous_State) => ({
+                                              ...previous_State,
+                                              [field_Key]: [...(previous_State[field_Key] || []), new_Option.value],
+                                            }));
+                                          }}
+                                        />
+                                        {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                      </>
+                                    );
 
-                                case "number":
-                                  // Requirement #5 - Numeric Value Fields Now Come Back As Ranges Of Values [From To] For Search
-                                  // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
-                                  return (
-                                    <>
-                                      <InputComponent
-                                        title={label}
-                                        mandatory={col.mandatory}
-                                        min={col.min || ""}
-                                        max={col.max || ""}
-                                        radioOptions={col.radioOptions || col.radio_Options}
-                                        value={formState[fieldKey]?.value || ""}
-                                        onChange={(value) =>
-                                          setFormState((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: { value: value },
-                                          }))
-                                        }
-                                      />
-                                      {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mb-2">
-                                          {errors[fieldKey]}
-                                        </div>
-                                      )}
-                                      {formState[fieldKey]?.value && (
-                                        <div className="text-green-800 text-[16px] font-bold mb-2">
-                                          {formState[fieldKey].value}
-                                        </div>
-                                      )}
-                                    </>
-                                  );
+                                  case "number":
+                                    return (
+                                      <>
+                                        <InputComponent
+                                          title={display_Label}
+                                          mandatory={column_Config.mandatory}
+                                          min={column_Config.min || ""}
+                                          max={column_Config.max || ""}
+                                          radioOptions={column_Config.radioOptions || column_Config.radio_Options}
+                                          value={form_State[field_Key]?.value || ""}
+                                          onChange={(value) =>
+                                            set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: { value: value } }))
+                                          }
+                                        />
+                                        {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                        {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)}
+                                      </>
+                                    );
 
-                                case "dual":
-                                  // Requirement #6 - Dual Values For Real-Numbers And Measurement Fields Get Converted By Calculation
-                                  // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
-                                  // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
-                                  return (
-                                    <>
-                                      <InputComponent
-                                        title={label}
-                                        mandatory={col.mandatory}
-                                        min={col.min || ""}
-                                        max={col.max || ""}
-                                        value={formState[fieldKey]?.value || ""}
-                                        radioOptions={col.radioOptions || col.radio_Options}
-                                        onChange={(value) =>
-                                          setFormState((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: { value: value },
-                                          }))
-                                        }
-                                      />
-                                      {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mb-2">
-                                          {errors[fieldKey]}
-                                        </div>
-                                      )}
-                                      {formState[fieldKey]?.value && (
-                                        <div className="text-green-800 text-[16px] font-bold mb-2">
-                                          {formState[fieldKey].value}
-                                        </div>
-                                      )}
-                                    </>
-                                  );
+                                  case "dual":
+                                    return (
+                                      <>
+                                        <InputComponent
+                                          title={display_Label}
+                                          mandatory={column_Config.mandatory}
+                                          min={column_Config.min || ""}
+                                          max={column_Config.max || ""}
+                                          value={form_State[field_Key]?.value || ""}
+                                          radioOptions={column_Config.radioOptions || column_Config.radio_Options}
+                                          onChange={(value) =>
+                                            set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: { value: value } }))
+                                          }
+                                        />
+                                        {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                        {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)}
+                                      </>
+                                    );
 
-                                case "date":
-                                  return (
-                                    <>
-                                      <DatePickerField
-                                        title={label}
-                                        mandatory={col.mandatory}
-                                        mode="single"
-                                        value={formState[fieldKey] || ""}
-                                        onChange={(iso) =>
-                                          setFormState((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: iso,
-                                          }))
-                                        }
-                                        placeholder="dd-mm-yyyy"
-                                      />
-                                      {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mb-2">
-                                          {errors[fieldKey]}
-                                        </div>
-                                      )}
-                                      {formState[fieldKey] && (
-                                        <div className="text-green-800 text-[16px] font-bold mb-2">
-                                          {formState[fieldKey]}
-                                        </div>
-                                      )}
-                                    </>
-                                  );
+                                  case "date":
+                                    return (
+                                      <>
+                                        <DatePickerField
+                                          title={display_Label}
+                                          mandatory={column_Config.mandatory}
+                                          mode="single"
+                                          value={form_State[field_Key] || ""}
+                                          onChange={(iso_Date) =>
+                                            set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: iso_Date }))
+                                          }
+                                          placeholder="dd-mm-yyyy"
+                                        />
+                                        {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                      </>
+                                    );
 
-                                case "timestamp":
-                                  return (
-                                    <>
-                                      <DateTimePickerField
-                                        title={label}
-                                        mandatory={col.mandatory}
-                                        mode="single"
-                                        value={formState[fieldKey] || ""}
-                                        onChange={(iso) =>
-                                          setFormState((prev) => ({
-                                            ...prev,
-                                            [fieldKey]: iso,
-                                          }))
-                                        }
-                                        placeholder="dd-mm-yyyy"
-                                      />
-                                      {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mb-2">
-                                          {errors[fieldKey]}
-                                        </div>
-                                      )}
-                                      {formState[fieldKey] && (
-                                        <div className="text-green-800 text-[16px] font-bold mb-2">
-                                          {formState[fieldKey]}
-                                        </div>
-                                      )}
-                                    </>
-                                  );
+                                  case "timestamp":
+                                    return (
+                                      <>
+                                        <DateTimePickerField
+                                          title={display_Label}
+                                          mandatory={column_Config.mandatory}
+                                          mode="single"
+                                          value={form_State[field_Key] || ""}
+                                          onChange={(iso_Date) =>
+                                            set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: iso_Date }))
+                                          }
+                                          placeholder="dd-mm-yyyy"
+                                        />
+                                        {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                      </>
+                                    );
 
-                                default:
-                                  //only label for unknown types
-                                  return (
-                                    <>
-                                      <label className="block mb-1 font-medium">
-                                        <span className="truncate">
-                                          {label}
-                                          {col.mandatory && <span className="text-red-500 ml-1">*</span>}
-                                        </span>
-                                      </label>
-                                      {errors[fieldKey] && (
-                                        <div className="text-red-500 text-sm mb-2">
-                                          {errors[fieldKey]}
-                                        </div>
-                                      )}
-                                    </>
-                                  );
-                              }
-                            })()}
-                          </div>
-                        );
-                      })}
+                                  default:
+                                    return (
+                                      <>
+                                        <label className="block mb-1 font-medium">
+                                          <span className="truncate">
+                                            {display_Label}
+                                            {column_Config.mandatory && <span className="text-red-500 ml-1">*</span>}
+                                          </span>
+                                        </label>
+                                        {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                      </>
+                                    );
+                                }
+                              })()}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
 
-            {/* Submit Button */}
             <div className="mt-6 flex justify-center">
               <button
                 type="submit"
@@ -447,8 +360,7 @@ export default function GenericAdvert() {
               </button>
             </div>
 
-            {/* Autofill Status */}
-            {autofillLoading && (
+            {autofill_Loading && (
               <div className="text-gray-500 mt-2 italic">Autofilling...</div>
             )}
           </form>
