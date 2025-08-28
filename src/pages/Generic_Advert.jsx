@@ -37,6 +37,8 @@ export default function GenericAdvert() {
         set_Service_Mappings(service_mappings);
         set_Form_State({});
 
+        // Derive varNames for make, model, year to power autofill
+
         const make_Model_Year_Object = { make: null, model: null, year: null };
         const variable_To_Column_Map = service_mappings?.var_To_Column || {};
         Object.keys(variable_To_Column_Map).forEach((variable_Name) => {
@@ -78,6 +80,8 @@ export default function GenericAdvert() {
     }
   };
 
+  // Helper to get field type by varName from config
+
   const get_Field_Type = useCallback((variable_Name) => {
     for (const table of service_Config?.tables || []) {
       if (table?.columns && table.columns[variable_Name]) return table.columns[variable_Name].type;
@@ -89,11 +93,13 @@ export default function GenericAdvert() {
     const autofill_Allowed_Services = ["engine", "trailer", "vessel"];
     if (!autofill_Allowed_Services.includes(String(service_Name || "").toLowerCase())) return;
     if (!make_Model_Year_Keys.make || !make_Model_Year_Keys.model || !make_Model_Year_Keys.year) return;
-    
+
     const raw_Make = form_State[make_Model_Year_Keys.make];
     const raw_Model = form_State[make_Model_Year_Keys.model];
     const raw_Year = form_State[make_Model_Year_Keys.year];
     if (!raw_Make || !raw_Model || !raw_Year) return;
+
+    // Normalize values for backend
 
     const normalized_Make = Array.isArray(raw_Make) ? raw_Make[0] : raw_Make;
     const normalized_Model = Array.isArray(raw_Model) ? raw_Model[0] : raw_Model;
@@ -137,6 +143,9 @@ export default function GenericAdvert() {
     return () => { is_Cancelled = true; clearTimeout(autofill_Timer); };
   }, [service_Name, make_Model_Year_Keys, get_Field_Type, form_State]);
 
+  // Key Functionality #5 - Advert - MANDATORY FIELDS ERROR MESSAGE Code
+  // Requirement #9 - Mandatory Fields (For Advertising) Marked – With Error Message.
+
   const validate_Form = () => {
     if (!service_Config) return true;
     const errors_Object = FormUtilities.validateMandatoryFields(
@@ -146,6 +155,10 @@ export default function GenericAdvert() {
     set_Errors(errors_Object);
     return Object.keys(errors_Object).length === 0;
   };
+
+
+  // Key Functionality #6 - Advert – SUBMIT BUTTON UPDATES DATABASE with form data entered and new ID.
+  // Requirement #8 - Submit Buttons Actually Updates Db Properly.
 
   const handle_Submit = async (event) => {
     if (event) event.preventDefault();
@@ -193,12 +206,12 @@ export default function GenericAdvert() {
                 })
                 .map((table) => {
                   const table_Entries = table.columns ? Object.entries(table.columns) : [];
-                  
+
                   return (
                     <div key={table.table_Name} className="p-4 min-w-[300px] w-1/3 xl:w-[380px]">
                       <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
                         {table.section_Heading}
-                      </h6> 
+                      </h6>
 
                       <div>
                         {table_Entries.map(([variable_Name, column_Config]) => {
@@ -246,6 +259,9 @@ export default function GenericAdvert() {
                                       </>
                                     );
 
+                                  // Requirement #5 - Numeric Value Fields Now Come Back As Ranges Of Values [From To] For Search
+                                  // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
+
                                   case "number":
                                     return (
                                       <>
@@ -266,6 +282,12 @@ export default function GenericAdvert() {
                                     );
 
                                   case "dual":
+
+                                    // Requirement #6 - Dual Values For Real-Numbers And Measurement Fields Get Converted By Calculation
+                                    // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
+                                    // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
+
+
                                     return (
                                       <>
                                         <InputComponent
@@ -321,6 +343,7 @@ export default function GenericAdvert() {
                                     );
 
                                   default:
+                                    //only label for unknown types
                                     return (
                                       <>
                                         <label className="block mb-1 font-medium">
@@ -343,6 +366,8 @@ export default function GenericAdvert() {
                 })}
             </div>
 
+            {/* Submit Button */}
+
             <div className="mt-6 flex justify-center">
               <button
                 type="submit"
@@ -360,6 +385,8 @@ export default function GenericAdvert() {
               </button>
             </div>
 
+            {/* Autofill Status */}
+            
             {autofill_Loading && (
               <div className="text-gray-500 mt-2 italic">Autofilling...</div>
             )}
