@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 
-import Engines from "./pages/Engine";
 import Services from "./pages/Service";
 import Register from "./pages/Registration";
 import Login from "./pages/Login";
@@ -8,7 +7,7 @@ import Login from "./pages/Login";
 import Landing from "./pages/Landing"; 
 import GenericSearch from "./pages/Generic_Search";
 import GenericAdvert from "./pages/Generic_Advert";
-import GenericDetail from "./pages/Generic_Detail";
+import GenericDetail from "./pages/Generic_Search_Detail";
 
 import HeaderNavbar from "./components/HeaderNavbar";
 
@@ -33,9 +32,6 @@ function App() {
 
           <Route path="/advert/:serviceName" element={<GenericAdvert />} />
           <Route path="/find/:serviceName" element={<GenericSearch />} />
-
-          <Route path="/engines" element={<Engines type="advert" />} />
-          <Route path="/advert-engines" element={<Engines type="search" />} />
 
           <Route path="/services" element={<Services type="myEngines" />} />
           <Route path="/view-berth" element={<Services type="myBerth" />} />
