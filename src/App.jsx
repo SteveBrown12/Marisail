@@ -14,7 +14,7 @@ import HeaderNavbar from "./components/HeaderNavbar";
 
 const Home = () => {  
   return (
-    <main>
+    <main className="w-full max-w-full overflow-hidden">
       <HeaderNavbar />
       <Outlet/>
     </main>
