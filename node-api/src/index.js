@@ -11,7 +11,7 @@ import search_router from "./routes/Generic_Search.js";
 import advert_router from "./routes/Generic_Advert.js"; 
 import sponsor_router from "./routes/Sponsor.js";
 import authRouter from "./routes/auth.js";
-
+import price_Check_Router from "./routes/Price_Label.js";
 const router = Router();
 
 // Use the homeRouter for requests to /api/home
@@ -25,7 +25,7 @@ router.use("/auth", authRouter);
 
 router.use("/search", search_router); 
 router.use("/advert", advert_router); 
-
+router.use('/price-check', price_Check_Router)
 
 router.use("/upload-media", handler);
 
