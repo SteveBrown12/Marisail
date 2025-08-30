@@ -13,156 +13,152 @@ import TrailerCard from "../components/TrailerCard";
 import TransportCard from "../components/TransportCard";
 import EngineCard from "../components/EngineCard";
 
-const apiUrl = import.meta.env.VITE_BACKEND_URL;
-const UI_KEY_SEP = "||";
+const api_Url = import.meta.env.VITE_BACKEND_URL;
 
 export default function GenericSearch() {
-  const { serviceName } = useParams();
+  const { serviceName: service_Name } = useParams();
 
-  const [filtersLoading, setFiltersLoading] = useState(false);
-  const [filtersError, setFiltersError] = useState("");
+  const [filters_Loading, set_Filters_Loading] = useState(false);
+  const [filters_Error, set_Filters_Error] = useState("");
 
-  const [resultsLoading, setResultsLoading] = useState(false);
-  const [resultsError, setResultsError] = useState("");
+  const [results_Loading, set_Results_Loading] = useState(false);
+  const [results_Error, set_Results_Error] = useState("");
 
-  const [fetchingOptions, setFetchingOptions] = useState({});
-  const [config, setConfig] = useState(null);
-  const [mapping, setMapping] = useState(null);
-  const [filtersData, setFiltersData] = useState({});
-  const [allSelectedOptions, setAllSelectedOptions] = useState({});
-  const [results, setResults] = useState([]);
-  const [openDropdown, setOpenDropdown] = useState(null);
+  const [fetching_Options, set_Fetching_Options] = useState({});
+  const [config, set_Config] = useState(null);
+  const [mapping, set_Mapping] = useState(null);
+  const [filters_Data, set_Filters_Data] = useState({});
+  const [all_Selected_Options, set_All_Selected_Options] = useState({});
+  const [results, set_Results] = useState([]);
+  const [open_Dropdown, set_Open_Dropdown] = useState(null);
 
-  const normalizeFacets = (facets) => {
+  const UI_KEY_SEP = "||";
+  const build_Ui_Key = (table_Name, field_Key) => `${table_Name}${UI_KEY_SEP}${field_Key}`;
+
+  const normalize_Facets = (facets) => {
     if (!Array.isArray(facets)) return [];
-    return facets.map((opt) => {
-      if (opt === null || opt === undefined) {
-        return { value: opt, label: String(opt) };
+    return facets.map((option) => {
+      if (option === null || option === undefined) {
+        return { value: option, label: String(option) };
       }
-      if (typeof opt === "string" || typeof opt === "number" || typeof opt === "boolean") {
-        return { value: opt, label: String(opt) };
+      if (typeof option === "string" || typeof option === "number" || typeof option === "boolean") {
+        return { value: option, label: String(option) };
       }
-      const valueCandidates = ["value", "id", "key", "code", "name"];
-      const labelCandidates = ["label", "name", "text", "display", "value"];
-      const value = valueCandidates.map((k) => opt[k]).find((v) => v !== undefined);
-      const label = labelCandidates.map((k) => opt[k]).find((v) => v !== undefined);
+      const value_Candidates = ["value", "id", "key", "code", "name"];
+      const label_Candidates = ["label", "name", "text", "display", "value"];
+      const value = value_Candidates.map((key) => option[key]).find((val) => val !== undefined);
+      const label = label_Candidates.map((key) => option[key]).find((val) => val !== undefined);
       return {
-        ...opt,
-        value: value !== undefined ? value : opt,
-        label: label !== undefined ? String(label) : String(value !== undefined ? value : JSON.stringify(opt)),
+        ...option,
+        value: value !== undefined ? value : option,
+        label: label !== undefined ? String(label) : String(value !== undefined ? value : JSON.stringify(option)),
       };
     });
   };
 
-  const uiKeyToField = (uiKey) => {
-    const idx = uiKey.lastIndexOf(UI_KEY_SEP);
-    if (idx === -1) return { tableName: null, fieldName: uiKey };
+  const ui_Key_To_Field = (ui_Key) => {
+    const index = ui_Key.lastIndexOf(UI_KEY_SEP);
+    if (index === -1) return { tableName: null, fieldName: ui_Key };
     return {
-      tableName: uiKey.slice(0, idx),
-      fieldName: uiKey.slice(idx + UI_KEY_SEP.length),
+      tableName: ui_Key.slice(0, index),
+      fieldName: ui_Key.slice(index + UI_KEY_SEP.length),
     };
   };
 
-  const fetchSearchOptions = useCallback(async () => {
-    if (!serviceName) return;
-    setFiltersLoading(true);
-    setFiltersError("");
+  const fetch_Search_Options = useCallback(async () => {
+    if (!service_Name) return;
+    set_Filters_Loading(true);
+    set_Filters_Error("");
 
     try {
-      const res = await axios.get(`${apiUrl}/search/${serviceName}/search-options`);
-      if (res.data.ok) {
-        setConfig(res.data.data.service_config);
-        setMapping(res.data.data.service_mappings);
+      const response = await axios.get(`${api_Url}/search/${service_Name}/search-options`);
+      if (response.data.ok) {
+        set_Config(response.data.data.service_config);
+        set_Mapping(response.data.data.service_mappings);
       } else {
-        setFiltersError("Failed to load search options");
+        set_Filters_Error("Failed to load search options");
       }
-    } catch (err) {
-      console.error(err);
-      setFiltersError("Error loading search options");
+    } catch (error) {
+      console.error(error);
+      set_Filters_Error("Error loading search options");
     } finally {
-      setFiltersLoading(false);
+      set_Filters_Loading(false);
     }
-  }, [serviceName]);
+  }, [service_Name]);
 
-  const fetchDropdownData = async (uiKey, fieldKey) => {
-    if (!serviceName || !fieldKey || !uiKey) return;
-    setFetchingOptions((prev) => ({ ...prev, [uiKey]: true }));
+  const fetch_Dropdown_Data = async (ui_Key, field_Key) => {
+    if (!service_Name || !field_Key || !ui_Key) return;
+    set_Fetching_Options((previous_Options) => ({ ...previous_Options, [ui_Key]: true }));
     try {
-      const res = await axios.get(`${apiUrl}/search/${serviceName}/facets/${fieldKey}`);
-      if (res.data.ok) {
-        const rawFacets = res.data.facets ?? [];
-        const clonedNormalized = normalizeFacets(rawFacets).map((o) => ({ ...o }));
-        setFiltersData((prev) => ({ ...prev, [uiKey]: clonedNormalized }));
+      const response = await axios.get(`${api_Url}/search/${service_Name}/facets/${field_Key}`);
+      if (response.data.ok) {
+        const raw_Facets = response.data.facets ?? [];
+        const cloned_Normalized = normalize_Facets(raw_Facets).map((option) => ({ ...option }));
+        set_Filters_Data((previous_Data) => ({ ...previous_Data, [ui_Key]: cloned_Normalized }));
       } else {
-        setFiltersData((prev) => ({ ...prev, [uiKey]: [] }));
+        set_Filters_Data((previous_Data) => ({ ...previous_Data, [ui_Key]: [] }));
       }
-    } catch (err) {
-      console.error(`Error fetching facets for ${fieldKey}:`, err);
-      setFiltersData((prev) => ({ ...prev, [uiKey]: [] }));
+    } catch (error) {
+      console.error(`Error fetching facets for ${field_Key}:`, error);
+      set_Filters_Data((previous_Data) => ({ ...previous_Data, [ui_Key]: [] }));
     } finally {
-      setFetchingOptions((prev) => ({ ...prev, [uiKey]: false }));
+      set_Fetching_Options((previous_Options) => ({ ...previous_Options, [ui_Key]: false }));
     }
   };
 
-  const mapFiltersToDbKeys = (rawFilters) => {
-    const mapped = {};
-    Object.keys(rawFilters).forEach((uiKey) => {
-      const { fieldName } = uiKeyToField(uiKey);
-      const dbKey = mapping?.var_to_column?.[fieldName] || fieldName;
-      mapped[dbKey] = rawFilters[uiKey];
+  const map_Filters_To_Db_Keys = (raw_Filters) => {
+    const mapped_Filters = {};
+    Object.keys(raw_Filters).forEach((ui_Key) => {
+      const { fieldName: field_Name } = ui_Key_To_Field(ui_Key);
+      const db_Key = mapping?.var_to_column?.[field_Name] || field_Name;
+      mapped_Filters[db_Key] = raw_Filters[ui_Key];
     });
-    return mapped;
+    return mapped_Filters;
   };
 
-  const fetchResults = useCallback(async () => {
-    if (!serviceName || !config) return;
-    setResultsLoading(true);
-    setResultsError("");
+  const fetch_Results = useCallback(async () => {
+    if (!service_Name || !config) return;
+    set_Results_Loading(true);
+    set_Results_Error("");
 
     try {
-      const mappedFilters = mapFiltersToDbKeys(allSelectedOptions);
-      const res = await axios.get(`${apiUrl}/search/${serviceName}/search`, {
-        params: { filters: mappedFilters },
+      const mapped_Filters = map_Filters_To_Db_Keys(all_Selected_Options);
+      const response = await axios.get(`${api_Url}/search/${service_Name}/search`, {
+        params: { filters: mapped_Filters },
       });
-      if (res.data.ok) {
-        setResults(res.data.data || []);
+      if (response.data.ok) {
+        set_Results(response.data.data || []);
       } else {
-        setResultsError("Search failed");
+        set_Results_Error("Search failed");
       }
-    } catch (err) {
-      console.error(err);
-      setResultsError("Error during search");
+    } catch (error) {
+      console.error(error);
+      set_Results_Error("Error during search");
     } finally {
-      setResultsLoading(false);
+      set_Results_Loading(false);
     }
-  }, [allSelectedOptions, serviceName, config, mapping]);
+  }, [all_Selected_Options, service_Name, config, mapping]);
 
-  useEffect(() => {
-    fetchSearchOptions();
-  }, [fetchSearchOptions]);
+  useEffect(() => { fetch_Search_Options(); }, [fetch_Search_Options]);
 
-  useEffect(() => {
-    if (config) fetchResults();
-  }, [allSelectedOptions, fetchResults, config]);
+  useEffect(() => { if (config) fetch_Results(); }, [all_Selected_Options, fetch_Results, config]);
 
-  // Requirement #2 - Drop Down Menus Multi-Choice Functionality
-  // Key Functionality #1 - Search - MULTI-SEARCH Code
-  const handleMultiSelectChange = (tableName, field, selectedValues) => {
-    const uiKey = `${tableName}${UI_KEY_SEP}${field}`;
-    setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: selectedValues }));
+  const handle_Multi_Select_Change = (table_Name, field, selected_Values) => {
+    const ui_Key = `${table_Name}${UI_KEY_SEP}${field}`;
+    set_All_Selected_Options((previous_Options) => ({ ...previous_Options, [ui_Key]: selected_Values }));
   };
 
-  const handleRangeChange = (tableName, field, min, max) => {
-    const uiKey = `${tableName}${UI_KEY_SEP}${field}`;
-    setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: { from: min, to: max } }));
+  const handle_Range_Change = (table_Name, field, min, max) => {
+    const ui_Key = `${table_Name}${UI_KEY_SEP}${field}`;
+    set_All_Selected_Options((previous_Options) => ({ ...previous_Options, [ui_Key]: { from: min, to: max } }));
   };
 
-  const handleTextChange = (tableName, field, value) => {
-    const uiKey = `${tableName}${UI_KEY_SEP}${field}`;
-    setAllSelectedOptions((prev) => ({ ...prev, [uiKey]: value }));
+  const handle_Text_Change = (table_Name, field, value) => {
+    const ui_Key = `${table_Name}${UI_KEY_SEP}${field}`;
+    set_All_Selected_Options((previous_Options) => ({ ...previous_Options, [ui_Key]: value }));
   };
 
-  let a = 0;
+  let table_Counter = 0;
 
   return (
     <div className="my-4 px-4">
@@ -171,86 +167,82 @@ export default function GenericSearch() {
         {/* Sidebar Filters */}
         <div className="md:w-1/5 min-w-[300px] bg-white p-4">
           <h4 className="text-[25px] capitalize font-bold pb-2 mb-2">
-            Search for {serviceName}
+            Search for {service_Name}
           </h4>
 
-          {filtersLoading && <Loader />}
-          {filtersError && <div className="bg-red-100 text-red-700 p-3 rounded">{filtersError}</div>}
+          {filters_Loading && <Loader />}
+          {filters_Error && <div className="bg-red-100 text-red-700 p-3 rounded">{filters_Error}</div>}
 
-          {!filtersLoading && !filtersError && config?.tables?.map((table) => {
-            const tableColumns = Array.isArray(table.columns)
+          {!filters_Loading && !filters_Error && config?.tables?.map((table) => {
+            const table_Columns = Array.isArray(table.columns)
               ? table.columns
               : table.columns
               ? Object.values(table.columns)
               : [];
-            a += 1;
+            table_Counter += 1;
             return (
-              <div key={`${table.table_Name}-${a}`} className="mb-6">
+              <div key={`${table.table_Name}-${table_Counter}`} className="mb-6">
                 <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
                   {table.section_Heading}
                 </h6>
 
-                {tableColumns.map((col) => {
-                  const uiKey = `${table.table_Name}${UI_KEY_SEP}${col.column_Name}`;
-                  const backendFieldKey = col.column_Name;
-                  const label = col.display_Text || backendFieldKey;
-                  switch (col.type) {
+                {table_Columns.map((column) => {
+                  const backend_Field_Key = column.column_Name;
+                  const ui_Key = build_Ui_Key(table.table_Name, backend_Field_Key);
+                  const label = column.display_Text || backend_Field_Key;
+                  
+                  switch (column.type) {
                     case "radio":
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={ui_Key}>
                           <DropdownWithCheckBoxes
                             title={label}
-                            options={filtersData[uiKey] ? [...filtersData[uiKey]] : []}
-                            selected={allSelectedOptions[uiKey] || []}
-                            onChange={(vals) =>
-                              handleMultiSelectChange(table.table_Name, backendFieldKey, vals)
+                            options={filters_Data[ui_Key] ? [...filters_Data[ui_Key]] : []}
+                            selected={all_Selected_Options[ui_Key] || []}
+                            onChange={(values) =>
+                              handle_Multi_Select_Change(table.table_Name, backend_Field_Key, values)
                             }
                             onOpen={() => {
-                              setOpenDropdown(uiKey);
-                              fetchDropdownData(uiKey, backendFieldKey);
+                              set_Open_Dropdown(ui_Key);
+                              fetch_Dropdown_Data(ui_Key, backend_Field_Key);
                             }}
-                            open={openDropdown === uiKey}
-                            onClose={() => setOpenDropdown(null)}
-                            fetching={!!fetchingOptions[uiKey]}
+                            open={open_Dropdown === ui_Key}
+                            onClose={() => set_Open_Dropdown(null)}
+                            fetching={!!fetching_Options[ui_Key]}
                             placeholder={`Select ${label}`}
                           />
                         </div>
                       );
                     
                     case "number": 
-                      // Requirement #5 - Numeric Value Fields Now Come Back As Ranges Of Values [From To] For Search
-                      // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={ui_Key}>
                           <RangeInput
                             title={label}
-                            min={col.min || ""}
-                            max={col.max || ""}
-                            radioOptions={col.radioOptions || col.radio_Options}
-                            valueFrom={allSelectedOptions[uiKey]?.from || ""}
-                            valueTo={allSelectedOptions[uiKey]?.to || ""}
+                            min={column.min || ""}
+                            max={column.max || ""}
+                            radioOptions={column.radioOptions || column.radio_Options}
+                            valueFrom={all_Selected_Options[ui_Key]?.from || ""}
+                            valueTo={all_Selected_Options[ui_Key]?.to || ""}
                             onChange={(min, max) =>
-                              handleRangeChange(table.table_Name, backendFieldKey, min, max)
+                              handle_Range_Change(table.table_Name, backend_Field_Key, min, max)
                             }
                           />
                         </div>
                       );
 
                     case "dual":
-                      // Requirement #6 - Dual Values For Real-Numbers And Measurement Fields Get Converted By Calculation
-                      // Key Functionality #7 - Both - Dual, Measurement, Numeric – ‘From To’ Code
-                      // Requirement #4 - Measurement Fields Now Come Back As A Range Of Values [From To] For Search
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={ui_Key}>
                           <RangeInput
                             title={label}
-                            min={col.min || ""}
-                            max={col.max || ""}
-                            valueFrom={allSelectedOptions[uiKey]?.from || ""}
-                            valueTo={allSelectedOptions[uiKey]?.to || ""}
-                            radioOptions={col.radioOptions || col.radio_Options}
+                            min={column.min || ""}
+                            max={column.max || ""}
+                            valueFrom={all_Selected_Options[ui_Key]?.from || ""}
+                            valueTo={all_Selected_Options[ui_Key]?.to || ""}
+                            radioOptions={column.radioOptions || column.radio_Options}
                             onChange={(min, max) =>
-                              handleRangeChange(table.table_Name, backendFieldKey, min, max)
+                              handle_Range_Change(table.table_Name, backend_Field_Key, min, max)
                             }
                           />
                         </div>
@@ -258,14 +250,14 @@ export default function GenericSearch() {
 
                     case "date":
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={ui_Key}>
                           <DatePickerField
                             title={label}
-                            value={allSelectedOptions[uiKey] || {}}
+                            value={all_Selected_Options[ui_Key] || {}}
                             onChange={(range) =>
-                              handleTextChange(
+                              handle_Text_Change(
                                 table.table_Name,
-                                backendFieldKey,
+                                backend_Field_Key,
                                 range
                               )
                             }
@@ -275,14 +267,14 @@ export default function GenericSearch() {
 
                     case "timestamp":
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden mb-2" key={ui_Key}>
                           <DateTimePickerField
                             title={label}
-                            value={allSelectedOptions[uiKey] || {}}
+                            value={all_Selected_Options[ui_Key] || {}}
                             onChange={(range) =>
-                              handleTextChange(
+                              handle_Text_Change(
                                 table.table_Name,
-                                backendFieldKey,
+                                backend_Field_Key,
                                 range
                               )
                             }
@@ -291,9 +283,8 @@ export default function GenericSearch() {
                       );
 
                     default:
-                      // label for unknown types, could be extended for text inputs etc.
                       return (
-                        <div className="mb-2" key={uiKey}>
+                        <div className="mb-2" key={ui_Key}>
                           <label className="font-medium block mb-1">{label}</label>
                         </div>
                       );
@@ -308,42 +299,42 @@ export default function GenericSearch() {
         <div className="md:w-3/4">
 
           {/* Active Filters Summary */}
-          {Object.keys(allSelectedOptions).length > 0 && (
+          {Object.keys(all_Selected_Options).length > 0 && (
             <div className="mb-3 p-3 border rounded bg-gray-50 shadow-sm">
               <strong className="text-gray-600">Active Filters:</strong>
               <div className="flex flex-wrap mt-2">
-                {Object.entries(allSelectedOptions).map(([uiKey, value]) => {
+                {Object.entries(all_Selected_Options).map(([ui_Key, value]) => {
                   if (!value || (Array.isArray(value) && value.length === 0)) return null;
-                  const { fieldName } = uiKeyToField(uiKey);
+                  const { fieldName: field_Name } = ui_Key_To_Field(ui_Key);
 
-                  let displayValue;
+                  let display_Value;
                   if (typeof value === "object" && value.from !== undefined) {
-                    displayValue = `${value.from || ""} - ${value.to || ""}`;
+                    display_Value = `${value.from || ""} - ${value.to || ""}`;
                   } else if (Array.isArray(value)) {
-                    displayValue = value
-                      .map((v) => {
-                        if (v && typeof v === "object") return v.label ?? v.value ?? JSON.stringify(v);
-                        return String(v);
+                    display_Value = value
+                      .map((val) => {
+                        if (val && typeof val === "object") return val.label ?? val.value ?? JSON.stringify(val);
+                        return String(val);
                       })
                       .join(", ");
                   } else {
-                    displayValue = String(value);
+                    display_Value = String(value);
                   }
 
                   return (
                     <span
-                      key={uiKey}
+                      key={ui_Key}
                       className="bg-blue-600 text-white px-2 py-1 rounded flex items-center shadow-sm text-sm mr-2 mb-2"
                     >
-                      {fieldName}: {displayValue}
+                      {field_Name}: {display_Value}
                       <button
                         type="button"
                         className="ml-2 text-xs"
                         onClick={() =>
-                          setAllSelectedOptions((prev) => {
-                            const updated = { ...prev };
-                            delete updated[uiKey];
-                            return updated;
+                          set_All_Selected_Options((previous_Options) => {
+                            const updated_Options = { ...previous_Options };
+                            delete updated_Options[ui_Key];
+                            return updated_Options;
                           })
                         }
                       >
@@ -356,7 +347,7 @@ export default function GenericSearch() {
                 <button
                   type="button"
                   className="ml-2 px-2 py-1 border border-red-500 text-red-500 rounded text-sm"
-                  onClick={() => setAllSelectedOptions({})}
+                  onClick={() => set_All_Selected_Options({})}
                 >
                   Clear All
                 </button>
@@ -364,27 +355,27 @@ export default function GenericSearch() {
             </div>
           )}
 
-          {resultsLoading && <Loader />}
-          {resultsError && <div className="bg-red-100 text-red-700 p-3 rounded">{resultsError}</div>}
+          {results_Loading && <Loader />}
+          {results_Error && <div className="bg-red-100 text-red-700 p-3 rounded">{results_Error}</div>}
 
-          {!resultsLoading && !resultsError && results.length === 0 && (
+          {!results_Loading && !results_Error && results.length === 0 && (
             <p className="text-gray-500 italic">No results found</p>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {results.map((item, idx) => {
-              if (serviceName === 'berth') {
-                return <BerthCard key={idx} item={item} />;
-              } else if (serviceName === 'transport') {
-                return <TransportCard key={idx} item={item} />;
-              } else if (serviceName === 'charter') {
-                return <CharterCard key={idx} item={item} />;
-              } else if (serviceName === 'trailer') {
-                return <TrailerCard key={idx} item={item} />;
-              } else if (serviceName === 'engine') {
-                return <EngineCard key={idx} item={item} />;
+            {results.map((item, index) => {
+              if (service_Name === 'berth') {
+                return <BerthCard key={index} item={item} />;
+              } else if (service_Name === 'transport') {
+                return <TransportCard key={index} item={item} />;
+              } else if (service_Name === 'charter') {
+                return <CharterCard key={index} item={item} />;
+              } else if (service_Name === 'trailer') {
+                return <TrailerCard key={index} item={item} />;
+              } else if (service_Name === 'engine') {
+                return <EngineCard key={index} item={item} />;
               }
-              return null; // in case no condition matches
+              return null;
             })}
           </div>
         </div>

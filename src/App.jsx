@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 
-import Engines from "./pages/Engine";
 import Services from "./pages/Service";
 import Register from "./pages/Registration";
 import Login from "./pages/Login";
@@ -9,7 +8,7 @@ import ProfileCompletion from "./components/ProfileCompletion.jsx";
 import Landing from "./pages/Landing"; 
 import GenericSearch from "./pages/Generic_Search";
 import GenericAdvert from "./pages/Generic_Advert";
-import GenericDetail from "./pages/Generic_Detail";
+import GenericDetail from "./pages/Generic_Search_Detail";
 
 import HeaderNavbar from "./components/HeaderNavbar";
 import AuthProvider from "./auth/AuthProvider.jsx";
@@ -21,7 +20,7 @@ const Home = () => {
   useSyncAuthUser();
   
   return (
-    <main>
+    <main className="w-full max-w-full overflow-hidden">
       <HeaderNavbar />
       <Outlet/>
     </main>

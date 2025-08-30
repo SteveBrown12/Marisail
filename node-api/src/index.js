@@ -13,6 +13,7 @@ import authRouter from "./routes/auth.js";
 import emailTestRouter from "./routes/email-test.js";
 import smsTestRouter from "./routes/sms-test.js";
 
+import price_Check_Router from "./routes/Price_Label.js";
 const router = Router();
 
 // Use the homeRouter for requests to /api/home
@@ -31,7 +32,7 @@ router.use("/sms-test", smsTestRouter);
 
 router.use("/search", search_router); 
 router.use("/advert", advert_router); 
-
+router.use('/price-check', price_Check_Router)
 
 router.use("/upload-media", handler);
 

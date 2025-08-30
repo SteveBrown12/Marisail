@@ -46,7 +46,7 @@ const validate_Schema = async (config) => {
   try {
 
     // 1. Aggregate all tables to check: main table + join tables
-    
+
     const tables_To_Check = [config.main_table, ...(config.join_tables || [])];
 
     for (const table_Name of tables_To_Check) {
@@ -58,11 +58,11 @@ const validate_Schema = async (config) => {
         errors.push(`Configuration error: Table '${table_Name}' does not exist in the database.`);
         continue;
       }
-  
+
       // Find the table config object for column validation
 
       const table_Config = (config.tables || []).find(table_Config_Obj => table_Config_Obj.table_Name === table_Name);
-      if (!table_Config) continue; 
+      if (!table_Config) continue;
 
       // Retrieve actual columns from DB table
 
@@ -85,10 +85,10 @@ const validate_Schema = async (config) => {
 
   // Throw all errors as a single error if any missing
 
-if (errors.length > 0) {
-  const numbered_Errors = errors.map((err, idx) => `${idx + 1}. ${err}`).join('\n');
-  throw new Error(numbered_Errors);
-}
+  if (errors.length > 0) {
+    const numbered_Errors = errors.map((err, idx) => `${idx + 1}. ${err}`).join('\n');
+    throw new Error(numbered_Errors);
+  }
   console.log(`✅ Schema validated successfully for service: ${config.schema_name}`);
 };
 
@@ -165,7 +165,7 @@ export const build_Joins = (main_Table_Info) => {
   console.log('=== DEBUGGING build_Joins ===');
   console.log('main_Table_Info:', main_Table_Info);
   console.log('join_tables:', main_Table_Info?.join_tables);
-  console.log( 'join_tables is array:', Array.isArray(main_Table_Info?.join_tables) );
+  console.log('join_tables is array:', Array.isArray(main_Table_Info?.join_tables));
   if (!main_Table_Info?.join_tables) {
     console.error('❌ join_tables is undefined in build_Joins!');
     return '';
@@ -180,7 +180,7 @@ export const build_Joins = (main_Table_Info) => {
 export const build_Where_Clause = (filters, mappings) => {
 
   // Parse filters if they come as JSON string
-  
+
   if (typeof filters === "string") {
     try { filters = JSON.parse(filters); }
     catch (e) { console.error("Invalid filters JSON:", filters); filters = {}; }
@@ -218,7 +218,7 @@ export const build_Where_Clause = (filters, mappings) => {
         const result = filters[key];
         if (result !== "" && result !== undefined && result !== null) {
           if (key.endsWith("From")) conditions.push(`${qualified} >= ${db_connection.escape(result)}`);
-          if (key.endsWith("To"))   conditions.push(`${qualified} <= ${db_connection.escape(result)}`);
+          if (key.endsWith("To")) conditions.push(`${qualified} <= ${db_connection.escape(result)}`);
         }
       }
       delete filters[key];
@@ -280,13 +280,44 @@ export const execute_Operation_With_Retry = async (
 ) => {
   for (let attempt = 1; attempt <= max_attempts; attempt++) {
     try {
-      return await operation(); 
+      return await operation();
     } catch (error) {
       console.error(`Operation failed on attempt ${attempt}: ${error.message}`);
       if (attempt >= max_attempts) {
-        throw error; 
+        throw error;
       }
       await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
     }
   }
 };
+
+// Price Label, Price Drop, Total Price
+
+export const calculate_Price_Label = async (details) => {
+  const { make, model, year, condition, asking_Price } = details;
+
+  //return early if we dont have unnecessary details.
+  if (!make || !model || !year || !asking_Price) return 'Not Available';
+  const connection = await db_connection.getConnection();
+  try {
+    const sql = `
+    SELECT AVG(sold_price) as averageMarketPrice
+    from Sales_History 
+    WHERE make = ? AND model = ? AND year = ? AND sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    `;
+    const [rows] = await connection.execute(sql, [make, model, year]);
+    const average_Market_Price = rows[0]?.averageMarketPrice;
+    if(!average_Market_Price) return 'Unique Items';
+    const percentage_Diff = ((asking_Price - average_Market_Price) / average_Market_Price) * 100;
+    return percentage_Diff <= -20 ? 'Great Price' 
+        : percentage_Diff < -10 ? 'Good Price' 
+        : percentage_Diff <= 10 ? 'Fair Price' 
+        : 'Higher Price'
+          
+  } catch (error) {
+    console.error("Error Calculating Price Label " , error);
+    return 'Calculation Error';
+  }finally {
+    if(connection) connection.release();
+  }
+}
