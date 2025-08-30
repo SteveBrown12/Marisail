@@ -1,17 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import Loader from "../components/Loader";
-import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes";
-import RangeInput from "../components/RangeInput";
-import DatePickerField from "../components/DatePickerField";
-import DateTimePickerField from "../components/DateTimePickerField";
-
-import BerthCard from "../components/BerthCard";
-import CharterCard from "../components/CharterCard";
-import TrailerCard from "../components/TrailerCard";
-import TransportCard from "../components/TransportCard";
-import EngineCard from "../components/EngineCard";
+import { Loader } from "../components/Common_Utils";
+import {DropdownWithCheckBoxes, RangeInput, DatePickerField, DateTimePickerField} from "../components/Generic_Components";
+import { BerthCard, CharterCard, TrailerCard, TransportCard, EngineCard } from "../components/Services_Cards";
 
 const api_Url = import.meta.env.VITE_BACKEND_URL;
 

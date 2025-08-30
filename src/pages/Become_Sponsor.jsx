@@ -1,4 +1,4 @@
-import axios from "../utils/axiosConfig";
+import axios from "../utils/Axios_Config";
 import { useState } from "react";
 
 const BecomeSponsor = () => {

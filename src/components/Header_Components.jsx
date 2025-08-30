@@ -1,4 +1,8 @@
-const BrandIcon = () => {
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import PropTypes from "prop-types";
+
+export const BrandIcon = () => {
   return (
     <svg version='1.1' id='svg1' width='64' height='64' viewBox='0 0 352 235'>
       <defs id='defs1' />
@@ -62,4 +66,241 @@ const BrandIcon = () => {
   );
 };
 
-export default BrandIcon;
+
+export const ProfileDropdown = () => {
+  const [open, setOpen] = useState(false);
+
+  const user = {
+    name: "Maulik Solanki",
+    email: "mauliksolanki2002@gmail.com",
+    avatar:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToiRnzzyrDtkmRzlAvPPbh77E-Mvsk3brlxQ&s",
+  };
+
+  return (
+    <div className="relative">
+      {/* Avatar button */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 focus:outline-none cursor-pointer"
+      >
+        <img
+          src={user?.avatar}
+          alt="Profile Avatar"
+          className="w-10 h-10 rounded-full border-2 border-transparent hover:border-blue-500 transition-all"
+        />
+      </button>
+
+      {/* Dropdown menu */}
+      {open && (
+        <div
+          className="absolute right-0 mt-2 w-56 bg-white shadow-lg rounded-md overflow-hidden z-50"
+          onMouseLeave={() => setOpen(false)}
+        >
+          {user ? (
+            <>
+              <div className="px-4 py-3">
+                <h6 className="text-sm font-medium text-gray-900">
+                  {user.name}
+                </h6>
+                <p className="text-xs text-gray-500">{user.email}</p>
+              </div>
+              <div className="border-t border-gray-200">
+                <a
+                  href="/profile"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Profile
+                </a>
+                <a
+                  href="/logout"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </a>
+              </div>
+            </>
+          ) : (
+            <div className="px-4 py-3">
+              <a
+                href="/login"
+                className="block text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              >
+                Login
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const menuItems = [
+  {
+    title: "boats",
+    links: [
+      { to: "/find/boat", label: "find a boat" },
+      { to: "/advert/boat", label: "advertise a boat" },
+    ],
+  },
+  {
+    title: "berths",
+    links: [
+      { to: "/find/berth", label: "find a berth" },
+      { to: "/advert/berth", label: "advertise a berth" },
+    ],
+  },
+  {
+    title: "engines",
+    links: [
+      { to: "/find/engine", label: "find an engine" },
+      { to: "/advert/engine", label: "advertise an engine" },
+    ],
+  },
+  {
+    title: "transportation",
+    links: [
+      { to: "/find/transport", label: "find a transportation" },
+      { to: "/advert/transport", label: "advertise a transportation" },
+    ],
+  },
+  {
+    title: "trailers",
+    links: [
+      { to: "/find/trailer", label: "find a trailer" },
+      { to: "/advert/trailer", label: "advertise a trailer" },
+    ],
+  },
+  {
+    title: "charters",
+    links: [
+      { to: "/find/charter", label: "find a charter" },
+      { to: "/advert/charter", label: "advertise a charter" },
+    ],
+  },
+  {
+    title: "services",
+    links: [
+      { to: "/services/engines", label: "My Engines" },
+      { to: "/services/charters", label: "My Charters" },
+      { to: "/services/trailers", label: "My Trailers" },
+      { to: "/services/berths", label: "My Berths" },
+      { to: "/services/transports", label: "My Transport" },
+      { to: "/services/sponsor", label: "Become Sponsor" },
+    ],
+  },
+];
+
+export const HeaderNavbar = ({ navbarRef }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <header
+      ref={navbarRef}
+      className="w-full px-auto bg-white shadow-sm sticky top-0 z-50 font-medium uppercase"
+    >
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between">
+          {/* Brand */}
+          <NavLink
+            to="/"
+            className="flex items-center space-x-2 no-underline hover:no-underline hover:opacity-80 transition-opacity"
+          >
+            <BrandIcon />
+            <h1 className="text-lg tracking-wide">Marisail</h1>
+          </NavLink>
+
+          {/* Mobile menu button */}
+          <button
+            className="lg:hidden p-2 rounded-md text-blue-600 hover:bg-blue-50"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            <svg
+              className="h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {mobileOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+
+          {/* Desktop menu */}
+          <nav className="hidden lg:flex space-x-8 items-center">
+            {menuItems.map((menu) => (
+              <div key={menu.title} className="relative group">
+                <button className="hover:text-blue-600 tracking-wide cursor-pointer">
+                  {menu.title.toUpperCase()}
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all">
+                  {menu.links.map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      className="block px-4 py-2 text-sm capitalize no-underline hover:no-underline hover:bg-blue-50 hover:text-blue-600"
+                    >
+                      {link.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {/* Profile */}
+            <div className="hidden lg:block">
+              <ProfileDropdown />
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      {/* Mobile dropdown menu */}
+      {mobileOpen && (
+        <div className="lg:hidden bg-white border-t shadow-md">
+          <nav className="flex flex-col p-4 space-y-4">
+            {menuItems.map((menu) => (
+              <div key={menu.title}>
+                <p className="font-bold text-gray-800">{menu.title}</p>
+                <div className="ml-3 flex flex-col space-y-1">
+                  {menu.links.map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      className="text-sm capitalize no-underline hover:no-underline hover:text-blue-600"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {link.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div className="pt-4 border-t">
+              <ProfileDropdown />
+            </div>
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+};
+
+HeaderNavbar.propTypes = {
+  navbarRef: PropTypes.object,
+};

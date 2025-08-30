@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Loader from "../components/Loader";
+import { Loader } from "../components/Common_Utils";
 import { format as formatDate, parseISO, isValid } from "date-fns";
 import axios from "axios";
 import image from "/images/engine.jpg";

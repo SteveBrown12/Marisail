@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "../utils/axiosConfig";
+import axios from "../utils/Axios_Config";
 
 const Landing = () => {
   const [sponsors, setSponsors] = useState([]);
