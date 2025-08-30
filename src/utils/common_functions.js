@@ -1,5 +1,5 @@
 //This function generates Text from camelCase or any other case
-//Eg. Input: "engineBlock", Output: "Engine Block"
+//Eg. Input: "engineBlock", Output: "Engine Block" 
 
 export const makeString = (str, keyToExpectedValueMap) => {
   if (str in keyToExpectedValueMap) {
