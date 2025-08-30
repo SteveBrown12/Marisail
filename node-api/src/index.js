@@ -12,6 +12,7 @@ import sponsor_router from "./routes/Sponsor.js";
 import authRouter from "./routes/auth.js";
 import emailTestRouter from "./routes/email-test.js";
 import smsTestRouter from "./routes/sms-test.js";
+import paymentRouter from "./routes/payment.js";
 
 import price_Check_Router from "./routes/Price_Label.js";
 const router = Router();
@@ -33,6 +34,8 @@ router.use("/sms-test", smsTestRouter);
 router.use("/search", search_router); 
 router.use("/advert", advert_router); 
 router.use('/price-check', price_Check_Router)
+
+router.use("/payment", paymentRouter);
 
 router.use("/upload-media", handler);
 
