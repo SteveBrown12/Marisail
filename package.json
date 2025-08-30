@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.4.0",
     "axios": "^1.7.4",
     "concurrently": "^9.1.2",
     "date-fns": "^4.1.0",
