@@ -183,6 +183,7 @@ export default function GenericSearch() {
                   const ui_Key = build_Ui_Key(table.table_Name, backend_Field_Key);
                   const label = column.display_Text || backend_Field_Key;
                   
+                  if (column.searchable === false) return null;
                   switch (column.type) {
                     case "radio":
                       return (
@@ -354,7 +355,7 @@ export default function GenericSearch() {
             <p className="text-gray-500 italic">No results found</p>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
             {results.map((item, index) => {
               if (service_Name === 'berth') {
                 return <BerthCard key={index} item={item} />;

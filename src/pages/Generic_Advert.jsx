@@ -194,7 +194,7 @@ export default function GenericAdvert() {
           </h4>
 
           <form onSubmit={handle_Submit}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex justify-items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 flex justify-items-center">
               {[...(service_Config?.tables || [])]
                 .sort((table_A, table_B) => {
                   const position_A = Section_Positions[service_Name]?.find(t => t.table_Name === table_A.table_Name)?.position || 0;
@@ -252,7 +252,7 @@ export default function GenericAdvert() {
                                           }}
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                        {/* {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)} */}
                                       </>
                                     );
 
@@ -274,7 +274,7 @@ export default function GenericAdvert() {
                                           }
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)}
+                                        {/* {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)} */}
                                       </>
                                     );
 
@@ -299,7 +299,7 @@ export default function GenericAdvert() {
                                           }
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)}
+                                        {/* {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)} */}
                                       </>
                                     );
 
@@ -317,7 +317,7 @@ export default function GenericAdvert() {
                                           placeholder="dd-mm-yyyy"
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                        {/* {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)} */}
                                       </>
                                     );
 
@@ -335,7 +335,7 @@ export default function GenericAdvert() {
                                           placeholder="dd-mm-yyyy"
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                        {/* {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)} */}
                                       </>
                                     );
 
