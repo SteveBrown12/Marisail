@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Loader } from "../components/Common_Utils";
-import {DropdownWithCheckBoxes, RangeInput, DatePickerField, DateTimePickerField} from "../components/Generic_Components";
+import { DropdownWithCheckBoxes, RangeInput, DatePickerField, DateTimePickerField} from "../components/Generic_Components";
 import { BerthCard, CharterCard, TrailerCard, TransportCard, EngineCard } from "../components/Services_Cards";
 
 const api_Url = import.meta.env.VITE_BACKEND_URL;
@@ -82,7 +82,10 @@ export default function GenericSearch() {
     if (!service_Name || !field_Key || !ui_Key) return;
     set_Fetching_Options((previous_Options) => ({ ...previous_Options, [ui_Key]: true }));
     try {
-      const response = await axios.get(`${api_Url}/search/${service_Name}/facets/${field_Key}`);
+      const mapped_Filters = map_Filters_To_Db_Keys(all_Selected_Options);
+      const response = await axios.get(`${api_Url}/search/${service_Name}/facets/${field_Key}`, {
+        params: { filters: mapped_Filters },
+      });
       if (response.data.ok) {
         const raw_Facets = response.data.facets ?? [];
         const cloned_Normalized = normalize_Facets(raw_Facets).map((option) => ({ ...option }));
@@ -319,7 +322,7 @@ export default function GenericSearch() {
                       key={ui_Key}
                       className="bg-blue-600 text-white px-2 py-1 rounded flex items-center shadow-sm text-sm mr-2 mb-2"
                     >
-                      {field_Name}: {display_Value}
+                      {field_Name.replace(/_/g, " ")}: {display_Value}
                       <button
                         type="button"
                         className="ml-2 text-xs"
@@ -339,7 +342,7 @@ export default function GenericSearch() {
 
                 <button
                   type="button"
-                  className="ml-2 px-2 py-1 border border-red-500 text-red-500 rounded text-sm"
+                  className="ml-2 px-2 py-1 mr-2 mb-2 border border-red-500 text-red-500 rounded text-sm"
                   onClick={() => set_All_Selected_Options({})}
                 >
                   Clear All

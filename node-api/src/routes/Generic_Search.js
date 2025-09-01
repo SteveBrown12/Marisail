@@ -150,15 +150,19 @@ search_Router.get("/:service_name/details/:id", initialize_Service, async (reque
 search_Router.get("/:service_name/facets/:field", initialize_Service, async (request, response) => {
   try {
     const { field } = request.params;
-    const { service_mappings } = request;
+    const { service_config, service_mappings } = request;
 
+    // 🔎 Resolve WHERE clause (same as search)
+    const where_Sql = build_Where_Clause(request.query.filters || {}, service_mappings);
+
+    // 🔎 Resolve mapping for facet field
     let column_Name = service_mappings.var_To_Column[field];
-    let table_Name = service_mappings.var_To_Table[field];
+    let table_Name  = service_mappings.var_To_Table[field];
     if (!column_Name || !table_Name) {
       for (const [key, cell] of Object.entries(service_mappings.var_To_Column)) {
         if (cell.toLowerCase() === field.toLowerCase()) {
           column_Name = cell;
-          table_Name = service_mappings.var_To_Table[key];
+          table_Name  = service_mappings.var_To_Table[key];
           break;
         }
       }
@@ -167,36 +171,54 @@ search_Router.get("/:service_name/facets/:field", initialize_Service, async (req
     if (!column_Name || !table_Name) {
       return handle_Error_Response(response, `Field '${field}' not configured`, 404);
     }
+
+    // --- RANGE FACET (numeric/date bins)
     if (request.query.range) {
       const query = build_Range_Facets(table_Name, column_Name, parseInt(request.query.range));
       const [ranges] = await db_connection.query(query);
       return response.json({ ok: true, facets: ranges });
     }
 
-    // Query to get counts of each distinct value
-    
+    // Fully qualified column
+    const qualifiedColumn = `\`${table_Name}\`.\`${column_Name}\``;
+
+    // Facet query: values independent, counts filtered
     const facets_Query = `
-      SELECT \`${column_Name}\` AS value, COUNT(*) AS count
-      FROM \`${table_Name}\`
-      WHERE \`${column_Name}\` IS NOT NULL
-      GROUP BY \`${column_Name}\`
-      ORDER BY value ASC
-    `;
+      SELECT vals.value, COUNT(filtered.${service_config.primary_key}) AS count
+      FROM (
+        SELECT DISTINCT ${qualifiedColumn} AS value
+        FROM \`${table_Name}\`
+        WHERE ${qualifiedColumn} IS NOT NULL
+      ) vals
+      LEFT JOIN (
+        SELECT ${qualifiedColumn}, \`${service_config.main_table}\`.${service_config.primary_key}
+        FROM \`${service_config.main_table}\`
+        ${build_Joins(service_config)}
+        ${where_Sql}
+      ) filtered
+      ON vals.value = filtered.${column_Name}
+      GROUP BY vals.value
+      ORDER BY vals.value ASC
+    `.trim().replace(/\s+/g, ' ');
+
     const [facets] = await db_connection.query(facets_Query);
 
-    // Query to get total count of records where column NOT NULL
-
+    console.log("Facets with count:", facets);
+    // --- Total count (also filtered!)
     const totalCountQuery = `
       SELECT COUNT(*) AS totalCount
-      FROM \`${table_Name}\`
-      WHERE \`${column_Name}\` IS NOT NULL
-    `;
+      FROM \`${service_config.main_table}\`
+      ${build_Joins(service_config)}
+      ${where_Sql ? where_Sql + " AND" : "WHERE"} ${qualifiedColumn} IS NOT NULL
+    `.trim().replace(/\s+/g, ' ');
+
     const [total_Rows] = await db_connection.query(totalCountQuery);
     const total_Count = total_Rows[0]?.totalCount ?? 0;
 
-    return response.json({ ok: true,   total_Count,facets });
+    return response.json({ ok: true, total_Count, facets });
+
   } catch (error) {
-    handle_Error_Response( response, `Facets failed for field '${request.params.field}': ${error.message}`  );
+    handle_Error_Response(response, `Facets failed for field '${request.params.field}': ${error.message}`);
   }
 });
 

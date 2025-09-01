@@ -5,8 +5,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { format as formatDate, parseISO, isValid } from "date-fns";
-import { Loader } from "rsuite";
-
+import { Loader } from "./Common_Utils";
 
 export const RangeInput = ({
   title,
