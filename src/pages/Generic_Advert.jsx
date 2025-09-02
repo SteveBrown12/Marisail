@@ -189,7 +189,7 @@ export default function GenericAdvert() {
     <div className="flex justify-center items-center">
       <div className="w-full p-4">
         <div className="bg-white shadow-sm rounded-xl p-4">
-          <h4 className="text-[25px] capitalize font-bold pb-2 mb-2 pl-[60px]">
+          <h4 className="text-[25px] capitalize font-bold pb-2 mb-2 pl-[60px] 2xl:pl-[95px]">
             Advertise {service_Name}
           </h4>
 
@@ -197,13 +197,208 @@ export default function GenericAdvert() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 flex justify-items-center">
               {[...(service_Config?.tables || [])]
                 .sort((table_A, table_B) => {
-                  const position_A = Section_Positions[service_Name]?.find(t => t.table_Name === table_A.table_Name)?.position || 0;
-                  const position_B = Section_Positions[service_Name]?.find(t => t.table_Name === table_B.table_Name)?.position || 0;
+                  const position_A =
+                    Section_Positions[service_Name]?.find(
+                      (t) => t.table_Name === table_A.table_Name
+                    )?.position || 0;
+                  const position_B =
+                    Section_Positions[service_Name]?.find(
+                      (t) => t.table_Name === table_B.table_Name
+                    )?.position || 0;
                   return position_A - position_B;
                 })
-                .map((table) => {
-                  const table_Entries = table.columns ? Object.entries(table.columns) : [];
+                .flatMap((table) => {
+                  const table_Entries = table.columns
+                    ? Object.entries(table.columns)
+                    : [];
 
+                  if (table_Entries.length >= 20) {
+                    // Split into 2 halves
+                    const half = Math.ceil(table_Entries.length / 2);
+                    const firstHalf = table_Entries.slice(0, half);
+                    const secondHalf = table_Entries.slice(half);
+
+                    return [firstHalf, secondHalf].map((halfEntries, index) => (
+                      <div
+                        key={`${table.table_Name}-${index}`}
+                        className="p-4 min-w-[300px] w-1/3 xl:w-[380px]"
+                      >
+                        <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
+                          {table.section_Heading} {index === 0 ? "(Part 1)" : "(Part 2)"}
+                        </h6>
+
+                        <div>
+                          {halfEntries.map(([variable_Name, column_Config]) => {
+                            const field_Key = variable_Name;
+                            const ui_Key = build_Ui_Key(table.table_Name, field_Key);
+                            const display_Label =
+                              column_Config.display_Text || field_Key;
+
+                            return (
+                              <div
+                                key={ui_Key}
+                                className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden"
+                              >
+                                {(() => {
+                                  switch (column_Config.type) {
+                                    case "radio":
+                                      return (
+                                        <>
+                                          <DropdownWithCheckBoxes
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            options={
+                                              filters_Data[ui_Key]
+                                                ? [...filters_Data[ui_Key]]
+                                                : []
+                                            }
+                                            selected={form_State[field_Key] || []}
+                                            onChange={(values) =>
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: values,
+                                              }))
+                                            }
+                                            onOpen={() => {
+                                              set_Open_Dropdown(ui_Key);
+                                              fetch_Dropdown_Data(ui_Key, field_Key);
+                                            }}
+                                            onClose={() => set_Open_Dropdown(null)}
+                                            open={open_Dropdown === ui_Key}
+                                            fetching={!!fetching_Options[ui_Key]}
+                                            placeholder={`Select ${display_Label}`}
+                                            advert={true}
+                                            onAddOption={(new_Option) => {
+                                              set_Filters_Data((prev) => ({
+                                                ...prev,
+                                                [ui_Key]: [
+                                                  ...(prev[ui_Key] || []),
+                                                  new_Option,
+                                                ],
+                                              }));
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: [
+                                                  ...(prev[field_Key] || []),
+                                                  new_Option.value,
+                                                ],
+                                              }));
+                                            }}
+                                          />
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+
+                                    case "number":
+                                    case "dual":
+                                      return (
+                                        <>
+                                          <InputComponent
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            min={column_Config.min || ""}
+                                            max={column_Config.max || ""}
+                                            radioOptions={
+                                              column_Config.radioOptions ||
+                                              column_Config.radio_Options
+                                            }
+                                            value={form_State[field_Key]?.value || ""}
+                                            onChange={(value) =>
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: { value },
+                                              }))
+                                            }
+                                          />
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+
+                                    case "date":
+                                      return (
+                                        <>
+                                          <DatePickerField
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            mode="single"
+                                            value={form_State[field_Key] || ""}
+                                            onChange={(iso_Date) =>
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: iso_Date,
+                                              }))
+                                            }
+                                            placeholder="dd-mm-yyyy"
+                                          />
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+
+                                    case "timestamp":
+                                      return (
+                                        <>
+                                          <DateTimePickerField
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            mode="single"
+                                            value={form_State[field_Key] || ""}
+                                            onChange={(iso_Date) =>
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: iso_Date,
+                                              }))
+                                            }
+                                            placeholder="dd-mm-yyyy"
+                                          />
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+
+                                    default:
+                                      return (
+                                        <>
+                                          <label className="block mb-1 font-medium">
+                                            <span className="truncate">
+                                              {display_Label}
+                                              {column_Config.mandatory && (
+                                                <span className="text-red-500 ml-1">*</span>
+                                              )}
+                                            </span>
+                                          </label>
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+                                  }
+                                })()}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ));
+                  }
+
+                  // Normal case (< 20 fields)
                   return (
                     <div key={table.table_Name} className="p-4 min-w-[300px] w-1/3 xl:w-[380px]">
                       <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">

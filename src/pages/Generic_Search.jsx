@@ -358,7 +358,7 @@ export default function GenericSearch() {
             <p className="text-gray-500 italic">No results found</p>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-10">
             {results.map((item, index) => {
               if (service_Name === 'berth') {
                 return <BerthCard key={index} item={item} />;

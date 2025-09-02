@@ -81,26 +81,64 @@ const GenericDetail = () => {
               )?.position || 0;
             return position_A - position_B;
           })
-          .map(([table_Name, values_Object]) => (
-            <div key={table_Name} className="p-4 w-full min-w-[380px] sm:max-w-[480px]">
-              <h6 className="text-md font-semibold text-blue-500 uppercase tracking-wide mb-5">
-                {table_Name.replace(/_/g, " ")}
-              </h6>
+          .flatMap(([table_Name, values_Object]) => {
+            const entries = Object.entries(values_Object);
+            if (entries.length >= 20) {
+              // Split into 2 halves
+              const half = Math.ceil(entries.length / 2);
+              const firstHalf = entries.slice(0, half);
+              const secondHalf = entries.slice(half);
 
-              <div className="grid grid-cols-2 gap-y-2">
-                {Object.entries(values_Object).map(([key, value]) => (
-                  <React.Fragment key={key}>
-                    <span className="font-semibold text-[17px] text-gray-900">
-                      {key.replace(/_/g, " ")}:
-                    </span>
-                    <span className="text-[17px] text-gray-900">
-                      {format_Display_Value(value)}
-                    </span>
-                  </React.Fragment>
-                ))}
+              return [firstHalf, secondHalf].map((halfEntries, index) => (
+                <div
+                  key={`${table_Name}-${index}`}
+                  className="p-4 w-full min-w-[380px] sm:max-w-[480px]"
+                >
+                  <h6 className="text-md font-semibold text-blue-500 uppercase tracking-wide mb-5">
+                    {table_Name.replace(/_/g, " ")} {index === 0 ? "(Part 1)" : "(Part 2)"}
+                  </h6>
+
+                  <div className="grid grid-cols-2 gap-y-2">
+                    {halfEntries.map(([key, value]) => (
+                      <React.Fragment key={key}>
+                        <span className="font-semibold text-[17px] text-gray-900">
+                          {key.replace(/_/g, " ")}:
+                        </span>
+                        <span className="text-[17px] text-gray-900">
+                          {format_Display_Value(value)}
+                        </span>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              ));
+            }
+
+            // Normal case (< 20 entries)
+            return (
+              <div
+                key={table_Name}
+                className="p-4 w-full min-w-[380px] sm:max-w-[480px]"
+              >
+                <h6 className="text-md font-semibold text-blue-500 uppercase tracking-wide mb-5">
+                  {table_Name.replace(/_/g, " ")}
+                </h6>
+
+                <div className="grid grid-cols-2 gap-y-2">
+                  {entries.map(([key, value]) => (
+                    <React.Fragment key={key}>
+                      <span className="font-semibold text-[17px] text-gray-900">
+                        {key.replace(/_/g, " ")}:
+                      </span>
+                      <span className="text-[17px] text-gray-900">
+                        {format_Display_Value(value)}
+                      </span>
+                    </React.Fragment>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
       </div>
     </div>
   );
