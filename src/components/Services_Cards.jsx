@@ -42,11 +42,6 @@ export const BerthCard = ({ item }) => {
           {/* Location */}
           <p className="text-sm text-gray-500 mt-1">{Location}</p>
         </div>
-
-        {/* Footer */}
-        <div className="px-5 py-3 bg-gray-50 text-sm text-blue-600 font-medium hover:text-blue-800">
-          View Details →
-        </div>
       </div>
     </Link>
   );
@@ -101,11 +96,6 @@ export const TrailerCard = ({ item }) => {
           {/* Model */}
           <p className="text-sm text-gray-500 mt-1">{Model}</p>
         </div>
-
-        {/* Footer */}
-        <div className="px-5 py-3 bg-gray-50 text-sm text-blue-600 font-medium hover:text-blue-800">
-          View Details →
-        </div>
       </div>
     </Link>
   );
@@ -159,11 +149,6 @@ export const TransportCard = ({ item }) => {
 
           {/* Location */}
           <p className="text-sm text-gray-500 mt-1">{Departure_Destination}</p>
-        </div>
-
-        {/* Footer */}
-        <div className="px-5 py-3 bg-gray-50 text-sm text-blue-600 font-medium hover:text-blue-800">
-          View Details →
         </div>
       </div>
     </Link>
@@ -222,11 +207,6 @@ export const EngineCard = ({ item }) => {
 
           {/* Engine Make */}
           <p className="text-sm text-gray-500 mt-1">{Engine_Make}</p>
-        </div>
-
-        {/* Footer */}
-        <div className="px-5 py-3 bg-gray-50 text-sm text-blue-600 font-medium hover:text-blue-800">
-          View Details →
         </div>
       </div>
     </Link>

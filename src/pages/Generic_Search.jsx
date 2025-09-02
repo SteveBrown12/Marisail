@@ -160,7 +160,7 @@ export default function GenericSearch() {
       <div className="flex flex-col md:flex-row gap-4">
         
         {/* Sidebar Filters */}
-        <div className="md:w-1/5 min-w-[300px] bg-white p-4">
+        <div className="md:w-1/6 min-w-[300px] bg-white p-4">
           <h4 className="text-[25px] capitalize font-bold pb-2 mb-2">
             Search for {service_Name}
           </h4>
@@ -292,7 +292,7 @@ export default function GenericSearch() {
         </div>
 
         {/* Results */}
-        <div className="md:w-3/4">
+        <div className="md:w-5/6">
 
           {/* Active Filters Summary */}
           {Object.keys(all_Selected_Options).length > 0 && (
@@ -358,7 +358,7 @@ export default function GenericSearch() {
             <p className="text-gray-500 italic">No results found</p>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-10">
             {results.map((item, index) => {
               if (service_Name === 'berth') {
                 return <BerthCard key={index} item={item} />;
