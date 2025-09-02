@@ -68,7 +68,7 @@ const GenericDetail = () => {
         />
       </div> */}
         
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 flex justify-items-center">
         {Object.entries(details)
           .sort((entry_A, entry_B) => {
             const position_A =
@@ -90,10 +90,10 @@ const GenericDetail = () => {
               <div className="grid grid-cols-2 gap-y-2">
                 {Object.entries(values_Object).map(([key, value]) => (
                   <React.Fragment key={key}>
-                    <span className="font-semibold text-sm text-gray-900">
+                    <span className="font-semibold text-[17px] text-gray-900">
                       {key.replace(/_/g, " ")}:
                     </span>
-                    <span className="text-sm text-gray-900">
+                    <span className="text-[17px] text-gray-900">
                       {format_Display_Value(value)}
                     </span>
                   </React.Fragment>
