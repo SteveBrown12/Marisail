@@ -277,4 +277,184 @@ advert_router.post(
     }
   }
 );
+
+
+//New route for price label calculation
+advert_router.post("/:service_name/calculate-price-label", initialize_Service, async (request, response) => {
+  try {
+    const { service_name } = request.params;
+    const { main_table } = request.service_config;
+    const body = request.body;
+
+    let price_label = "Not available"; // Default label
+
+    // --- Logic for Trailer, Boat, and Engine Services ---
+    if (['trailer', 'boat', 'engine'].includes(service_name)) {
+      const { askingPrice, make, model, year } = body;
+      if (!askingPrice || !make || !model || !year) {
+        return response.json({ ok: true, price_label: "" });
+      }
+
+      const query = `
+                SELECT AVG(Asking_Price) as averagePrice
+                FROM ${main_table}
+                WHERE
+                    Make = ? AND
+                    Model = ? AND
+                    Year = ?
+            `;
+
+      const [rows] = await db_connection.query(query, [make, model, year]);
+
+      if (rows.length > 0 && rows[0].averagePrice) {
+        const average_price = parseFloat(rows[0].averagePrice);
+        const user_price = parseFloat(askingPrice);
+        const percentage_diff = ((user_price - average_price) / average_price) * 100;
+
+        if (percentage_diff < -20) price_label = "Fantastic Price";
+        else if (percentage_diff < -10) price_label = "Very Good Price";
+        else if (percentage_diff <= 10) price_label = "Fair Price";
+        else if (percentage_diff > 20) price_label = "Very High Price";
+        else if (percentage_diff > 10) price_label = "Higher Price";
+        else price_label = "Fair Price";
+      } else {
+        price_label = "Not enough data";
+      }
+    }
+    // --- Logic for Berth Service ---
+    else if (service_name === 'berth') {
+      const { length, beam, pricePA, pricePCM, pricePW } = body;
+      const cleanPrice = (price) => {
+          if (!price) return null;
+          return parseFloat(String(price).replace(/^01jan/, ''));
+      };
+      const user_price_pa = cleanPrice(pricePA);
+      const user_price_pcm = cleanPrice(pricePCM);
+      const user_price_pw = cleanPrice(pricePW);
+
+      if (!length || !beam || (!user_price_pa && !user_price_pcm && !user_price_pw)) {
+          return response.json({ ok: true, price_label: "" });
+      }
+      const user_area = parseFloat(length) * parseFloat(beam);
+      let user_annual_price = user_price_pa || (user_price_pcm * 12) || (user_price_pw * 52);
+      let area_category;
+      if (user_area <= 15) area_category = 'small';
+      else if (user_area <= 30) area_category = 'medium';
+      else if (user_area <= 50) area_category = 'large';
+      else if (user_area <= 100) area_category = 'xlarge';
+      else area_category = 'xxlarge';
+
+      const query = `
+          SELECT
+              AVG(COALESCE(p.Price_PA, p.Price_PCM * 12, p.Price_PW * 52)) as averagePrice
+          FROM Berth_Details bd
+          JOIN Berth b ON bd.Berth_ID = b.Berth_ID
+          JOIN Pricing p ON bd.Berth_ID = p.Berth_ID
+          WHERE 
+              CASE
+                  WHEN (b.Length * b.Beam) <= 15 THEN 'small'
+                  WHEN (b.Length * b.Beam) <= 30 THEN 'medium'
+                  WHEN (b.Length * b.Beam) <= 50 THEN 'large'
+                  WHEN (b.Length * b.Beam) <= 100 THEN 'xlarge'
+                  ELSE 'xxlarge'
+              END = ?
+      `;
+      const [rows] = await db_connection.query(query, [area_category]);
+      if (rows.length > 0 && rows[0].averagePrice) {
+          const average_price = parseFloat(rows[0].averagePrice);
+          const percentage_diff = ((user_annual_price - average_price) / average_price) * 100;
+          if (percentage_diff < -20) price_label = "Fantastic Price";
+          else if (percentage_diff < -10) price_label = "Very Good Price";
+          else if (percentage_diff <= 10) price_label = "Fair Price";
+          else if (percentage_diff > 20) price_label = "Very High Price";
+          else if (percentage_diff > 10) price_label = "Higher Price";
+          else price_label = "Fair Price";
+      } else {
+          price_label = "Not enough data for this size";
+      }
+    }
+    // --- Logic for Charter Service ---
+    else if (service_name === 'charter') {
+      const { guestCapacity, summerRatePerWeek, winterRatePerWeek, summerRatePerNight, winterRatePerNight, totalPrice } = body;
+      const user_weekly_price = parseFloat(summerRatePerWeek) || parseFloat(winterRatePerWeek) || (parseFloat(summerRatePerNight) * 7) || (parseFloat(winterRatePerNight) * 7) || parseFloat(totalPrice);
+      if (!guestCapacity || !user_weekly_price) {
+        return response.json({ ok: true, price_label: "" });
+      }
+      const query = `
+          SELECT 
+              AVG(COALESCE(
+                  cc.Summerrate_Per_Week, cc.Winterrate_Per_week, 
+                  cc.Summerrate_Per_Night * 7, cc.Winterrate_Per_Night * 7, 
+                  cc.Total_Price
+              )) as averagePrice
+          FROM Accomodation a
+          JOIN Charter_Costs cc ON a.Charter_ID = cc.Charter_ID
+          WHERE a.Guest_Capacity = ?
+      `;
+      const [rows] = await db_connection.query(query, [guestCapacity]);
+      if (rows.length > 0 && rows[0].averagePrice) {
+        const average_price = parseFloat(rows[0].averagePrice);
+        const percentage_diff = ((user_weekly_price - average_price) / average_price) * 100;
+        if (percentage_diff < -20) price_label = "Fantastic Price";
+        else if (percentage_diff < -10) price_label = "Very Good Price";
+        else if (percentage_diff <= 10) price_label = "Fair Price";
+        else if (percentage_diff > 20) price_label = "Very High Price";
+        else if (percentage_diff > 10) price_label = "Higher Price";
+        else price_label = "Fair Price";
+      } else {
+        price_label = "Not enough data for this capacity";
+      }
+    }
+    // --- Logic for Transport Service ---
+    else if (service_name === 'transport') {
+      const { roundTripDistance, quoteValue } = body;
+      if (!roundTripDistance || !quoteValue) {
+        return response.json({ ok: true, price_label: "" });
+      }
+      const distance = parseFloat(roundTripDistance);
+      let distance_category;
+      if (distance <= 100) distance_category = 'short';
+      else if (distance <= 500) distance_category = 'medium';
+      else if (distance <= 1000) distance_category = 'long';
+      else distance_category = 'xlong';
+
+      const query = `
+          SELECT AVG(tq.Quote_Value) as averagePrice
+          FROM Job j
+          JOIN Transportation_Quotes tq ON j.Transport_ID = tq.Transport_ID
+          WHERE 
+              CASE
+                  WHEN j.Round_Trip_Distance <= 100 THEN 'short'
+                  WHEN j.Round_Trip_Distance <= 500 THEN 'medium'
+                  WHEN j.Round_Trip_Distance <= 1000 THEN 'long'
+                  ELSE 'xlong'
+              END = ?
+      `;
+      const [rows] = await db_connection.query(query, [distance_category]);
+      if (rows.length > 0 && rows[0].averagePrice) {
+          const average_price = parseFloat(rows[0].averagePrice);
+          const user_price = parseFloat(quoteValue);
+          const percentage_diff = ((user_price - average_price) / average_price) * 100;
+          if (percentage_diff < -20) price_label = "Fantastic Price";
+          else if (percentage_diff < -10) price_label = "Very Good Price";
+          else if (percentage_diff <= 10) price_label = "Fair Price";
+          else if (percentage_diff > 20) price_label = "Very High Price";
+          else if (percentage_diff > 10) price_label = "Higher Price";
+          else price_label = "Fair Price";
+      } else {
+        price_label = "Not enough data for this distance";
+      }
+    }
+    
+    return response.json({ ok: true, price_label: price_label });
+
+  } catch (error) {
+    console.error(`Price label calculation failed: ${error.message}`);
+    return response.json({ ok: true, price_label: "" });
+  }
+});
+
+
+
+
 export default advert_router;

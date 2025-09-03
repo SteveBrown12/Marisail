@@ -200,8 +200,8 @@ export const HeaderNavbar = ({ navbarRef }) => {
       ref={navbarRef}
       className="w-full px-auto bg-white shadow-sm sticky top-0 z-50 font-medium uppercase"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <NavLink
             to="/"
@@ -210,37 +210,6 @@ export const HeaderNavbar = ({ navbarRef }) => {
             <BrandIcon />
             <h1 className="text-lg tracking-wide">Marisail</h1>
           </NavLink>
-
-          {/* Mobile menu button */}
-          <button
-            className="lg:hidden p-2 rounded-md text-blue-600 hover:bg-blue-50"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            <svg
-              className="h-6 w-6"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              {mobileOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
 
           {/* Desktop menu */}
           <nav className="hidden lg:flex space-x-8 items-center">
@@ -262,11 +231,46 @@ export const HeaderNavbar = ({ navbarRef }) => {
                 </div>
               </div>
             ))}
+          </nav>
+
+          {/* Right side: Profile and Mobile menu button */}
+          <div className="flex items-center">
             {/* Profile */}
             <div className="hidden lg:block">
               <ProfileDropdown />
             </div>
-          </nav>
+
+            {/* Mobile menu button */}
+            <button
+              className="lg:hidden p-2 rounded-md text-blue-600 hover:bg-blue-50"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="h-6 w-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {mobileOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 

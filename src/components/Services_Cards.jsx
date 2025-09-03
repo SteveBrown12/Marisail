@@ -8,7 +8,51 @@ export const BerthCard = ({ item }) => {
     Location,
     Type,
     Year_Established,
+      // Destructure price fields and the label
+    Price_PA,
+    Price_PCM,
+    Price_PW,
+    Price_Label,
   } = item;
+
+  // Helper to get styles for the price label tag
+  const get_Label_Styles = (label_text) => {
+    switch (label_text) {
+      case "Great Price":
+      case "Very Good Price":
+        return "bg-green-100 text-green-800";
+      case "Average Price":
+        return "bg-blue-100 text-blue-800";
+      case "Higher Price":
+        return "bg-yellow-100 text-yellow-800";
+      case "Poor Price":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  // Find the best available price to display and its period
+  let displayPrice = 0;
+  let pricePeriod = "";
+  if (Price_PA) {
+    displayPrice = Price_PA;
+    pricePeriod = "/ year";
+  } else if (Price_PCM) {
+    displayPrice = Price_PCM;
+    pricePeriod = "/ month";
+  } else if (Price_PW) {
+    displayPrice = Price_PW;
+    pricePeriod = "/ week";
+  }
+
+  // Format the price to a currency string
+  const formattedPrice = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(displayPrice);
 
   return (
     <Link
@@ -34,10 +78,19 @@ export const BerthCard = ({ item }) => {
           {/* Title */}
           <h3 className="text-lg font-semibold text-gray-800">{Type}</h3>
 
-          {/* Price */}
-          <p className="text-xl font-bold text-green-600 mt-2">
-            £ 249,950 <span className="text-sm font-normal text-gray-500">Tax Paid</span>
-          </p>
+          {/* Price and Price Label */}
+          <div className="flex items-center gap-2 mt-2">
+            <p className="text-xl font-bold text-green-600">
+              {formattedPrice}
+              {pricePeriod && <span className="text-sm font-normal text-gray-500">{pricePeriod}</span>}
+            </p>
+            {Price_Label && (
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(Price_Label)}`}>
+                {Price_Label}
+              </span>
+            )}
+          </div>
+          <p className="text-sm font-normal text-gray-500">Tax Paid</p>
 
           {/* Location */}
           <p className="text-sm text-gray-500 mt-1">{Location}</p>
@@ -53,6 +106,10 @@ BerthCard.propTypes = {
     Location: PropTypes.string.isRequired,
     Type: PropTypes.string.isRequired,
     Year_Established: PropTypes.string,
+    Price_PA: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    Price_PCM: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    Price_PW: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    Price_Label: PropTypes.string,
   }).isRequired,
 };
 
@@ -63,7 +120,34 @@ export const TrailerCard = ({ item }) => {
     Make,
     Model,
     Year,
+    Asking_Price,
+    Price_Label,
   } = item;
+
+  // Helper to get styles for the price label tag
+  const get_Label_Styles = (label_text) => {
+    switch (label_text) {
+      case "Great Price":
+      case "Very Good Price":
+        return "bg-green-100 text-green-800";
+      case "Average Price":
+        return "bg-blue-100 text-blue-800";
+      case "Higher Price":
+        return "bg-yellow-100 text-yellow-800";
+      case "Poor Price":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  // Format the price to a currency string
+  const formattedPrice = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(Asking_Price || 0);
 
   return (
     <Link
@@ -89,9 +173,18 @@ export const TrailerCard = ({ item }) => {
           <h3 className="text-lg font-semibold text-gray-800">{Make}</h3>
 
           {/* Price */}
-          <p className="text-xl font-bold text-green-600 mt-2">
-            £ 249,950 <span className="text-sm font-normal text-gray-500">Tax Paid</span>
-          </p>
+            {/* Price and Price Label */}
+          <div className="flex items-center gap-2 mt-2">
+            <p className="text-xl font-bold text-green-600">
+              {formattedPrice}
+            </p>
+            {Price_Label && (
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(Price_Label)}`}>
+                {Price_Label}
+              </span>
+            )}
+          </div>
+          <p className="text-sm font-normal text-gray-500">Tax Paid</p>
 
           {/* Model */}
           <p className="text-sm text-gray-500 mt-1">{Model}</p>
@@ -107,6 +200,8 @@ TrailerCard.propTypes = {
     Make: PropTypes.string.isRequired,
     Model: PropTypes.string.isRequired,
     Year: PropTypes.string,
+    Asking_Price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    Price_Label: PropTypes.string,
   }).isRequired,
 };
 
@@ -117,7 +212,36 @@ export const TransportCard = ({ item }) => {
     Departure_Destination,
     Category,
     Posted_Date = "",
+    // Destructure the price and label
+    Quote_Value,
+    Price_Label,
   } = item;
+
+    // Helper to get styles for the price label tag
+  const get_Label_Styles = (label_text) => {
+    switch (label_text) {
+      case "Great Price":
+      case "Very Good Price":
+        return "bg-green-100 text-green-800";
+      case "Average Price":
+        return "bg-blue-100 text-blue-800";
+      case "Higher Price":
+        return "bg-yellow-100 text-yellow-800";
+      case "Poor Price":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  // Format the price to a currency string
+  const formattedPrice = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(Quote_Value || 0);
+
 
   return (
     <Link
@@ -143,9 +267,17 @@ export const TransportCard = ({ item }) => {
           <h3 className="text-lg font-semibold text-gray-800">{Category}</h3>
 
           {/* Price */}
-          <p className="text-xl font-bold text-green-600 mt-2">
-            £ 249,950 <span className="text-sm font-normal text-gray-500">Tax Paid</span>
-          </p>
+          <div className="flex items-center gap-2 mt-2">
+            <p className="text-xl font-bold text-green-600">
+              {formattedPrice}
+            </p>
+            {Price_Label && (
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(Price_Label)}`}>
+                {Price_Label}
+              </span>
+            )}
+          </div>
+          <p className="text-sm font-normal text-gray-500">Quote Value</p>
 
           {/* Location */}
           <p className="text-sm text-gray-500 mt-1">{Departure_Destination}</p>
@@ -161,6 +293,8 @@ TransportCard.propTypes = {
     Departure_Destination: PropTypes.string.isRequired,
     Category: PropTypes.string.isRequired,
     Posted_Date: PropTypes.string,
+    Quote_Value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    Price_Label: PropTypes.string,
   }).isRequired,
 };
 
@@ -232,7 +366,39 @@ export const CharterCard = ({ item }) => {
     Crew_Accommodation,
     Yacht_Decor,
     Boardingport_Time = "",
+    Price_Label,
+    Summerrate_Per_Week,
+    Total_Price,
+    Summerrate_Per_Night,
   } = item;
+
+    // Helper to get styles for the price label tag
+  const get_Label_Styles = (label_text) => {
+    switch (label_text) {
+      case "Great Price":
+      case "Very Good Price":
+        return "bg-green-100 text-green-800";
+      case "Average Price":
+        return "bg-blue-100 text-blue-800";
+      case "Higher Price":
+        return "bg-yellow-100 text-yellow-800";
+      case "Poor Price":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  // Find the best available price to display (weekly rate is preferred)
+  const displayPrice = Summerrate_Per_Week || Total_Price || (Summerrate_Per_Night * 7) || 0;
+
+  // Format the price to a currency string
+  const formattedPrice = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(displayPrice);
 
   return (
     <Link
@@ -257,10 +423,19 @@ export const CharterCard = ({ item }) => {
           {/* Yacht_Decor */}
           <h3 className="text-lg font-semibold text-gray-800">{Yacht_Decor}</h3>
 
-          {/* Price */}
-          <p className="text-xl font-bold text-green-600 mt-2">
-            £ 249,950 <span className="text-sm font-normal text-gray-500">Tax Paid</span>
-          </p>
+              {/* Price and Price Label */}
+          <div className="flex items-center gap-2 mt-2">
+            <p className="text-xl font-bold text-green-600">
+              {formattedPrice}
+              {Summerrate_Per_Week || Summerrate_Per_Night ? <span className="text-sm font-normal text-gray-500"> / week</span> : ""}
+            </p>
+            {Price_Label && (
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(Price_Label)}`}>
+                {Price_Label}
+              </span>
+            )}
+          </div>
+          <p className="text-sm font-normal text-gray-500">Tax Paid</p>
 
           {/* Crew_Accommodation */}
           <p className="text-sm text-gray-500 mt-1">{Crew_Accommodation}</p>
@@ -281,5 +456,9 @@ CharterCard.propTypes = {
     Crew_Accommodation: PropTypes.string.isRequired,
     Yacht_Decor: PropTypes.string.isRequired,
     Boardingport_Time: PropTypes.string,
+    Price_Label: PropTypes.string,
+    Summerrate_Per_Week: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    Total_Price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    Summerrate_Per_Night: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }).isRequired,
 };

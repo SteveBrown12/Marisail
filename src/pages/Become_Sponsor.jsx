@@ -1,5 +1,5 @@
 import axios from "../utils/Axios_Config";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const BecomeSponsor = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +19,29 @@ const BecomeSponsor = () => {
     paymentDate: "",
     logo: "",
   });
+  const [rankPreview, setRankPreview] = useState('');
 
+  //For rank preview 
+  useEffect(() => {
+    const get_Rank_Preview = async () => {
+      if (formData.paymentValue > 0) {
+        try {
+          const response = await axios.get(`/sponsor/rank-preview/${formData.paymentValue}`);
+          setRankPreview(`Your payment will rank #${response.data.potential_Rank} position`);
+        } catch (error) {
+          setRankPreview('Could not calculate the rank')
+        }
+      } else {
+        setRankPreview('');
+      }
+    }
+    const timer = setTimeout(() => {
+      get_Rank_Preview()
+    }, 500);
+
+    return () => clearTimeout(timer)
+  }, [formData.paymentValue]);
+  
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (files) {
@@ -94,7 +116,6 @@ const BecomeSponsor = () => {
         companyName: "",
         paymentValue: "",
         currency: "",
-        paymentDate: "",
         logo: null,
       });
       setErrors({
@@ -102,7 +123,6 @@ const BecomeSponsor = () => {
         companyName: "",
         paymentValue: "",
         currency: "",
-        paymentDate: "",
         logo: "",
       });
     } catch (error) {
@@ -170,6 +190,9 @@ const BecomeSponsor = () => {
               placeholder="1000"
               className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
             />
+             {rankPreview && (
+              <p className="text-green-600 text-sm mt-2">{rankPreview}</p>
+            )}
             {errors.paymentValue && (
               <p className="text-red-500 text-sm">{errors.paymentValue}</p>
             )}
@@ -208,23 +231,6 @@ const BecomeSponsor = () => {
               <p className="text-red-500 text-sm">{errors.currency}</p>
             )}
           </div>
-        </div>
-
-        {/* Payment Date */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">
-            Payment Date
-          </label>
-          <input
-            type="date"
-            name="paymentDate"
-            value={formData.paymentDate}
-            onChange={handleChange}
-            className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
-          />
-          {errors.paymentDate && (
-            <p className="text-red-500 text-sm">{errors.paymentDate}</p>
-          )}
         </div>
 
         {/* Company Logo */}

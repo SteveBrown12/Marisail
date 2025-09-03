@@ -5,6 +5,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import FormUtilities from "../utils/Form_Utilities";
 import { Section_Positions } from "../utils/Section_Position";
+import { usePriceLabel } from "../utils/PriceLabel.js";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
@@ -20,6 +21,9 @@ export default function GenericAdvert() {
   const [autofill_Loading, set_Autofill_Loading] = useState(false);
   const [make_Model_Year_Keys, set_Make_Model_Year_Keys] = useState({ make: null, model: null, year: null });
   const [open_Dropdown, set_Open_Dropdown] = useState(null);
+
+  // Price label logic is now handled by the custom hook
+  const { price_label, price_label_loading } = usePriceLabel(service_Name, service_Config, form_State, make_Model_Year_Keys);
 
   const UI_KEY_SEP = "||";
   const build_Ui_Key = (table_Name, field_Key) => `${table_Name}${UI_KEY_SEP}${field_Key}`;
@@ -166,6 +170,7 @@ export default function GenericAdvert() {
         form_State,
         service_Mappings
       );
+      normalized_Form_Data.priceLabel = price_label;
       const response = await fetch(`${API_BASE}/advert/${service_Name}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -181,6 +186,44 @@ export default function GenericAdvert() {
     } finally {
       set_Loading(false);
     }
+  };
+
+  const get_Label_Styles = (label_text) => {
+    switch (label_text) {
+      case "Fantastic Price":
+      case "Very Good Price":
+        return "bg-green-100 text-green-800";
+      case "Fair Price":
+        return "bg-blue-100 text-blue-800";
+      case "Higher Price":
+        return "bg-yellow-100 text-yellow-800";
+      case "Very High Price":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  // --- UI Helper to determine if a field should show the price label ---
+  const show_Price_Label_For_Field = (column_Name, field_Key) => {
+    const service_name_lower = String(service_Name || "").toLowerCase();
+    const trigger_Fields = {
+      trailer: ["Asking_Price"],
+      berth: ["Price_PA", "Price_PCM", "Price_PW"],
+      charter: ["Summerrate_Per_Week", "Winterrate_Per_week", "Summerrate_Per_Night", "Winterrate_Per_Night", "Total_Price"],
+      transport: ["Round_Trip_Distance"],
+      boat: ["Asking_Price"],
+      engine: ["Asking_Price"]
+    };
+    
+    const is_trigger_field = (trigger_Fields[service_name_lower] || []).includes(column_Name);
+    if (!is_trigger_field) return false;
+
+    // Check if the specific field has a value
+    const field_value = form_State[field_Key];
+    const has_value = Array.isArray(field_value) ? field_value.length > 0 : (field_value && field_value.value);
+    
+    return has_value;
   };
 
   if (loading) return <Loader />;
@@ -290,6 +333,17 @@ export default function GenericAdvert() {
                                               {errors[field_Key]}
                                             </div>
                                           )}
+                                          {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
                                         </>
                                       );
 
@@ -317,6 +371,17 @@ export default function GenericAdvert() {
                                           {errors[field_Key] && (
                                             <div className="text-red-500 text-sm mb-2">
                                               {errors[field_Key]}
+                                            </div>
+                                          )}
+                                          {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
                                             </div>
                                           )}
                                         </>
@@ -448,6 +513,17 @@ export default function GenericAdvert() {
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
                                         {/* {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)} */}
+                                        {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
                                       </>
                                     );
 
@@ -470,6 +546,17 @@ export default function GenericAdvert() {
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
                                         {/* {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)} */}
+                                        {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
                                       </>
                                     );
 
@@ -495,6 +582,17 @@ export default function GenericAdvert() {
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
                                         {/* {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)} */}
+                                        {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
                                       </>
                                     );
 
@@ -588,3 +686,4 @@ export default function GenericAdvert() {
     </div>
   );
 }
+

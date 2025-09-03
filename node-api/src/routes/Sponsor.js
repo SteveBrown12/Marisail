@@ -20,21 +20,9 @@ const upload = multer({ storage });
 // POST: Add a new sponsor
 router.post("/", upload.single("Logo"), async (req, res) => {
   try {
-    const {
-      Contact_Name,
-      Company_Name,
-      Payment_Value,
-      Currency,
-      Payment_Date,
-    } = req.body;
+    const { Contact_Name, Company_Name, Payment_Value, Currency } = req.body;
 
-    if (
-      !Contact_Name ||
-      !Company_Name ||
-      !Payment_Value ||
-      !Currency ||
-      !Payment_Date
-    ) {
+    if (!Contact_Name || !Company_Name || !Payment_Value || !Currency) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -43,13 +31,12 @@ router.post("/", upload.single("Logo"), async (req, res) => {
     const [result] = await db_connection.query(
       `INSERT INTO Sponsers 
       (Contact_Name, Company_Name, Payment, Currency, Payment_Date, Logo) 
-      VALUES (?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, NOW(), ?)`, 
       [
         Contact_Name,
         Company_Name,
         Payment_Value,
         Currency,
-        Payment_Date,
         logoPath,
       ]
     );
@@ -67,7 +54,7 @@ router.post("/", upload.single("Logo"), async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const [rows] = await db_connection.query(
-      "SELECT * FROM Sponsers ORDER BY Payment DESC LIMIT 30"
+      "SELECT * FROM Sponsers WHERE Payment_Date >= DATE_SUB(NOW(), INTERVAL 1 YEAR) ORDER BY Payment DESC, Payment_Date DESC LIMIT 30"
     );
     res.json(rows);
   } catch (error) {
@@ -76,4 +63,19 @@ router.get("/", async (req, res) => {
   }
 });
 
+// To calculate the sponsor rank
+router.get("/rank-preview/:payment_Value", async (request, response) => {
+  try {
+    const { payment_Value } = request.params;
+    //Finding the rank
+    const [rows] = await db_connection.query(
+      `SELECT COUNT(*) + 1 AS potential_Rank FROM Sponsers WHERE Payment > ? AND Payment_Date >= DATE_SUB(NOW(), INTERVAL 1 YEAR)`,
+      [payment_Value]
+    );
+    response.json(rows[0]);
+  } catch (error) {
+    console.error("Error fetching the rank preview", error);
+    response.status(500).json({ error: "Server Error" });
+  }
+});
 export default router;

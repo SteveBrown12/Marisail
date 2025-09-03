@@ -37,8 +37,10 @@ search_Router.get(
         request.query.filters || {},
         service_mappings
       );
+      const sales_table = service_config.join_tables.find(t => t.toLowerCase().endsWith('_sales'));
       const query = `
-      SELECT \`${service_config.main_table}\`.*
+      SELECT \`${service_config.main_table}\`.*,
+      ${sales_table ? `\`${sales_table}\`.\`Price_Label\`` : 'NULL as Price_Label'}
       FROM \`${service_config.main_table}\` 
       ${build_Joins(service_config)}
       ${where_Sql} 
