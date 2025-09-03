@@ -209,7 +209,6 @@ search_Router.get("/:service_name/facets/:field", initialize_Service, async (req
     }
 
     // --- RANGE FACET (numeric/date bins)
-
     if (request.query.range) {
       const query = build_Range_Facets(table_Name, column_Name, parseInt(request.query.range));
       const [ranges] = await db_connection.query(query);
@@ -217,11 +216,9 @@ search_Router.get("/:service_name/facets/:field", initialize_Service, async (req
     }
 
     // Fully qualified column
-
     const qualifiedColumn = `\`${table_Name}\`.\`${column_Name}\``;
 
     // Facet query: values independent, counts filtered
-    
     const facets_Query = `
       SELECT vals.value, COUNT(filtered.${service_config.primary_key}) AS count
       FROM (

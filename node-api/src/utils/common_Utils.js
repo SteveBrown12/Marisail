@@ -227,7 +227,6 @@ export const build_Where_Clause = (filters, mappings) => {
   };
 
   // ---- KEYWORD SEARCH ----
-
   if (filters.keyword) {
     const keyword_Value = `%${filters.keyword}%`;
 
@@ -246,7 +245,6 @@ export const build_Where_Clause = (filters, mappings) => {
   }
 
   // ---- HANDLE From / To ----
-
   Object.keys(filters).forEach(key => {
     if (key.endsWith("From") || key.endsWith("To")) {
       const base_Key = key.replace(/(From|To)$/, "");
@@ -264,7 +262,6 @@ export const build_Where_Clause = (filters, mappings) => {
   });
 
   // ---- OTHER FILTERS ----
-
   Object.entries(filters || {}).forEach(([key, value]) => {
     const { column, table } = resolveMapping(key);
     if (!column) {

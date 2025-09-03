@@ -1,14 +1,14 @@
 // BERTH Sections
 const Berth_Section_Position = [
-  // Row 1 - Highest
-  { table_Name: "Safety", columns: 32, position: 1 },
-  { table_Name: "Environment", columns: 18, position: 2 },
-  { table_Name: "Family", columns: 13, position: 3 },
+  // Row 1
+  { table_Name: "Berth", columns: 13, position: 1 },
+  { table_Name: "Events", columns: 14, position: 2 },
+  { table_Name: "Berth_Details", columns: 12, position: 3 },
 
-  // Row 2
-  { table_Name: "Berth", columns: 13, position: 4 },
-  { table_Name: "Events", columns: 14, position: 5 },
-  { table_Name: "Berth_Details", columns: 12, position: 6 },
+  // Row 2 - Highest
+  { table_Name: "Safety", columns: 32, position: 4 },
+  { table_Name: "Environment", columns: 18, position: 5 },
+  { table_Name: "Family", columns: 13, position: 6 },
 
   // Row 3
   { table_Name: "Connectivity", columns: 11, position: 7 },

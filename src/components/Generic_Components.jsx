@@ -5,8 +5,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { format as formatDate, parseISO, isValid } from "date-fns";
-import { Loader } from "rsuite";
-
+import { Loader } from "./Common_Utils";
 
 export const RangeInput = ({
   title,
@@ -71,7 +70,7 @@ export const RangeInput = ({
       <button
         type="button"
         aria-expanded={isOpen}
-        className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
+        className="w-full flex justify-between items-center py-2 text-[17px] text-gray-900 font-medium transition"
       >
         <span className="truncate">
           {title}
@@ -212,7 +211,7 @@ export const InputComponent = ({
       <button
         type="button"
         aria-expanded={isOpen}
-        className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
+        className="w-full flex justify-between items-center py-2 text-[17px] text-gray-900 font-medium transition"
       >
         <span className="truncate">
           {title}
@@ -478,7 +477,7 @@ export const DropdownWithCheckBoxes = ({
       <button
         type="button"
         aria-expanded={isOpen}
-        className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
+        className="w-full flex justify-between items-center py-2 text-[17px] text-gray-900 font-medium transition"
       >
         <span className="truncate">
           {title}
@@ -680,7 +679,7 @@ export function DateTimePickerField({
       <button
         type="button"
         aria-expanded={open}
-        className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
+        className="w-full flex justify-between items-center py-2 text-[17px] text-gray-900 font-medium transition"
       >
         <span className="truncate text-left">
           {title}
@@ -816,7 +815,7 @@ export function DatePickerField({
       <button
         type="button"
         aria-expanded={open}
-        className="w-full flex justify-between items-center py-2 text-[15px] text-gray-900 font-medium transition"
+        className="w-full flex justify-between items-center py-2 text-[17px] text-gray-900 font-medium transition"
       >
         <span className="truncate text-left">
           {title}
