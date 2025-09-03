@@ -9,6 +9,8 @@
     "dev": "nodemon src/server.js"
   },
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",

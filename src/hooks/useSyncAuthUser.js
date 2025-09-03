@@ -2,9 +2,8 @@ import { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
 /**
- * Hook that automatically syncs Auth0 user data to our local database
- * after successful authentication. This ensures our Contact_Details table
- * stays in sync with Auth0 user profiles.
+ * Hook that automatically creates/updates user in local database
+ * after successful Auth0 authentication. Uses the new reliable approach.
  */
 export default function useSyncAuthUser() {
   const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
@@ -12,7 +11,7 @@ export default function useSyncAuthUser() {
   useEffect(() => {
     let ignore = false;
 
-    async function syncUser() {
+    async function createOrUpdateUser() {
       if (!isAuthenticated || !user) return;
       
       try {
@@ -20,35 +19,56 @@ export default function useSyncAuthUser() {
         const token = await getAccessTokenSilently({ audience });
         
         if (!token) {
-          console.warn('No access token available for user sync');
+          console.warn('No access token available for user creation');
           return;
         }
 
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/sync`, {
+        // Try the new create-user endpoint first (more reliable)
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/create-user`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
+          body: JSON.stringify({
+            email: user.email,
+            firstName: user.given_name || user.name?.split(' ')[0],
+            lastName: user.family_name || user.name?.split(' ').slice(1).join(' ')
+          })
         });
 
-        if (!response.ok) {
-          throw new Error(`Sync failed: ${response.status}`);
-        }
+        if (response.ok) {
+          const result = await response.json();
+          console.log('User created/updated successfully:', result.user);
+        } else {
+          // Fallback to sync endpoint if create-user fails
+          console.log('Create-user failed, trying sync endpoint...');
+          const syncResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/sync`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+          });
 
-        const result = await result.json();
-        console.log('User synced successfully:', result.user);
+          if (syncResponse.ok) {
+            const syncResult = await syncResponse.json();
+            console.log('User synced successfully:', syncResult.user);
+          } else {
+            throw new Error(`Both endpoints failed: create-user(${response.status}), sync(${syncResponse.status})`);
+          }
+        }
         
       } catch (error) {
-        console.error('Failed to sync user to local database:', error);
-        // Don't show error to user - this is a background sync
+        console.error('Failed to create/update user in local database:', error);
+        // Don't show error to user - this is a background operation
       }
     }
 
     // Small delay to ensure token is fully available
     const timer = setTimeout(() => {
       if (!ignore) {
-        syncUser();
+        createOrUpdateUser();
       }
     }, 1000);
 

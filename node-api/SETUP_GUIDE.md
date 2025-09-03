@@ -41,6 +41,13 @@ AUTH0_DOMAIN=marisail.us.auth0.com
 AUTH0_AUDIENCE=https://marisail.us.auth0.com/api/v2/
 ```
 
+### Required for Exchange Rate API
+
+```bash
+# Exchange Rate API Configuration
+EXCHANGE_RATE_API_KEY=618a428dd3b2ea6adc05e43b
+```
+
 ### Optional
 
 ```bash
@@ -92,6 +99,21 @@ After setting up the environment variables:
    curl -X POST http://localhost:3001/api/sms-test/welcome \
      -H "Content-Type: application/json" \
      -d '{"phone": "+1234567890", "firstName": "Test User"}'
+   ```
+
+5. **Test Exchange Rate API:**
+   ```bash
+   # Health check
+   curl http://localhost:3001/api/exchange-rate/health
+   
+   # Get latest USD rates
+   curl http://localhost:3001/api/exchange-rate/latest/USD
+   
+   # Convert 100 USD to EUR
+   curl "http://localhost:3001/api/exchange-rate/convert?amount=100&from=USD&to=EUR"
+   
+   # Get supported currencies
+   curl http://localhost:3001/api/exchange-rate/currencies
    ```
 
 ## ⚠️ Important Notes

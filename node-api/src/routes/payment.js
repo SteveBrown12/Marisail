@@ -1,6 +1,7 @@
 import express from 'express';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
+import paypal from '@paypal/checkout-server-sdk';
 
 dotenv.config();
 
@@ -14,6 +15,110 @@ if (process.env.STRIPE_SECRET_KEY) {
   console.warn('⚠️  STRIPE_SECRET_KEY not found. Payment functionality will be disabled.');
 }
 
+// Initialize PayPal SDK environment
+let paypalClient;
+const paypalClientId = process.env.PAYPAL_CLIENT_ID;
+const paypalClientSecret = process.env.PAYPAL_CLIENT_SECRET;
+const paypalEnv = (process.env.PAYPAL_ENV || 'sandbox').toLowerCase(); // 'sandbox' | 'live'
+
+if (paypalClientId && paypalClientSecret) {
+  const environment = paypalEnv === 'live'
+    ? new paypal.core.LiveEnvironment(paypalClientId, paypalClientSecret)
+    : new paypal.core.SandboxEnvironment(paypalClientId, paypalClientSecret);
+  paypalClient = new paypal.core.PayPalHttpClient(environment);
+} else {
+  console.warn('⚠️  PAYPAL_CLIENT_ID or PAYPAL_CLIENT_SECRET not found. PayPal functionality will be disabled.');
+}
+
+// Test Stripe configuration
+router.get('/test', (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ 
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.',
+      hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
+      stripeKeyLength: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 0
+    });
+  }
+  
+  res.json({ 
+    message: 'Stripe is properly configured',
+    hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
+    stripeKeyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) + '...' : 'Not set'
+  });
+});
+
+// Public config for frontend (exposes only publishable/allowed keys)
+router.get('/config', (req, res) => {
+  res.json({
+    stripe: {
+      enabled: !!process.env.STRIPE_PUBLISHABLE_KEY,
+      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
+    },
+    paypal: {
+      enabled: !!paypalClient,
+      clientId: paypalClientId || null,
+      env: paypalEnv,
+    },
+  });
+});
+
+// PayPal: create order
+router.post('/paypal/create-order', async (req, res) => {
+  if (!paypalClient) {
+    return res.status(503).json({ error: 'PayPal not configured. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET.' });
+  }
+
+  try {
+    const { amount, currency = 'USD', description } = req.body;
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    const request = new paypal.orders.OrdersCreateRequest();
+    request.prefer('return=representation');
+    request.requestBody({
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          amount: {
+            currency_code: currency,
+            value: amount.toFixed(2),
+          },
+          description: description || 'Payment',
+        },
+      ],
+    });
+
+    const order = await paypalClient.execute(request);
+    return res.json({ id: order.result.id, status: order.result.status });
+  } catch (error) {
+    console.error('PayPal create order error:', error);
+    return res.status(500).json({ error: 'Failed to create PayPal order', details: error.message });
+  }
+});
+
+// PayPal: capture order
+router.post('/paypal/capture-order', async (req, res) => {
+  if (!paypalClient) {
+    return res.status(503).json({ error: 'PayPal not configured. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET.' });
+  }
+
+  try {
+    const { orderId } = req.body;
+    if (!orderId) {
+      return res.status(400).json({ error: 'orderId is required' });
+    }
+
+    const request = new paypal.orders.OrdersCaptureRequest(orderId);
+    request.requestBody({});
+    const capture = await paypalClient.execute(request);
+    return res.json({ status: capture.result.status, id: capture.result.id, result: capture.result });
+  } catch (error) {
+    console.error('PayPal capture order error:', error);
+    return res.status(500).json({ error: 'Failed to capture PayPal order', details: error.message });
+  }
+});
+
 // Create payment intent
 router.post('/create-payment-intent', async (req, res) => {
   if (!stripe) {
@@ -24,6 +129,8 @@ router.post('/create-payment-intent', async (req, res) => {
 
   try {
     const { amount, currency = 'usd', metadata = {} } = req.body;
+    
+    console.log('Creating payment intent with:', { amount, currency, metadata });
 
     if (!amount) {
       return res.status(400).json({ error: 'Amount is required' });
@@ -38,13 +145,24 @@ router.post('/create-payment-intent', async (req, res) => {
       },
     });
 
+    console.log('Payment intent created successfully:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
+    });
+
     res.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);
-    res.status(500).json({ error: 'Failed to create payment intent' });
+    res.status(500).json({ 
+      error: 'Failed to create payment intent',
+      details: error.message,
+      type: error.type
+    });
   }
 });
 
@@ -58,12 +176,20 @@ router.post('/confirm-payment', async (req, res) => {
 
   try {
     const { paymentIntentId } = req.body;
+    
+    console.log('Confirming payment intent:', paymentIntentId);
 
     if (!paymentIntentId) {
       return res.status(400).json({ error: 'Payment intent ID is required' });
     }
 
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    console.log('Retrieved payment intent:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency
+    });
     
     if (paymentIntent.status === 'succeeded') {
       res.json({ 
@@ -81,7 +207,11 @@ router.post('/confirm-payment', async (req, res) => {
     }
   } catch (error) {
     console.error('Error confirming payment:', error);
-    res.status(500).json({ error: 'Failed to confirm payment' });
+    res.status(500).json({ 
+      error: 'Failed to confirm payment',
+      details: error.message,
+      type: error.type
+    });
   }
 });
 
