@@ -24,11 +24,11 @@ const Landing = () => {
   const url = import.meta.env.VITE_WEB_URL || "http://localhost:3001";
 
   return (
-    <div className="py-1 px-36 mx-auto text-center">
+    <div className="absolute top-16 bottom-16 left-0 right-0 flex flex-col px-60 mx-auto text-center">
       {loading ? (
         <p className="text-gray-500">Loading sponsors...</p>
       ) : (
-       <div className="grid grid-cols-6 gap-2">
+       <div className="grid grid-cols-6 gap-2 grow content-between">
           {sponsors.map((sponsor) => (
             <div key={sponsor.ID} className="flex flex-col items-center justify-center p-2">
               <div className="h-24 w-full flex items-center justify-center">
