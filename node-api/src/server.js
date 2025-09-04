@@ -6,6 +6,7 @@ import logger from "morgan";
 import authRoutes from "./index.js";
 import dotenv from 'dotenv';
 import path from "path";
+import { handleJwtError } from './middleware/auth0.js';
 
 dotenv.config();
 
@@ -19,6 +20,9 @@ server.use(urlencoded({ extended: false }));
 server.use(cookieParser());
 server.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 server.use("/api", authRoutes);
+
+// Add JWT error handling middleware
+server.use(handleJwtError);
 
 // catch 404 and forward to error handler
 server.get("/", (req, res) => {
