@@ -24,7 +24,7 @@ const Landing = () => {
   const url = import.meta.env.VITE_WEB_URL || "http://localhost:3001";
 
   return (
-    <div className="absolute top-16 bottom-16 left-0 right-0 flex flex-col px-36 mx-auto text-center">
+    <div className="absolute top-16 bottom-16 left-0 right-0 flex flex-col px-60 mx-auto text-center">
       {loading ? (
         <p className="text-gray-500">Loading sponsors...</p>
       ) : (
