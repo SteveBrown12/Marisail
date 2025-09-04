@@ -2,3 +2,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Google Translate UI overrides */
+/* Hide top banner/iframe that Google injects */
+iframe.skiptranslate,
+#goog-gt-tt,
+#goog-gt-vt,
+#goog-gt-tt + div { display: none !important; }
+
+/* Prevent body offset when banner would be shown */
+body { top: 0 !important; }
+
+/* Style the inline selector to look like a typical language dropdown */
+.gt-navbar-select select.goog-te-combo {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 6px 28px 6px 10px;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #111827; /* gray-900 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  min-width: 160px;
+}
+
+.gt-navbar-select {
+  position: relative;
+}
+
+.gt-navbar-select::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 5px 5px 0 5px;
+  border-style: solid;
+  border-color: #6b7280 transparent transparent transparent; /* gray-500 */
+  pointer-events: none;
+}
+
+/* Hide the "Powered by Google" block if injected near the element */
+.goog-logo-link,
+.goog-te-gadget span,
+.goog-te-gadget-simple img { display: none !important; }
+
+.goog-te-gadget { font-size: 0 !important; }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import BrandIcon from "./BrandIcon";
+import GoogleTranslate from "./GoogleTranslate";
 import ProfileDropdown from "./Profile";
 import PropTypes from "prop-types";
 
@@ -130,6 +131,10 @@ const HeaderNavbar = ({ navbarRef }) => {
                 </div>
               </div>
             ))}
+            {/* Language selector */}
+            <div className="gt-navbar-select">
+              <GoogleTranslate floating={false} />
+            </div>
             {/* Profile */}
             <div className="hidden lg:block">
               <ProfileDropdown />
@@ -142,6 +147,10 @@ const HeaderNavbar = ({ navbarRef }) => {
       {mobileOpen && (
         <div className="lg:hidden bg-white border-t shadow-md">
           <nav className="flex flex-col p-4 space-y-4">
+            {/* Language selector (mobile) */}
+            <div className="gt-navbar-select">
+              <GoogleTranslate floating={false} />
+            </div>
             {menuItems.map((menu) => (
               <div key={menu.title}>
                 <p className="font-bold text-gray-800">{menu.title}</p>

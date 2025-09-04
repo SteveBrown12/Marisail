@@ -17,6 +17,7 @@ import HeaderNavbar from "./components/HeaderNavbar";
 import AuthProvider from "./auth/AuthProvider.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import useSyncAuthUser from "./hooks/useSyncAuthUser.js";
+import GoogleAnalyticsProvider from "./components/GoogleAnalyticsProvider.jsx";
 
 const Home = () => {  
   // Automatically sync Auth0 user to local DB after login
@@ -32,9 +33,10 @@ const Home = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+    <GoogleAnalyticsProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/complete-profile" element={<RequireAuth><ProfileCompletion /></RequireAuth>} />
@@ -64,7 +66,8 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+        </AuthProvider>
+      </GoogleAnalyticsProvider>
   );
 }
 

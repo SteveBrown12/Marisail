@@ -6,6 +6,7 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import Loader from '../components/Loader';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 // Payment gateway configurations
 const PAYMENT_GATEWAYS = [
@@ -219,6 +220,7 @@ const PaymentForm = ({ amount, gateway, onSuccess, onError }) => {
 const Payment = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { trackPayment, trackEvent } = useAnalytics();
   const [amount, setAmount] = useState(0);
   const [paymentType, setPaymentType] = useState('');
   const [loading, setLoading] = useState(false);
@@ -266,6 +268,23 @@ const Payment = () => {
   }, []);
 
   const handlePaymentSuccess = (paymentIntent) => {
+    // Track successful payment
+    trackPayment({
+      paymentMethod: gateway,
+      amount: amount,
+      currency: 'USD',
+      paymentId: paymentIntent.id,
+      userId: localStorage.getItem('userId') || 'anonymous',
+      success: true
+    });
+
+    // Track payment gateway selection
+    trackEvent('payment_gateway_selected', {
+      gateway: gateway,
+      amount: amount,
+      user_id: localStorage.getItem('userId') || 'anonymous'
+    });
+
     // Redirect to success page or dashboard
     navigate('/payment-success', { 
       state: { 
@@ -278,6 +297,15 @@ const Payment = () => {
 
   const handlePaymentError = (error) => {
     console.error('Payment error:', error);
+    
+    // Track payment error
+    trackEvent('payment_error', {
+      error_message: error,
+      gateway: gateway,
+      amount: amount,
+      user_id: localStorage.getItem('userId') || 'anonymous'
+    });
+    
     // Handle payment error (already shown in toast)
   };
 
