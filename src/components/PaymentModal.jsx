@@ -4,7 +4,39 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import Loader from './Loader';
+import { Loader } from './Common_Utils';
+
+// Payment method options
+const PAYMENT_METHODS = [
+  {
+    id: 'credit_card',
+    name: 'Credit Card',
+    description: 'Pay with Visa, Mastercard, or American Express',
+    icon: '💳',
+    available: true
+  },
+  {
+    id: 'paypal',
+    name: 'PayPal',
+    description: 'Pay with your PayPal account',
+    icon: '🔵',
+    available: true
+  },
+  {
+    id: 'bank_transfer',
+    name: 'Bank Transfer',
+    description: 'Direct bank transfer (2-3 business days)',
+    icon: '🏦',
+    available: false
+  },
+  {
+    id: 'crypto',
+    name: 'Cryptocurrency',
+    description: 'Pay with Bitcoin, Ethereum, or USDC',
+    icon: '₿',
+    available: false
+  }
+];
 
 const stripePromise = (() => {
   const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -15,7 +47,7 @@ const stripePromise = (() => {
   return loadStripe(publishableKey);
 })();
 
-const PaymentForm = ({ amount, onSuccess, onClose, paymentType = 'service' }) => {
+const PaymentForm = ({ amount, onSuccess, onClose, paymentType = 'service', selectedMethod }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -32,10 +64,19 @@ const PaymentForm = ({ amount, onSuccess, onClose, paymentType = 'service' }) =>
     setError(null);
 
     try {
-      // Create payment intent
+      // Handle different payment methods
+      if (selectedMethod === 'paypal') {
+        // Redirect to PayPal or handle PayPal payment
+        toast.info('PayPal integration coming soon!');
+        setLoading(false);
+        return;
+      }
+
+      // Create payment intent for credit card
       const { data } = await axios.post('/api/payment/create-payment-intent', {
         amount,
         currency: 'usd',
+        paymentMethod: selectedMethod,
         metadata: {
           userId: localStorage.getItem('userId') || 'anonymous',
           paymentType,
@@ -90,48 +131,118 @@ const PaymentForm = ({ amount, onSuccess, onClose, paymentType = 'service' }) =>
     },
   };
 
+  // Render different forms based on payment method
+  const renderPaymentForm = () => {
+    switch (selectedMethod) {
+      case 'credit_card':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Card Information
+              </label>
+              <div className="border border-gray-300 rounded-md p-3">
+                <CardElement options={cardElementOptions} />
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'paypal':
+        return (
+          <div className="text-center py-6">
+            <div className="text-blue-600 mb-4">
+              <svg className="mx-auto h-16 w-16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.067 8.478c.492.315.844.825.844 1.478 0 .653-.352 1.163-.844 1.478-.492.315-1.163.478-1.844.478H18.5v-1.956h-.278c-.681 0-1.352-.163-1.844-.478-.492-.315-.844-.825-.844-1.478 0-.653.352-1.163.844-1.478.492-.315 1.163-.478 1.844-.478H18.5v-1.956h.278c.681 0 1.352.163 1.844.478z"/>
+              </svg>
+            </div>
+            <p className="text-gray-600 mb-4">
+              You will be redirected to PayPal to complete your payment securely.
+            </p>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? 'Redirecting to PayPal...' : 'Continue with PayPal'}
+            </button>
+          </div>
+        );
+      
+      case 'bank_transfer':
+        return (
+          <div className="text-center py-6">
+            <div className="text-yellow-600 mb-4">
+              <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Bank transfer details will be provided after order confirmation.
+            </p>
+            <p className="text-sm text-gray-500">
+              Processing time: 2-3 business days
+            </p>
+          </div>
+        );
+      
+      case 'crypto':
+        return (
+          <div className="text-center py-6">
+            <div className="text-yellow-600 mb-4">
+              <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Cryptocurrency payment integration coming soon!
+            </p>
+            <p className="text-sm text-gray-500">
+              We're working on adding support for Bitcoin, Ethereum, and USDC
+            </p>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Card Information
-          </label>
-          <div className="border border-gray-300 rounded-md p-3">
-            <CardElement options={cardElementOptions} />
-          </div>
+      {renderPaymentForm()}
+      
+      {error && (
+        <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
+          {error}
         </div>
-        
-        {error && (
-          <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
-            {error}
-          </div>
-        )}
-      </div>
+      )}
 
-      <div className="flex space-x-3">
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-md font-medium hover:bg-gray-200 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={!stripe || loading}
-          className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-        >
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <Loader size="sm" />
-              <span className="ml-2">Processing...</span>
-            </div>
-          ) : (
-            `Pay $${amount.toFixed(2)}`
-          )}
-        </button>
-      </div>
+      {selectedMethod === 'credit_card' && (
+        <div className="flex space-x-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-md font-medium hover:bg-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={!stripe || loading}
+            className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <Loader size="sm" />
+                <span className="ml-2">Processing...</span>
+              </div>
+            ) : (
+              `Pay $${amount.toFixed(2)}`
+            )}
+          </button>
+        </div>
+      )}
     </form>
   );
 };
@@ -143,6 +254,8 @@ const PaymentModal = ({
   paymentType = 'service',
   onSuccess 
 }) => {
+  const [selectedMethod, setSelectedMethod] = useState('credit_card');
+
   if (!isOpen) return null;
 
   return (
@@ -184,12 +297,50 @@ const PaymentModal = ({
               </div>
             </div>
 
+            {/* Payment Method Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Choose Payment Method
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {PAYMENT_METHODS.map((method) => (
+                  <button
+                    key={method.id}
+                    type="button"
+                    onClick={() => setSelectedMethod(method.id)}
+                    disabled={!method.available}
+                    className={`p-4 border-2 rounded-lg text-left transition-all ${
+                      selectedMethod === method.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    } ${
+                      !method.available
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'cursor-pointer hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">{method.icon}</span>
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">{method.name}</div>
+                        <div className="text-sm text-gray-600">{method.description}</div>
+                      </div>
+                    </div>
+                    {!method.available && (
+                      <div className="text-xs text-gray-500 mt-2">Coming Soon</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Payment Form */}
             {stripePromise ? (
               <Elements stripe={stripePromise}>
                 <PaymentForm
                   amount={amount}
                   paymentType={paymentType}
+                  selectedMethod={selectedMethod}
                   onSuccess={onSuccess}
                   onClose={onClose}
                 />

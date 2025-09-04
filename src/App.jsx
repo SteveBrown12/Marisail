@@ -11,7 +11,6 @@ import GenericDetail from "./pages/Generic_Search_Detail";
 import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentDemo from "./pages/PaymentDemo";
-import Engine from "./pages/Engine";
 import HeaderNavbar from "./components/HeaderNavbar";
 import AuthProvider from "./auth/AuthProvider.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
@@ -20,7 +19,7 @@ import GoogleAnalyticsProvider from "./components/GoogleAnalyticsProvider.jsx";
 import GenericServices from "./pages/Generic_Services";
 import BecomeSponsor from "./pages/Become_Sponsor";
 
-import { HeaderNavbar } from "./components/Header_Components";
+// import { HeaderNavbar } from "./components/Header_Components";
 
 const Home = () => {  
   // Automatically sync Auth0 user to local DB after login
@@ -59,8 +58,8 @@ function App() {
             <Route path="/advert/:serviceName" element={<GenericAdvert />} />
             <Route path="/find/:serviceName" element={<GenericSearch />} />
 
-            <Route path="/engines" element={<RequireAuth><Engine type="advert" /></RequireAuth>} />
-            <Route path="/advert-engines" element={<RequireAuth><Engine type="search" /></RequireAuth>} />
+            <Route path="/engines" element={<RequireAuth><GenericAdvert type="advert" /></RequireAuth>} />
+            <Route path="/advert-engines" element={<RequireAuth><GenericSearch type="search" /></RequireAuth>} />
 
             <Route path="/services" element={<RequireAuth><Services type="myEngines" /></RequireAuth>} />
             <Route path="/view-berth" element={<RequireAuth><Services type="myBerth" /></RequireAuth>} />

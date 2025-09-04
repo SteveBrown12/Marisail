@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import BrandIcon from "./BrandIcon";
 import GoogleTranslate from "./GoogleTranslate";
 import ProfileDropdown from "./Profile";
 import PropTypes from "prop-types";
+import { BrandIcon } from "./Header_Components";
 
 const menuItems = [
   {

@@ -5,7 +5,7 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import Loader from '../components/Loader';
+import { Loader } from '../components/Common_Utils';
 import { useAnalytics } from '../hooks/useAnalytics';
 
 // Payment gateway configurations
