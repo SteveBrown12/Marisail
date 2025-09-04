@@ -77,44 +77,58 @@ router.get("/", async (req, res) => {
         WHERE daily_rank <= 30
         GROUP BY Company_Name
       ),
-      GuaranteedSponsors AS (
-          SELECT Company_Name
+      PotentialGuaranteed AS (
+          SELECT Company_Name, first_entry_date
           FROM SponsorEntryDates
           WHERE first_entry_date >= DATE_SUB(NOW(), INTERVAL ? MONTH)
       ),
-      CurrentTopRanked AS (
+      GuaranteedSponsors AS (
+          SELECT Company_Name
+          FROM (
+              SELECT Company_Name,
+                     ROW_NUMBER() OVER (ORDER BY first_entry_date ASC, Company_Name ASC) AS rn
+              FROM PotentialGuaranteed
+          ) ranked
+          WHERE rn <= 30
+      ),
+      NonGuaranteedRanked AS (
           SELECT
-              Company_Name
+              Company_Name,
+              ROW_NUMBER() OVER (ORDER BY SUM(Payment) DESC) AS rn
           FROM Sponsers
           WHERE
               Payment_Date >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
               AND Company_Name NOT IN (SELECT Company_Name FROM GuaranteedSponsors)
           GROUP BY Company_Name
-          ORDER BY SUM(Payment) DESC
       ),
-      -- New CTE to safely combine and limit the final list of names
-      FinalSponsorNames AS (
-        (SELECT Company_Name FROM GuaranteedSponsors)
-        UNION
-        (SELECT Company_Name FROM CurrentTopRanked)
-        LIMIT 30
+      FinalList AS (
+          SELECT Company_Name, 1 AS priority
+          FROM GuaranteedSponsors
+          UNION ALL
+          SELECT Company_Name, 2 AS priority
+          FROM NonGuaranteedRanked
+          WHERE rn <= GREATEST(0, 30 - (SELECT COUNT(*) FROM GuaranteedSponsors))
       )
-      -- Final SELECT using the safe list
       SELECT s.*
       FROM Sponsers s
-      JOIN FinalSponsorNames fsn ON s.Company_Name = fsn.Company_Name
-      -- Join to get only the latest record for each sponsor in the final list
+      JOIN (
+          SELECT Company_Name, priority
+          FROM FinalList
+          -- Ensure hard cap of 30 with guaranteed priority
+          ORDER BY priority ASC
+          LIMIT 30
+      ) AS fsn ON s.Company_Name = fsn.Company_Name
       JOIN (
           SELECT Company_Name, MAX(Payment_Date) AS max_date
           FROM Sponsers
-          WHERE Company_Name IN (SELECT Company_Name FROM FinalSponsorNames)
+          WHERE Company_Name IN (SELECT Company_Name FROM FinalList)
           GROUP BY Company_Name
       ) AS latest ON s.Company_Name = latest.Company_Name AND s.Payment_Date = latest.max_date
-      ORDER BY s.Payment DESC, s.Payment_Date DESC;
+      ORDER BY fsn.priority ASC, s.Payment DESC, s.Payment_Date DESC;
     `;
     
     const [rows] = await db_connection.query(complexQuery, [SPONSOR_GUARANTEE_MONTHS, SPONSOR_GUARANTEE_MONTHS]);
-    
+
     const sponsors = rows;
     res.json(sponsors);
 
