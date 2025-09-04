@@ -26,7 +26,7 @@ const Home = () => {
   useSyncAuthUser();
   
   return (
-    <main className="w-full max-w-full overflow-hidden">
+    <main className="w-full max-w-full">
       <HeaderNavbar />
       <Outlet/>
     </main>
@@ -35,7 +35,7 @@ const Home = () => {
 
 const Services = () => {  
   return (
-    <main className="w-full max-w-full overflow-hidden">
+    <main className="w-full max-w-full">
       <HeaderNavbar />
       <Outlet/>
     </main>
