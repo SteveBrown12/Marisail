@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import DropdownWithCheckBoxes from "../components/DropdownWithCheckBoxes";
-import InputComponent from "../components/InputComponent";
-import Loader from "../components/Loader";
-import DatePickerField from "../components/DatePickerField";
-import DateTimePickerField from "../components/DateTimePickerField";
+import { Loader } from "../components/Common_Utils";
+import {DropdownWithCheckBoxes, InputComponent, DatePickerField, DateTimePickerField} from "../components/Generic_Components";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import FormUtilities from "../utils/Form_Utilities";
 import { Section_Positions } from "../utils/Section_Position";
+import { usePriceLabel } from "../utils/PriceLabel.js";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
@@ -23,6 +21,9 @@ export default function GenericAdvert() {
   const [autofill_Loading, set_Autofill_Loading] = useState(false);
   const [make_Model_Year_Keys, set_Make_Model_Year_Keys] = useState({ make: null, model: null, year: null });
   const [open_Dropdown, set_Open_Dropdown] = useState(null);
+
+  // Price label logic is now handled by the custom hook
+  const { price_label, price_label_loading } = usePriceLabel(service_Name, service_Config, form_State, make_Model_Year_Keys);
 
   const UI_KEY_SEP = "||";
   const build_Ui_Key = (table_Name, field_Key) => `${table_Name}${UI_KEY_SEP}${field_Key}`;
@@ -169,6 +170,7 @@ export default function GenericAdvert() {
         form_State,
         service_Mappings
       );
+      normalized_Form_Data.priceLabel = price_label;
       const response = await fetch(`${API_BASE}/advert/${service_Name}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -186,27 +188,282 @@ export default function GenericAdvert() {
     }
   };
 
+  const get_Label_Styles = (label_text) => {
+    switch (label_text) {
+      case "Fantastic Price":
+      case "Very Good Price":
+        return "bg-green-100 text-green-800";
+      case "Fair Price":
+        return "bg-blue-100 text-blue-800";
+      case "Higher Price":
+        return "bg-yellow-100 text-yellow-800";
+      case "Very High Price":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  // --- UI Helper to determine if a field should show the price label ---
+  const show_Price_Label_For_Field = (column_Name, field_Key) => {
+    const service_name_lower = String(service_Name || "").toLowerCase();
+    const trigger_Fields = {
+      trailer: ["Asking_Price"],
+      berth: ["Price_PA", "Price_PCM", "Price_PW"],
+      charter: ["Summerrate_Per_Week", "Winterrate_Per_week", "Summerrate_Per_Night", "Winterrate_Per_Night", "Total_Price"],
+      transport: ["Round_Trip_Distance"],
+      boat: ["Asking_Price"],
+      engine: ["Asking_Price"]
+    };
+    
+    const is_trigger_field = (trigger_Fields[service_name_lower] || []).includes(column_Name);
+    if (!is_trigger_field) return false;
+
+    // Check if the specific field has a value
+    const field_value = form_State[field_Key];
+    const has_value = Array.isArray(field_value) ? field_value.length > 0 : (field_value && field_value.value);
+    
+    return has_value;
+  };
+
   if (loading) return <Loader />;
 
   return (
     <div className="flex justify-center items-center">
       <div className="w-full p-4">
         <div className="bg-white shadow-sm rounded-xl p-4">
-          <h4 className="text-[25px] capitalize font-bold pb-2 mb-2 pl-[60px]">
+          <h4 className="text-[25px] capitalize font-bold pb-2 mb-2 pl-[60px] 2xl:pl-[95px]">
             Advertise {service_Name}
           </h4>
 
           <form onSubmit={handle_Submit}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex justify-items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 flex justify-items-center">
               {[...(service_Config?.tables || [])]
                 .sort((table_A, table_B) => {
-                  const position_A = Section_Positions[service_Name]?.find(t => t.table_Name === table_A.table_Name)?.position || 0;
-                  const position_B = Section_Positions[service_Name]?.find(t => t.table_Name === table_B.table_Name)?.position || 0;
+                  const position_A =
+                    Section_Positions[service_Name]?.find(
+                      (t) => t.table_Name === table_A.table_Name
+                    )?.position || 0;
+                  const position_B =
+                    Section_Positions[service_Name]?.find(
+                      (t) => t.table_Name === table_B.table_Name
+                    )?.position || 0;
                   return position_A - position_B;
                 })
-                .map((table) => {
-                  const table_Entries = table.columns ? Object.entries(table.columns) : [];
+                .flatMap((table) => {
+                  const table_Entries = table.columns
+                    ? Object.entries(table.columns)
+                    : [];
 
+                  if (table_Entries.length >= 20) {
+                    // Split into 2 halves
+                    const half = Math.ceil(table_Entries.length / 2);
+                    const firstHalf = table_Entries.slice(0, half);
+                    const secondHalf = table_Entries.slice(half);
+
+                    return [firstHalf, secondHalf].map((halfEntries, index) => (
+                      <div
+                        key={`${table.table_Name}-${index}`}
+                        className="p-4 min-w-[300px] w-1/3 xl:w-[380px]"
+                      >
+                        <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
+                          {table.section_Heading} {index === 0 ? "(Part 1)" : "(Part 2)"}
+                        </h6>
+
+                        <div>
+                          {halfEntries.map(([variable_Name, column_Config]) => {
+                            const field_Key = variable_Name;
+                            const ui_Key = build_Ui_Key(table.table_Name, field_Key);
+                            const display_Label =
+                              column_Config.display_Text || field_Key;
+
+                            return (
+                              <div
+                                key={ui_Key}
+                                className="flex flex-col p-0 bg-transparent w-full max-w-full overflow-hidden"
+                              >
+                                {(() => {
+                                  switch (column_Config.type) {
+                                    case "radio":
+                                      return (
+                                        <>
+                                          <DropdownWithCheckBoxes
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            options={
+                                              filters_Data[ui_Key]
+                                                ? [...filters_Data[ui_Key]]
+                                                : []
+                                            }
+                                            selected={form_State[field_Key] || []}
+                                            onChange={(values) =>
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: values,
+                                              }))
+                                            }
+                                            onOpen={() => {
+                                              set_Open_Dropdown(ui_Key);
+                                              fetch_Dropdown_Data(ui_Key, field_Key);
+                                            }}
+                                            onClose={() => set_Open_Dropdown(null)}
+                                            open={open_Dropdown === ui_Key}
+                                            fetching={!!fetching_Options[ui_Key]}
+                                            placeholder={`Select ${display_Label}`}
+                                            advert={true}
+                                            onAddOption={(new_Option) => {
+                                              set_Filters_Data((prev) => ({
+                                                ...prev,
+                                                [ui_Key]: [
+                                                  ...(prev[ui_Key] || []),
+                                                  new_Option,
+                                                ],
+                                              }));
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: [
+                                                  ...(prev[field_Key] || []),
+                                                  new_Option.value,
+                                                ],
+                                              }));
+                                            }}
+                                          />
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                          {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+
+                                    case "number":
+                                    case "dual":
+                                      return (
+                                        <>
+                                          <InputComponent
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            min={column_Config.min || ""}
+                                            max={column_Config.max || ""}
+                                            radioOptions={
+                                              column_Config.radioOptions ||
+                                              column_Config.radio_Options
+                                            }
+                                            value={form_State[field_Key]?.value || ""}
+                                            onChange={(value) =>
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: { value },
+                                              }))
+                                            }
+                                          />
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                          {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+
+                                    case "date":
+                                      return (
+                                        <>
+                                          <DatePickerField
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            mode="single"
+                                            value={form_State[field_Key] || ""}
+                                            onChange={(iso_Date) =>
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: iso_Date,
+                                              }))
+                                            }
+                                            placeholder="dd-mm-yyyy"
+                                          />
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+
+                                    case "timestamp":
+                                      return (
+                                        <>
+                                          <DateTimePickerField
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            mode="single"
+                                            value={form_State[field_Key] || ""}
+                                            onChange={(iso_Date) =>
+                                              set_Form_State((prev) => ({
+                                                ...prev,
+                                                [field_Key]: iso_Date,
+                                              }))
+                                            }
+                                            placeholder="dd-mm-yyyy"
+                                          />
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+
+                                    default:
+                                      return (
+                                        <>
+                                          <label className="block mb-1 font-medium">
+                                            <span className="truncate">
+                                              {display_Label}
+                                              {column_Config.mandatory && (
+                                                <span className="text-red-500 ml-1">*</span>
+                                              )}
+                                            </span>
+                                          </label>
+                                          {errors[field_Key] && (
+                                            <div className="text-red-500 text-sm mb-2">
+                                              {errors[field_Key]}
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+                                  }
+                                })()}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ));
+                  }
+
+                  // Normal case (< 20 fields)
                   return (
                     <div key={table.table_Name} className="p-4 min-w-[300px] w-1/3 xl:w-[380px]">
                       <h6 className="text-blue-600 text-[20px] font-bold pb-1 mb-2">
@@ -255,7 +512,18 @@ export default function GenericAdvert() {
                                           }}
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                        {/* {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)} */}
+                                        {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
                                       </>
                                     );
 
@@ -277,7 +545,18 @@ export default function GenericAdvert() {
                                           }
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)}
+                                        {/* {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)} */}
+                                        {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
                                       </>
                                     );
 
@@ -302,7 +581,18 @@ export default function GenericAdvert() {
                                           }
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)}
+                                        {/* {form_State[field_Key]?.value && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key].value}</div>)} */}
+                                        {show_Price_Label_For_Field(column_Config.column_Name, field_Key) && (
+                                            <div className="h-6 mt-1">
+                                              {price_label_loading ? (
+                                                <span className="text-gray-500 italic text-sm">Checking Price Label...</span>
+                                              ) : price_label && (
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${get_Label_Styles(price_label)}`}>
+                                                  {price_label}
+                                                </span>
+                                              )}
+                                            </div>
+                                          )}
                                       </>
                                     );
 
@@ -320,7 +610,7 @@ export default function GenericAdvert() {
                                           placeholder="dd-mm-yyyy"
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                        {/* {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)} */}
                                       </>
                                     );
 
@@ -338,7 +628,7 @@ export default function GenericAdvert() {
                                           placeholder="dd-mm-yyyy"
                                         />
                                         {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
-                                        {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)}
+                                        {/* {form_State[field_Key] && (<div className="text-green-800 text-[16px] font-bold mb-2">{form_State[field_Key]}</div>)} */}
                                       </>
                                     );
 
@@ -396,3 +686,4 @@ export default function GenericAdvert() {
     </div>
   );
 }
+

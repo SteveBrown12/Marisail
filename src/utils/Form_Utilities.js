@@ -75,6 +75,28 @@ const FormUtilities = {
       }
     });
     return payload;
+  },
+  /**
+   * NEW HELPER FUNCTION
+   * Finds the frontend variable name (key) for a given database column name.
+   * @param {object} serviceConfig - The service configuration object.
+   * @param {string} targetColumnName - The database column name to find (e.g., "Asking_Price").
+   * @returns {string|null} The variable name (e.g., "askingPrice") or null if not found.
+   */
+  findKeyForColumn(serviceConfig, targetColumnName) {
+    if (!serviceConfig || !serviceConfig.tables) {
+      return null;
+    }
+    for (const table of serviceConfig.tables) {
+      if (table.columns) {
+        for (const [variableName, columnConfig] of Object.entries(table.columns)) {
+          if (columnConfig.column_Name === targetColumnName) {
+            return variableName; // Found the key
+          }
+        }
+      }
+    }
+    return null; // Not found
   }
 };
 

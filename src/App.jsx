@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 
-import Services from "./pages/Service";
 import Register from "./pages/Registration";
 import Login from "./pages/Login";
 import ProfileCompletion from "./components/ProfileCompletion.jsx";
@@ -18,11 +17,24 @@ import AuthProvider from "./auth/AuthProvider.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import useSyncAuthUser from "./hooks/useSyncAuthUser.js";
 import GoogleAnalyticsProvider from "./components/GoogleAnalyticsProvider.jsx";
+import GenericServices from "./pages/Generic_Services";
+import BecomeSponsor from "./pages/Become_Sponsor";
+
+import { HeaderNavbar } from "./components/Header_Components";
 
 const Home = () => {  
   // Automatically sync Auth0 user to local DB after login
   useSyncAuthUser();
   
+  return (
+    <main className="w-full max-w-full overflow-hidden">
+      <HeaderNavbar />
+      <Outlet/>
+    </main>
+  );
+};
+
+const Services = () => {  
   return (
     <main className="w-full max-w-full overflow-hidden">
       <HeaderNavbar />

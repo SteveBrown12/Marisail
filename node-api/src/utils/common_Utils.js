@@ -13,6 +13,12 @@ import {
   transport_Var_To_Column,
   transport_Var_To_Table,
   transport_Unique_Table,
+  job_Var_To_Column,          
+  job_Var_To_Table,           
+  job_Unique_Table,           
+  haulier_Var_To_Column,      
+  haulier_Var_To_Table,       
+  haulier_Unique_Table,  
 } from '../config/All_Service_Config.js';
 
 // CORE UTILITIES & MIDDLEWARE
@@ -37,6 +43,16 @@ const SERVICE_MAPPINGS = {
     var_To_Column: transport_Var_To_Column,
     var_To_Table: transport_Var_To_Table,
     unique_Tables: transport_Unique_Table,
+  },
+    job: {                                    
+    var_To_Column: job_Var_To_Column,
+    var_To_Table: job_Var_To_Table,
+    unique_Tables: job_Unique_Table,
+  },
+  haulier: {                               
+    var_To_Column: haulier_Var_To_Column,
+    var_To_Table: haulier_Var_To_Table,
+    unique_Tables: haulier_Unique_Table,
   },
 };
 
@@ -177,27 +193,49 @@ export const build_Joins = (main_Table_Info) => {
     )
     .join('\n');
 };
+
 export const build_Where_Clause = (filters, mappings) => {
-
-  // Parse filters if they come as JSON string
-
   if (typeof filters === "string") {
     try { filters = JSON.parse(filters); }
     catch (e) { console.error("Invalid filters JSON:", filters); filters = {}; }
   }
-  const operatorMap = { eq: '=', neq: '!=', gt: '>', gte: '>=', lt: '<', lte: '<=', in: 'IN', nin: 'NOT IN' };
+
+  const operatorMap = { 
+    eq: '=', neq: '!=', gt: '>', gte: '>=', 
+    lt: '<', lte: '<=', in: 'IN', nin: 'NOT IN' 
+  };
+
+  const quote = (val) => `'${String(val).replace(/'/g, "''")}'`;
   const conditions = [];
 
-  // ---- KEYWORD SEARCH ----
+  // 🔎 Utility: resolve mapping with fallback search
+  const resolveMapping = (field) => {
+    let column_Name = mappings.var_To_Column[field];
+    let table_Name  = mappings.var_To_Table[field];
 
+    // fallback search if direct not found
+    if (!column_Name || !table_Name) {
+      for (const [mapKey, cell] of Object.entries(mappings.var_To_Column)) {
+        if (cell && cell.toLowerCase() === field.toLowerCase()) {
+          column_Name = cell;
+          table_Name  = mappings.var_To_Table[mapKey];
+          break;
+        }
+      }
+    }
+    return { column: column_Name, table: table_Name };
+  };
+
+  // ---- KEYWORD SEARCH ----
   if (filters.keyword) {
     const keyword_Value = `%${filters.keyword}%`;
+
     const keyword_Conditions = Object.keys(mappings.var_To_Column).map((key) => {
-      const column_Name = mappings.var_To_Column[key];
-      const table_Name = mappings.var_To_Table[key];
-      return (table_Name && column_Name)
-        ? `\`${table_Name}\`.\`${column_Name}\` LIKE ${db_connection.escape(keyword_Value)}`
-        : null;
+      const { column, table } = resolveMapping(key);
+      if (!column) return null;
+      return table 
+        ? `\`${table}\`.\`${column}\` LIKE ${quote(keyword_Value)}`
+        : `\`${column}\` LIKE ${quote(keyword_Value)}`;
     }).filter(Boolean);
 
     if (keyword_Conditions.length > 0) {
@@ -206,48 +244,60 @@ export const build_Where_Clause = (filters, mappings) => {
     delete filters.keyword;
   }
 
-  // ---- FROM / TO RANGE (#7) ----
-
+  // ---- HANDLE From / To ----
   Object.keys(filters).forEach(key => {
     if (key.endsWith("From") || key.endsWith("To")) {
       const base_Key = key.replace(/(From|To)$/, "");
-      const column = mappings.var_To_Column[base_Key];
-      const table = mappings.var_To_Table[base_Key];
-      if (column && table) {
-        const qualified = `\`${table}\`.\`${column}\``;
+      const { column, table } = resolveMapping(base_Key);
+      if (column) {
+        const qualified = table ? `\`${table}\`.\`${column}\`` : `\`${column}\``;
         const result = filters[key];
         if (result !== "" && result !== undefined && result !== null) {
-          if (key.endsWith("From")) conditions.push(`${qualified} >= ${db_connection.escape(result)}`);
-          if (key.endsWith("To")) conditions.push(`${qualified} <= ${db_connection.escape(result)}`);
+          if (key.endsWith("From")) conditions.push(`${qualified} >= ${quote(result)}`);
+          if (key.endsWith("To")) conditions.push(`${qualified} <= ${quote(result)}`);
         }
       }
       delete filters[key];
     }
   });
 
-  // ---- ALL OTHER FILTERS ----
-
+  // ---- OTHER FILTERS ----
   Object.entries(filters || {}).forEach(([key, value]) => {
-    const column = mappings.var_To_Column[key];
-    const table = mappings.var_To_Table[key];
-    if (!column || !table) return;
+    const { column, table } = resolveMapping(key);
+    if (!column) {
+      console.warn("⚠️ Unmapped filter key:", key);
+      return;
+    }
 
-    const qualified = `\`${table}\`.\`${column}\``;
+    const qualified = table ? `\`${table}\`.\`${column}\`` : `\`${column}\``;
 
-    if (typeof value === "object" && !Array.isArray(value)) {
-      const operators = Object.keys(value)[0];
-      const result = Object.values(value)[0];
-      const sqlOp = operatorMap[operators];
-      if (!sqlOp) return;
-      if (sqlOp === "IN" || sqlOp === "NOT IN") {
-        const list = result.split(',').map(item => db_connection.escape(item.trim()));
-        conditions.push(`${qualified} ${sqlOp} (${list.join(", ")})`);
-      } else {
-        conditions.push(`${qualified} ${sqlOp} ${db_connection.escape(result)}`);
+    if (typeof value === "object" && !Array.isArray(value) && ('from' in value || 'to' in value)) {
+      if (value.from !== undefined && value.from !== null && value.from !== "") {
+        conditions.push(`${qualified} >= ${quote(value.from)}`);
       }
-    } else {
-      const escaped = db_connection.escape(`%${value}%`);
-      conditions.push(`${qualified} LIKE ${escaped}`);
+      if (value.to !== undefined && value.to !== null && value.to !== "") {
+        conditions.push(`${qualified} <= ${quote(value.to)}`);
+      }
+    }
+    else if (typeof value === "object" && !Array.isArray(value)) {
+      Object.entries(value).forEach(([op, val]) => {
+        const sqlOp = operatorMap[op];
+        if (!sqlOp) return;
+        if (sqlOp === "IN" || sqlOp === "NOT IN") {
+          const list = Array.isArray(val) ? val : val.split(',');
+          const escapedList = list.map(v => quote(v.trim()));
+          conditions.push(`${qualified} ${sqlOp} (${escapedList.join(", ")})`);
+        } else {
+          conditions.push(`${qualified} ${sqlOp} ${quote(val)}`);
+        }
+      });
+    }
+    else if (Array.isArray(value)) {
+      const escapedList = value.map(v => quote(v));
+      conditions.push(`${qualified} IN (${escapedList.join(", ")})`);
+    }
+    else {
+      conditions.push(`${qualified} LIKE ${quote(`%${value}%`)}`);
     }
   });
   return conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : '';
@@ -321,3 +371,42 @@ export const calculate_Price_Label = async (details) => {
     if(connection) connection.release();
   }
 }
+
+const QuestionUtils = {
+  validateQuestionData(data) {
+    if (!data.Transport_ID) throw new Error('Transport_ID is required');
+    if (!data.Haulier_ID) throw new Error('Haulier_ID is required');
+    if (!data.Question_Text || typeof data.Question_Text !== 'string' || data.Question_Text.trim().length === 0) {
+      throw new Error('Question_Text must be a non-empty string');
+    }
+    return true;
+  },
+
+  formatQuestionForResponse(record) {
+    return {
+      id: record.Question_ID,
+      transportId: record.Transport_ID,
+      haulierId: record.Haulier_ID,
+      questionText: record.Question_Text,
+      answerText: record.Answer_Text || null,
+      questionDate: record.Question_Date,
+      answerDate: record.Answer_Date || null
+    };
+  },
+
+  canHaulierAsk(user) {
+    // no auth implemented yet
+    return true;
+  },
+
+  canCustomerAnswer(user) {
+    // no auth implemented yet
+    return true;
+  },
+
+  logActivity(action, record) {
+    console.log(`[Question ${action}]`, record);
+  }
+};
+
+export default QuestionUtils;
