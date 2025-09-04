@@ -50,3 +50,13 @@ body { top: 0 !important; }
 .goog-te-gadget-simple img { display: none !important; }
 
 .goog-te-gadget { font-size: 0 !important; }
+
+/* Profile dropdown z-index fix */
+.profile-dropdown {
+  z-index: 100000 !important;
+}
+
+.profile-dropdown .dropdown-menu {
+  z-index: 100001 !important;
+  position: absolute !important;
+}
