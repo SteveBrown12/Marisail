@@ -5,8 +5,6 @@ const router = express.Router();
 
 // POST: Add contact details
 router.post("/", async (req, res) => {
-  console.log('cookie', req.cookies);
-  // console.log('req', req);
   try {
     const {
       title,

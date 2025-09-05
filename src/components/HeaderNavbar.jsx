@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import GoogleTranslate from "./GoogleTranslate";
 import ProfileDropdown from "./Profile";
@@ -51,7 +51,7 @@ const menuItems = [
   {
     title: "services",
     links: [
-      { to: "/contact", label: "Contact Page" },
+      { to: "/contact", label: "Contact Details" },
       { to: "/services", label: "My Engines" },
       { to: "/view-charter", label: "My Charters" },
       { to: "/view-trailer", label: "My Trailers" },
@@ -64,6 +64,14 @@ const menuItems = [
 
 const HeaderNavbar = ({ navbarRef }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const ipInfo = JSON.parse(localStorage.getItem("ipInfo"));
+
+    if (ipInfo) {
+      console.log(ipInfo.country, ipInfo.language, ipInfo.currency);
+    }
+  }, []);
 
   return (
     <header
