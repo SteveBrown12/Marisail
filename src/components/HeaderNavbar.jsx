@@ -51,6 +51,7 @@ const menuItems = [
   {
     title: "services",
     links: [
+      { to: "/contact", label: "Contact Page" },
       { to: "/services", label: "My Engines" },
       { to: "/view-charter", label: "My Charters" },
       { to: "/view-trailer", label: "My Trailers" },
