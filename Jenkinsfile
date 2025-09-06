@@ -18,7 +18,7 @@ pipeline {
                 sh "docker build -t ${NAME}_frontend_${env.BUILD_NUMBER} -f Dockerfile.frontend ."
 
                 echo "------------ Building Backend Image ------------"
-                sh "docker build -t ${NAME}_backend_${env.BUILD_NUMBER} -f node-api/Dockerfile.backend ./node-api"
+                sh "docker build -t ${NAME}_backend_${env.BUILD_NUMBER} -f Dockerfile.backend ."
             }
         }
 
@@ -32,7 +32,7 @@ pipeline {
                     echo '---------- Running Frontend Container ----------'
                     def frontendDeployStatus = sh(script: """
                         set -a
-                        . /var/lib/jenkins/workspace/${NAME}/.env
+                        . /var/lib/jenkins/workspace/${NAME}/frontend/.env
                         docker run -dit -p 4173:4173 --name ${NAME}_frontend_${env.BUILD_NUMBER} ${NAME}_frontend_${env.BUILD_NUMBER}
                         set +a
                     """, returnStatus: true)
@@ -40,7 +40,7 @@ pipeline {
                     echo '--------- Running Backend Container ---------'
                     def backendDeployStatus = sh(script: """
                         set -a
-                        . /var/lib/jenkins/workspace/${NAME}/node-api/.env
+                        . /var/lib/jenkins/workspace/${NAME}/backend/.env
                         docker run -dit -p 3006:3006 --name ${NAME}_backend_${env.BUILD_NUMBER} ${NAME}_backend_${env.BUILD_NUMBER}
                         set +a
                     """, returnStatus: true)
