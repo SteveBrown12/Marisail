@@ -12,7 +12,7 @@
 # CMD ["npm", "run", "start", "--", "--host"]
 
 # After Directory Restructure-----------------------
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
@@ -25,4 +25,4 @@ COPY backend/ ./
 
 EXPOSE 3006
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start", "--", "--host"]
