@@ -19,6 +19,9 @@ import GoogleAnalyticsProvider from "./components/GoogleAnalyticsProvider.jsx";
 import GenericServices from "./pages/Generic_Services";
 import BecomeSponsor from "./pages/Become_Sponsor";
 import Contact from "./pages/Contact";
+import { LoadScript } from "@react-google-maps/api";
+
+const libraries = ["places"];
 
 // import { HeaderNavbar } from "./components/Header_Components";
 
@@ -48,6 +51,10 @@ function App() {
     <GoogleAnalyticsProvider>
       <AuthProvider>
         <BrowserRouter>
+        <LoadScript
+            googleMapsApiKey={import.meta.env.VITE_MAP_API_KEY}
+            libraries={libraries}
+          >
           <Routes>
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
@@ -78,6 +85,7 @@ function App() {
               <Route path="/payment-demo" element={<PaymentDemo />} />
             </Route>
           </Routes>
+        </LoadScript>
         </BrowserRouter>
       </AuthProvider>
     </GoogleAnalyticsProvider>
