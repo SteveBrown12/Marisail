@@ -80,7 +80,7 @@ export const Berth_Config = {
                 ownership: { column_Name: "Ownership", display_Text: "Ownership", type: "radio", mandatory: true, searchable: true, radio_Options: null },
                 yearEstablished: { column_Name: "Year_Established", display_Text: "Year Established", type: "radio", mandatory: true, searchable: true, radio_Options: null },
                 operatingHours: { column_Name: "Operating_Hours", display_Text: "Operating Hours", type: "radio", mandatory: true, searchable: true, radio_Options: null },
-                contactDetails: { column_Name: "Contact", display_Text: "Contact", type: "radio", mandatory: true, searchable: true, radio_Options: null },
+                contactDetails: { column_Name: "Contact", display_Text: "Contact", type: "dialog", mandatory: true, searchable: true, radio_Options: null },
                 seasonalOperation: { column_Name: "Seasonal_Operation", display_Text: "Seasonal Operation", type: "radio", mandatory: true, searchable: true, radio_Options: null },
                 languageServices: { column_Name: "Language", display_Text: "Language", type: "radio", mandatory: true, searchable: true, radio_Options: null }
             },        
@@ -517,7 +517,7 @@ export const Transport_Config = {
                 overweightPermitNeeded: { column_Name: 'Overweight_Permit', display_Text: 'Overweight Permit Required?', type: 'radio', mandatory: true, searchable: true, radio_Options: ['Yes', 'No'] },
                 oversizePermitNeeded: { column_Name: 'Oversize_Permit', display_Text: 'Oversize Permit Required?', type: 'radio', mandatory: true, searchable: true, radio_Options: ['Yes', 'No'] },
                 postedDate: { column_Name: 'Posted_Date', display_Text: 'Posted Date', type: 'date', mandatory: false, searchable: true, radio_Options: null },
-                collectionDeliveryDistance: { column_Name: 'Collection_Delivery_Distance', display_Text: 'Collection Delivery Distance', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
+                collectionDeliveryDistance: { column_Name: 'Collection_Delivery_Distance', display_Text: 'Collection Delivery Distance', type: 'distance', mandatory: false, searchable: true, radio_Options: null },
                 departureDestination: { column_Name: 'Departure_Destination', display_Text: 'Departure Destination', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
                 returnJourney: { column_Name: 'Return_Journey', display_Text: 'Return Journey', type: 'radio', mandatory: false, searchable: true, radio_Options: ['Yes', 'No'] },
                 roundTripDistance: { column_Name: 'Round_Trip_Distance', display_Text: 'Round Trip Distance', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
@@ -555,9 +555,9 @@ export const Transport_Config = {
                 collectionContact: { column_Name: 'Collection_Contact', display_Text: 'Collection Contact', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
                 collectionMobile: { column_Name: 'Collection_Mobile', display_Text: 'Collection Mobile', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
                 deliveryContact: { column_Name: 'Delivery_Contact', display_Text: 'Delivery Contact', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
-                collectionAddress: { column_Name: 'Collection_Address', display_Text: 'Collection Address', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
+                collectionAddress: { column_Name: 'Collection_Address', display_Text: 'Collection Address', type: 'address1', mandatory: false, searchable: true, radio_Options: null },
                 deliveryMobile: { column_Name: 'Delivery_Mobile', display_Text: 'Delivery Mobile', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
-                deliveryAddress: { column_Name: 'Delivery_Address', display_Text: 'Delivery Address', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
+                deliveryAddress: { column_Name: 'Delivery_Address', display_Text: 'Delivery Address', type: 'address2', mandatory: false, searchable: true, radio_Options: null },
                 emergencyContacts: { column_Name: 'Emergency_Contacts', display_Text: 'Emergency Contacts', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
                 preferredCommunication: { column_Name: 'Preferred_Communication', display_Text: 'Preferred Communication', type: 'radio', mandatory: false, searchable: true, radio_Options: null }
             }

@@ -181,19 +181,26 @@ export const InputComponent = ({
     return conversions[lower]?.defaultUnit || firstValue;
   });
 
-  const effectiveValue = value !== undefined ? value : "";
+  // Local state mirrors the controlled value
+  const [localValue, setLocalValue] = useState(value || "");
+
+  // Update local value whenever parent updates value
+  useEffect(() => {
+    onChange(value);
+  }, [value]);
 
   const handleValueChange = (e) => {
     const newValue = e.target.value.replace(/[^0-9.]/g, "");
     if (!isNaN(newValue) || newValue === "") {
+      setLocalValue(newValue);  
       if (typeof onChange === "function") onChange(newValue);
     }
   };
 
   const handleUnitChange = (unitValue) => {
     const convertedValue =
-      effectiveValue !== ""
-        ? Math.max(0, convertUnit(Number(effectiveValue), selectedUnit, unitValue))
+    localValue !== ""
+        ? Math.max(0, convertUnit(Number(localValue), selectedUnit, unitValue))
         : "";
 
     setSelectedUnit(unitValue);
@@ -242,7 +249,7 @@ export const InputComponent = ({
             <input
               type="text"
               inputMode="numeric"
-              value={effectiveValue}
+              value={localValue}
               onChange={handleValueChange}
               placeholder="Value"
               className="w-[200px] px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:border-blue-400"
@@ -295,6 +302,64 @@ InputComponent.propTypes = {
 };
 
 
+export const TextComponent = ({
+  title,
+  value,
+  onChange,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  // Update local value whenever parent updates value
+  useEffect(() => {
+    onChange(value);
+  }, [value]);  
+
+  return (
+    <div
+      className="dropdown w-full"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      {/* Toggle */}
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        className="w-full flex justify-between items-center py-2 text-[17px] text-gray-900 font-medium transition"
+      >
+        <span className="truncate">
+          {title}
+        </span>
+        <svg
+          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Dropdown Content */}
+      {isOpen && value && (
+        <div className="w-full my-2 bg-white px-3">
+            {value}
+        </div>
+      )}
+    </div>
+  );
+};
+
+TextComponent.propTypes = {
+  title: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onChange: PropTypes.func,
+};
 
 export const DropdownWithCheckBoxes = ({
   defaultUnit,
@@ -862,4 +927,159 @@ DatePickerField.propTypes = {
   style: PropTypes.object,
   title: PropTypes.string,
   mandatory: PropTypes.bool,
+};
+
+export const AddressFinderComponent = ({
+  title,
+  mandatory,
+  onSelect,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [candidates, setCandidates] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const debounceRef = useRef(null);
+  const suppressFetch = useRef(false);
+  const dummyElement = document.createElement("div");
+  // Fetch candidates and add postal code
+  const fetchCandidates = (query) => {
+    if (!window.google || !query) return;
+
+    const service = new window.google.maps.places.PlacesService(dummyElement);
+    const request = {
+      query,
+      type: "address",
+      fields: ["name", "formatted_address", "geometry", "place_id"],
+    };
+
+    service.textSearch(request, (results, status) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        const geocoder = new window.google.maps.Geocoder();
+
+        const enhancedResults = results.map((place) => {
+          return new Promise((resolve) => {
+            geocoder.geocode({ placeId: place.place_id }, (geoResults, geoStatus) => {
+              let postalCode = "";
+              if (geoStatus === "OK" && geoResults[0]) {
+                const components = geoResults[0].address_components;
+                postalCode =
+                  components.find((c) => c.types.includes("postal_code"))?.long_name ||
+                  "";
+              }
+              resolve({ ...place, postalCode });
+            });
+          });
+        });
+
+        Promise.all(enhancedResults).then((finalResults) => {
+          setCandidates(finalResults);
+        });
+      } else {
+        setCandidates([]);
+      }
+    });
+  };
+
+  // Debounced typing
+  useEffect(() => {
+    if (suppressFetch.current) {
+      suppressFetch.current = false;
+      return;
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      if (inputValue.length > 2) {
+        fetchCandidates(inputValue);
+      } else {
+        setCandidates([]);
+      }
+    }, 400);
+  }, [inputValue]);
+
+  // When selecting a candidate
+  const handleSelect = (place) => {
+    if (place.geometry) {
+      setInputValue(place.formatted_address || place.name);
+      setCandidates([]); // hide dropdown
+      suppressFetch.current = true;
+      onSelect(place);
+    }
+  };
+
+  return (
+    <div
+      className="dropdown w-full"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      {/* Toggle */}
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        className="w-full flex justify-between items-center py-2 text-[17px] text-gray-900 font-medium transition"
+      >
+        <span className="truncate">
+          {title}
+          {mandatory && <span className="text-red-500 ml-1">*</span>}
+        </span>
+        <svg
+          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+            }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Dropdown Content */}
+      {isOpen && (
+        <div className="p-4 flex flex-col gap-4 relative h-[300px]">
+          {/* Search Box */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Enter address or postal/zip code"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onFocus={() => {
+                if (inputValue.length > 2) fetchCandidates(inputValue);
+              }}
+              className="w-full p-2 border border-blue-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+
+            {/* Candidate Dropdown */}
+            {candidates.length > 0 && (
+              <ul className="absolute z-50 bg-white border rounded shadow mt-1 w-full max-h-60 overflow-y-auto">
+                {candidates.map((place, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSelect(place)}
+                    className="p-2 cursor-pointer hover:bg-gray-100"
+                  >
+                    {place.formatted_address}{" "}
+                    {place.postalCode && `(${place.postalCode})`}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )
+      }
+    </div >
+  );
+};
+
+AddressFinderComponent.propTypes = {
+  title: PropTypes.string,
+  mandatory: PropTypes.bool,
+  onSelect: PropTypes.func,
 };
