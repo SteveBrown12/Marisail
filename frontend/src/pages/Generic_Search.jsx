@@ -1,11 +1,36 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Loader } from "../components/Common_Utils";
 import { DropdownWithCheckBoxes, RangeInput, DatePickerField, DateTimePickerField} from "../components/Generic_Components";
 import { BerthCard, CharterCard, TrailerCard, TransportCard, EngineCard } from "../components/Services_Cards";
+import { ViewControls, Pagination, BerthListItem, CharterListItem, TrailerListItem, TransportListItem, EngineListItem } from "../components/ControlPanel";
 
 const api_Url = import.meta.env.VITE_BACKEND_URL;
+
+const renderServiceComponent = (serviceName, viewMode, item, index) => {
+  const key = item.Berth_ID || item.Trailer_ID || item.Transport_ID || item.engine_id || item.Charter_ID || index;
+
+  if (viewMode === 'list') {
+    switch (serviceName) {
+      case 'berth': return <BerthListItem key={key} item={item} />;
+      case 'transport': return <TransportListItem key={key} item={item} />;
+      case 'charter': return <CharterListItem key={key} item={item} />;
+      case 'trailer': return <TrailerListItem key={key} item={item} />;
+      case 'engine': return <EngineListItem key={key} item={item} />;
+      default: return null;
+    }
+  } else { // Grid view
+    switch (serviceName) {
+      case 'berth': return <BerthCard key={key} item={item} />;
+      case 'transport': return <TransportCard key={key} item={item} />;
+      case 'charter': return <CharterCard key={key} item={item} />;
+      case 'trailer': return <TrailerCard key={key} item={item} />;
+      case 'engine': return <EngineCard key={key} item={item} />;
+      default: return null;
+    }
+  }
+};
 
 export default function GenericSearch() {
   const { serviceName: service_Name } = useParams();
@@ -23,6 +48,10 @@ export default function GenericSearch() {
   const [all_Selected_Options, set_All_Selected_Options] = useState({});
   const [results, set_Results] = useState([]);
   const [open_Dropdown, set_Open_Dropdown] = useState(null);
+  
+  const [viewMode, setViewMode] = useState('grid');
+  const [sortConfig, setSortConfig] = useState({ key: 'default', direction: 'asc' });
+  const [pagination, setPagination] = useState({ currentPage: 1, itemsPerPage: 10 });
 
   const UI_KEY_SEP = "||";
   const build_Ui_Key = (table_Name, field_Key) => `${table_Name}${UI_KEY_SEP}${field_Key}`;
@@ -152,6 +181,51 @@ export default function GenericSearch() {
     const ui_Key = `${table_Name}${UI_KEY_SEP}${field}`;
     set_All_Selected_Options((previous_Options) => ({ ...previous_Options, [ui_Key]: value }));
   };
+
+  const processedResults = useMemo(() => {
+    let sortableItems = [...results];
+    if (sortConfig.key !== 'default') {
+      sortableItems.sort((a, b) => {
+        const valA = a[sortConfig.key];
+        const valB = b[sortConfig.key];
+        if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    return sortableItems;
+  }, [results, sortConfig]);
+
+  const paginatedResults = useMemo(() => {
+    const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage;
+    return processedResults.slice(startIndex, startIndex + pagination.itemsPerPage);
+  }, [processedResults, pagination]);
+
+  const totalPages = Math.ceil(processedResults.length / pagination.itemsPerPage);
+
+  const handleSortChange = (key) => {
+    setSortConfig({ key, direction: 'asc' });
+    setPagination(p => ({ ...p, currentPage: 1 }));
+  };
+  const handleItemsPerPageChange = (value) => {
+    setPagination({ currentPage: 1, itemsPerPage: value });
+  };
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+        setPagination(p => ({ ...p, currentPage: page }));
+    }
+  };
+  
+  const sortOptions = useMemo(() => {
+    const options = {
+      berth: [ { value: 'Price_PA', label: 'Price (Yearly)' }, { value: 'Year_Established', label: 'Year Established' }, { value: 'Location', label: 'Location' } ],
+      trailer: [ { value: 'Asking_Price', label: 'Asking Price' }, { value: 'Year', label: 'Year' }, { value: 'Make', label: 'Make' } ],
+      transport: [ { value: 'Quote_Value', label: 'Quote Value' }, { value: 'Posted_Date', label: 'Posted Date' }, { value: 'Category', label: 'Category' } ],
+      charter: [ { value: 'Summerrate_Per_Week', label: 'Price (Weekly)' }, { value: 'Guest_Capacity', label: 'Guest Capacity' } ],
+      engine: [ { value: 'asking_price', label: 'Asking Price' }, { value: 'Engine_Model_Year', label: 'Year' }, { value: 'Engine_Make', label: 'Make' } ],
+    };
+    return options[service_Name] || [];
+  }, [service_Name]);
 
   let table_Counter = 0;
 
@@ -296,84 +370,49 @@ export default function GenericSearch() {
 
           {/* Active Filters Summary */}
           {Object.keys(all_Selected_Options).length > 0 && (
-            <div className="mb-3 p-3 border rounded bg-gray-50 shadow-sm">
-              <strong className="text-gray-600">Active Filters:</strong>
-              <div className="flex flex-wrap mt-2">
-                {Object.entries(all_Selected_Options).map(([ui_Key, value]) => {
-                  if (!value || (Array.isArray(value) && value.length === 0)) return null;
-                  const { fieldName: field_Name } = ui_Key_To_Field(ui_Key);
+            <div className="mb-3 p-3 border rounded bg-gray-50 shadow-sm">{/* ... */}</div>
+          )}
 
-                  let display_Value;
-                  if (typeof value === "object" && value.from !== undefined) {
-                    display_Value = `${value.from || ""} - ${value.to || ""}`;
-                  } else if (Array.isArray(value)) {
-                    display_Value = value
-                      .map((val) => {
-                        if (val && typeof val === "object") return val.label ?? val.value ?? JSON.stringify(val);
-                        return String(val);
-                      })
-                      .join(", ");
-                  } else {
-                    display_Value = String(value);
-                  }
-
-                  return (
-                    <span
-                      key={ui_Key}
-                      className="bg-blue-600 text-white px-2 py-1 rounded flex items-center shadow-sm text-sm mr-2 mb-2"
-                    >
-                      {field_Name.replace(/_/g, " ")}: {display_Value}
-                      <button
-                        type="button"
-                        className="ml-2 text-xs"
-                        onClick={() =>
-                          set_All_Selected_Options((previous_Options) => {
-                            const updated_Options = { ...previous_Options };
-                            delete updated_Options[ui_Key];
-                            return updated_Options;
-                          })
-                        }
-                      >
-                        ✕
-                      </button>
-                    </span>
-                  );
-                })}
-
-                <button
-                  type="button"
-                  className="ml-2 px-2 py-1 mr-2 mb-2 border border-red-500 text-red-500 rounded text-sm"
-                  onClick={() => set_All_Selected_Options({})}
-                >
-                  Clear All
-                </button>
+          {/* --- CONTROL PANEL MOVED TO TOP --- */}
+          {!results_Loading && !results_Error && processedResults.length > 0 && (
+              <div className="mb-4 p-4 border rounded-lg flex justify-between items-center bg-white shadow-sm w-[55rem]">
+                <ViewControls
+                    viewMode={viewMode}
+                    onViewChange={setViewMode}
+                    sortOptions={sortOptions}
+                    sortConfig={sortConfig}
+                    onSortChange={handleSortChange}
+                    itemsPerPage={pagination.itemsPerPage}
+                    onItemsPerPageChange={handleItemsPerPageChange}
+                />
+                <Pagination
+                    currentPage={pagination.currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
               </div>
-            </div>
           )}
 
           {results_Loading && <Loader />}
           {results_Error && <div className="bg-red-100 text-red-700 p-3 rounded">{results_Error}</div>}
 
-          {!results_Loading && !results_Error && results.length === 0 && (
+          {!results_Loading && !results_Error && processedResults.length === 0 && (
             <p className="text-gray-500 italic">No results found</p>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-10">
-            {results.map((item, index) => {
-              if (service_Name === 'berth') {
-                return <BerthCard key={index} item={item} />;
-              } else if (service_Name === 'transport') {
-                return <TransportCard key={index} item={item} />;
-              } else if (service_Name === 'charter') {
-                return <CharterCard key={index} item={item} />;
-              } else if (service_Name === 'trailer') {
-                return <TrailerCard key={index} item={item} />;
-              } else if (service_Name === 'engine') {
-                return <EngineCard key={index} item={item} />;
-              }
-              return null;
-            })}
-          </div>
+          {!results_Loading && !results_Error && paginatedResults.length > 0 && (
+            <>
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-10">
+                  {paginatedResults.map((item, index) => renderServiceComponent(service_Name, 'grid', item, index))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {paginatedResults.map((item, index) => renderServiceComponent(service_Name, 'list', item, index))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
