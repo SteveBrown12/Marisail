@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.20.7",
     "@auth0/auth0-react": "^2.4.0",
     "@heroicons/react": "^2.2.0",
     "@paypal/react-paypal-js": "^8.9.0",
