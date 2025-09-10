@@ -16,7 +16,7 @@ export const ViewControls = ({
   onItemsPerPageChange,
 }) => {
   const baseButtonClass = "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors duration-150";
-  const selectedButtonClass = "bg-white border border-gray-300 shadow-sm text-gray-800";
+  const selectedButtonClass = "bg-white border border-gray-300 shadow-sm text-gray-800 rounded-[30rem]";
   const unselectedButtonClass = "bg-transparent border border-transparent text-gray-600 hover:bg-gray-100";
 
   return (
@@ -48,7 +48,7 @@ export const ViewControls = ({
           id="sort-by"
           value={sortConfig.key}
           onChange={(e) => onSortChange(e.target.value)}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          className="block w-max rounded-md border border-gray-300 items-center shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm h-[43px]"
         >
           <option value="default" disabled={sortConfig.key !== 'default'}>Sort by</option>
           {sortOptions.map((option) => (
@@ -62,9 +62,9 @@ export const ViewControls = ({
           id="per-page"
           value={itemsPerPage}
           onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          className="block w-[6rem] rounded-md border text-center border-gray-300 items-center shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm h-[43px]"
         >
-          <option value="" disabled>Per page</option>
+          <option value={15}>Per page</option>
           <option value={10}>10</option>
           <option value={25}>25</option>
           <option value={50}>50</option>
@@ -102,9 +102,8 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   }
 
   return (
-    // Outer margin, padding, border and background removed
-    <div className="flex justify-between items-center">
-      <div className="flex-1 flex justify-between sm:justify-end gap-3">
+    <div className="flex justify-between items-center mt-6 px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+      <div className="flex-1 flex justify-center gap-3">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -159,10 +158,12 @@ export const BerthListItem = ({ item }) => {
   return (
     <ListItemWrapper to={`/detail/berth/${item.Berth_ID}`}>
       <img src={image} className="w-24 h-24 object-cover rounded-md flex-shrink-0" alt="berth"/>
-      <div className="flex-grow">
+      <div className="flex-grow flex justify-between items-center">
+        <div>
         <h4 className="font-bold text-gray-800">{item.Type}</h4>
         <p className="text-sm text-gray-500">{item.Location}</p>
-        <p className="text-lg font-semibold text-green-600 mt-1">{formattedPrice}</p>
+        </div>
+        <p className="text-lg font-semibold text-green-600">{formattedPrice}</p>
       </div>
     </ListItemWrapper>
   );
@@ -172,11 +173,13 @@ export const TrailerListItem = ({ item }) => {
     const formattedPrice = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(item.Asking_Price || 0);
     return (
     <ListItemWrapper to={`/detail/trailer/${item.Trailer_ID}`}>
-      <img src={image} className="w-24 h-24 object-cover rounded-md flex-shrink-0" alt="trailer"/>
-      <div className="flex-grow">
+      <img src={image} className="w-60 h-60 object-cover rounded-md flex-shrink-0" alt="trailer"/>
+      <div className="flex-grow flex justify-between items-center">
+        <div>
         <h4 className="font-bold text-gray-800">{item.Make} {item.Model} ({item.Year})</h4>
         <p className="text-sm text-gray-500">Asking Price</p>
-        <p className="text-lg font-semibold text-green-600 mt-1">{formattedPrice}</p>
+       </div>
+        <p className="text-lg font-semibold text-green-600">{formattedPrice}</p>
       </div>
     </ListItemWrapper>
   );
@@ -187,10 +190,12 @@ export const TransportListItem = ({ item }) => {
     return (
     <ListItemWrapper to={`/detail/transport/${item.Transport_ID}`}>
       <img src={image} className="w-24 h-24 object-cover rounded-md flex-shrink-0" alt="transport"/>
-      <div className="flex-grow">
+      <div className="flex-grow flex justify-between items-center">
+        <div>
         <h4 className="font-bold text-gray-800">{item.Category}</h4>
         <p className="text-sm text-gray-500">{item.Departure_Destination}</p>
-        <p className="text-lg font-semibold text-green-600 mt-1">{formattedPrice}</p>
+        </div>
+        <p className="text-lg font-semibold text-green-600">{formattedPrice}</p>
       </div>
     </ListItemWrapper>
   );
@@ -201,10 +206,12 @@ export const EngineListItem = ({ item }) => {
     return (
     <ListItemWrapper to={`/detail/engines/${item.engine_id}`}>
       <img src={image} className="w-24 h-24 object-cover rounded-md flex-shrink-0" alt="engine"/>
-      <div className="flex-grow">
+      <div className="flex-grow flex justify-between items-center">
+        <div>
         <h4 className="font-bold text-gray-800">{item.Engine_Make} {item.Engine_Model}</h4>
         <p className="text-sm text-gray-500">Year: {item.Engine_Model_Year}</p>
-        <p className="text-lg font-semibold text-green-600 mt-1">{formattedPrice}</p>
+        </div>
+        <p className="text-lg font-semibold text-green-600">{formattedPrice}</p>
       </div>
     </ListItemWrapper>
   );
@@ -216,10 +223,12 @@ export const CharterListItem = ({ item }) => {
     return (
     <ListItemWrapper to={`/detail/charter/${item.Charter_ID}`}>
       <img src={image} className="w-24 h-24 object-cover rounded-md flex-shrink-0" alt="charter"/>
-      <div className="flex-grow">
+      <div className="flex-grow flex justify-between items-center">
+        <div>
         <h4 className="font-bold text-gray-800">{item.Yacht_Decor}</h4>
         <p className="text-sm text-gray-500">{item.Crew_Accommodation}</p>
-        <p className="text-lg font-semibold text-green-600 mt-1">{formattedPrice} / week</p>
+        </div>
+        <p className="text-lg font-semibold text-green-600">{formattedPrice} / week</p>
       </div>
     </ListItemWrapper>
   );

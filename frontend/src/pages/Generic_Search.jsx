@@ -233,7 +233,6 @@ export default function GenericSearch() {
     <div className="my-4 px-4">
       <div className="flex flex-col md:flex-row gap-4">
         
-        {/* Sidebar Filters */}
         <div className="md:w-1/6 min-w-[300px] bg-white p-4">
           <h4 className="text-[25px] capitalize font-bold pb-2 mb-2">
             Search for {service_Name}
@@ -365,17 +364,14 @@ export default function GenericSearch() {
           })}
         </div>
 
-        {/* Results */}
         <div className="md:w-5/6">
 
-          {/* Active Filters Summary */}
           {Object.keys(all_Selected_Options).length > 0 && (
             <div className="mb-3 p-3 border rounded bg-gray-50 shadow-sm">{/* ... */}</div>
           )}
 
-          {/* --- CONTROL PANEL MOVED TO TOP --- */}
-          {!results_Loading && !results_Error && processedResults.length > 0 && (
-              <div className="mb-4 p-4 border rounded-lg flex justify-between items-center bg-white shadow-sm w-[55rem]">
+          {processedResults.length > 0 && (
+              <div className="flex justify-end mb-4">
                 <ViewControls
                     viewMode={viewMode}
                     onViewChange={setViewMode}
@@ -384,11 +380,6 @@ export default function GenericSearch() {
                     onSortChange={handleSortChange}
                     itemsPerPage={pagination.itemsPerPage}
                     onItemsPerPageChange={handleItemsPerPageChange}
-                />
-                <Pagination
-                    currentPage={pagination.currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
                 />
               </div>
           )}
@@ -407,10 +398,15 @@ export default function GenericSearch() {
                   {paginatedResults.map((item, index) => renderServiceComponent(service_Name, 'grid', item, index))}
                 </div>
               ) : (
-                <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {paginatedResults.map((item, index) => renderServiceComponent(service_Name, 'list', item, index))}
                 </div>
               )}
+              <Pagination
+                  currentPage={pagination.currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+              />
             </>
           )}
         </div>
