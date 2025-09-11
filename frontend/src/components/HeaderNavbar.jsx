@@ -64,10 +64,11 @@ const menuItems = [
 
 const HeaderNavbar = ({ navbarRef }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [ipInfo, setIpInfo] = useState(null);
 
   useEffect(() => {
     const ipInfo = JSON.parse(localStorage.getItem("ipInfo"));
-
+    setIpInfo(ipInfo);
     if (ipInfo) {
       console.log(ipInfo.country, ipInfo.language, ipInfo.currency);
     }
@@ -120,6 +121,12 @@ const HeaderNavbar = ({ navbarRef }) => {
             </svg>
           </button>
 
+          {ipInfo && (
+            <div className="">
+              <span>{ipInfo.country}, {ipInfo.currency}, {ipInfo.language}</span>
+            </div>
+          )}
+          
           {/* Desktop menu */}
           <nav className="hidden lg:flex space-x-8 items-center">
             {menuItems.map((menu) => (

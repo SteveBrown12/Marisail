@@ -110,6 +110,7 @@ const Contact = () => {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-lg rounded-2xl p-8 w-full container max-w-5xl"
@@ -124,14 +125,23 @@ const Contact = () => {
             <label className="block text-gray-700 font-medium mb-2">
               Title
             </label>
-            <input
-              type="text"
+            <select
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder=""
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
-            />
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
+            >
+              <option value="">Select</option>
+              {[
+                "Mr",
+                "Mrs",
+                "Ms",
+              ].map((title) => (
+                <option key={title} value={title}>
+                  {title}
+                </option>
+              ))}
+            </select>
             {errors.title && (
               <p className="text-red-500 text-sm">{errors.title}</p>
             )}
@@ -146,7 +156,7 @@ const Contact = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="example@mail.com"
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.email && (
               <p className="text-red-500 text-sm">{errors.email}</p>
@@ -166,7 +176,7 @@ const Contact = () => {
               value={formData.firstName}
               onChange={handleChange}
               placeholder="John"
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.firstName && (
               <p className="text-red-500 text-sm">{errors.firstName}</p>
@@ -182,7 +192,7 @@ const Contact = () => {
               value={formData.lastName}
               onChange={handleChange}
               placeholder="Done"
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.lastName && (
               <p className="text-red-500 text-sm">{errors.lastName}</p>
@@ -201,7 +211,7 @@ const Contact = () => {
               name="landline"
               value={formData.landline}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300 
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300 
              [&::-webkit-outer-spin-button]:appearance-none 
              [&::-webkit-inner-spin-button]:appearance-none 
              [appearance:textfield]"
@@ -219,7 +229,7 @@ const Contact = () => {
               name="mobile"
               value={formData.mobile}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300 
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300 
              [&::-webkit-outer-spin-button]:appearance-none 
              [&::-webkit-inner-spin-button]:appearance-none 
              [appearance:textfield]"
@@ -241,7 +251,7 @@ const Contact = () => {
               name="privateTrade"
               value={formData.privateTrade}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.privateTrade && (
               <p className="text-red-500 text-sm">{errors.privateTrade}</p>
@@ -251,13 +261,27 @@ const Contact = () => {
             <label className="block text-gray-700 font-medium mb-2">
               Personal Role
             </label>
-            <input
-              type="text"
+            <select
               name="personalRole"
               value={formData.personalRole}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
-            />
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
+            >
+              <option value="">Select</option>
+              {[
+                "Buyer",
+                "Seller",
+                "Dealer",
+                "Broker",
+                "Valuer",
+                "Surveyor",
+                "Architect Designer",
+              ].map((personalRole) => (
+                <option key={personalRole} value={personalRole}>
+                  {personalRole}
+                </option>
+              ))}
+            </select>
             {errors.personalRole && (
               <p className="text-red-500 text-sm">{errors.personalRole}</p>
             )}
@@ -275,7 +299,7 @@ const Contact = () => {
               name="companyName"
               value={formData.companyName}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.companyName && (
               <p className="text-red-500 text-sm">{errors.companyName}</p>
@@ -289,7 +313,7 @@ const Contact = () => {
               name="companyType"
               value={formData.companyType}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             >
               <option value="">Select</option>
               {[
@@ -300,8 +324,8 @@ const Contact = () => {
                 "Sailing Club",
                 "Recruiter",
                 "Job Applicant",
-                "Marine Retail(B2C)",
-                "Marine Wholesale(B2B)",
+                "Marine Retail (B2C)",
+                "Marine Wholesale (B2B)",
                 "Docks",
                 "Marine Survey",
                 "Boat Builder",
@@ -332,7 +356,7 @@ const Contact = () => {
               name="country"
               value={formData.country}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.country && (
               <p className="text-red-500 text-sm">{errors.country}</p>
@@ -347,7 +371,7 @@ const Contact = () => {
               name="state"
               value={formData.state}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.state && (
               <p className="text-red-500 text-sm">{errors.state}</p>
@@ -362,7 +386,7 @@ const Contact = () => {
               name="city"
               value={formData.city}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.city && (
               <p className="text-red-500 text-sm">{errors.city}</p>
@@ -378,7 +402,7 @@ const Contact = () => {
                 name="postcode"
                 value={formData.postcode}
                 onChange={handleChange}
-                className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+                className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
               />
               {errors.postcode && (
                 <p className="text-red-500 text-sm">{errors.postcode}</p>
@@ -397,7 +421,7 @@ const Contact = () => {
               name="address1"
               value={formData.address1}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.address1 && (
               <p className="text-red-500 text-sm">{errors.address1}</p>
@@ -412,7 +436,7 @@ const Contact = () => {
               name="address2"
               value={formData.address2}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.address2 && (
               <p className="text-red-500 text-sm">{errors.address2}</p>
@@ -427,7 +451,7 @@ const Contact = () => {
               name="address3"
               value={formData.address3}
               onChange={handleChange}
-              className="w-full border rounded-lg p-4 focus:ring focus:ring-blue-300"
+              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
             />
             {errors.address3 && (
               <p className="text-red-500 text-sm">{errors.address3}</p>
