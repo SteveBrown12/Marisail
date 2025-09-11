@@ -149,14 +149,23 @@ export default function ContactDialog({ isOpen, onClose, setContactData }) {
               <label className="block text-gray-700 font-medium mb-2">
                 Title
               </label>
-              <input
-                type="text"
+              <select
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder=""
                 className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
-              />
+              >
+                <option value="">Select</option>
+                {[
+                  "Mr",
+                  "Mrs",
+                  "Ms",
+                ].map((title) => (
+                  <option key={title} value={title}>
+                    {title}
+                  </option>
+                ))}
+              </select>
               {errors.title && (
                 <p className="text-red-500 text-sm">{errors.title}</p>
               )}
@@ -276,13 +285,27 @@ export default function ContactDialog({ isOpen, onClose, setContactData }) {
               <label className="block text-gray-700 font-medium mb-2">
                 Personal Role
               </label>
-              <input
-                type="text"
+              <select
                 name="personalRole"
                 value={formData.personalRole}
                 onChange={handleChange}
                 className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
-              />
+              >
+                <option value="">Select</option>
+                {[
+                  "Buyer",
+                  "Seller",
+                  "Dealer",
+                  "Broker",
+                  "Valuer",
+                  "Surveyor",
+                  "Architect Designer",
+                ].map((personalRole) => (
+                  <option key={personalRole} value={personalRole}>
+                    {personalRole}
+                  </option>
+                ))}
+              </select>
               {errors.personalRole && (
                 <p className="text-red-500 text-sm">{errors.personalRole}</p>
               )}
@@ -325,8 +348,8 @@ export default function ContactDialog({ isOpen, onClose, setContactData }) {
                   "Sailing Club",
                   "Recruiter",
                   "Job Applicant",
-                  "Marine Retail(B2C)",
-                  "Marine Wholesale(B2B)",
+                  "Marine Retail (B2C)",
+                  "Marine Wholesale (B2B)",
                   "Docks",
                   "Marine Survey",
                   "Boat Builder",

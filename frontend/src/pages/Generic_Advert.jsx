@@ -28,9 +28,12 @@ export default function GenericAdvert() {
   const [contactData, setContactData] = useState(null);
   const [contact_Key, setContact_Key] = useState(null);
   const [distance_Key, setDistance_Key] = useState(null);
+  const [deliveryDistance_Key, setDeliveryDistance_Key] = useState(null);
 
   const [distance, setDistance] = useState("");
+  const [deliveryDistance, setDeliveryDistance] = useState("");
   const [startPosition, setStartPosition] = useState(null);
+  const [secondPosition, setSecondPosition] = useState(null);
   const [endPosition, setEndPosition] = useState(null);
 
   const handleDistanceChange = (distanceValue) => {
@@ -38,6 +41,14 @@ export default function GenericAdvert() {
     set_Form_State((prev) => ({
       ...prev,
       [distance_Key]: distanceValue,
+    }));
+  };
+
+  const handleDeliveryDistanceChange = (distanceValue) => {
+    setDeliveryDistance(distanceValue);
+    set_Form_State((prev) => ({
+      ...prev,
+      [deliveryDistance_Key]: distanceValue,
     }));
   };
 
@@ -262,7 +273,7 @@ export default function GenericAdvert() {
             </h4>
 
             <form>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 flex justify-items-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-center">
                 {[...(service_Config?.tables || [])]
                   .sort((table_A, table_B) => {
                     const position_A =
@@ -460,7 +471,7 @@ export default function GenericAdvert() {
                                           </>
                                         );
 
-                                      case "distance":
+                                      case "distance1":
                                         return (
                                           <>
                                             <TextComponent
@@ -469,6 +480,39 @@ export default function GenericAdvert() {
                                               onChange={(value) => {
                                                 setDistance_Key(field_Key);
                                                 set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: value }));
+                                              }}
+                                            />
+                                            {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                          </>
+                                        );
+
+                                      case "distance2":
+                                        return (
+                                          <>
+                                            <TextComponent
+                                              title={display_Label}
+                                              value={deliveryDistance}
+                                              onChange={(value) => {
+                                                setDeliveryDistance_Key(field_Key);
+                                                set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: value }));
+                                              }}
+                                            />
+                                            {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                          </>
+                                        );
+
+                                      case 'address1':
+                                        return (
+                                          <>
+                                            <AddressFinderComponent
+                                              title={display_Label}
+                                              mandatory={column_Config.mandatory}
+                                              onSelect={(value) => {
+                                                setStartPosition({
+                                                  lat: value.geometry.location.lat(),
+                                                  lng: value.geometry.location.lng(),
+                                                });
+                                                set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: value.formatted_address }));
                                               }}
                                             />
                                             {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
@@ -736,7 +780,7 @@ export default function GenericAdvert() {
                                             title={display_Label}
                                             mandatory={column_Config.mandatory}
                                             onSelect={(value) => {
-                                              setStartPosition({
+                                              setFirstPosition({
                                                 lat: value.geometry.location.lat(),
                                                 lng: value.geometry.location.lng(),
                                               });
@@ -748,6 +792,24 @@ export default function GenericAdvert() {
                                       );
 
                                     case 'address2':
+                                      return (
+                                        <>
+                                          <AddressFinderComponent
+                                            title={display_Label}
+                                            mandatory={column_Config.mandatory}
+                                            onSelect={(value) => {
+                                              setSecondPosition({
+                                                lat: value.geometry.location.lat(),
+                                                lng: value.geometry.location.lng(),
+                                              });
+                                              set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: value.formatted_address }));
+                                            }}
+                                          />
+                                          {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                        </>
+                                      );
+
+                                    case 'address3':
                                       return (
                                         <>
                                           <AddressFinderComponent
@@ -819,7 +881,7 @@ export default function GenericAdvert() {
         {/* Contact Dialog */}
         <ContactDialog isOpen={contactDialogOpen} onClose={() => setContactDialogOpen(false)} setContactData={setContactData} />
       </div>
-      {startPosition && endPosition && <GoogleMapDisplay position1={startPosition} position2={endPosition} handleDistanceChange={handleDistanceChange} />}
+      {startPosition && endPosition && <GoogleMapDisplay position1={startPosition} position2={secondPosition} position3={endPosition} handleDistanceChange={handleDistanceChange} handleDeliveryDistanceChange={handleDeliveryDistanceChange} />}
     </>
   );
 }
