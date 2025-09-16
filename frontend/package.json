@@ -1,0 +1,46 @@
+{
+  "name": "marisail",
+  "private": true,
+  "version": "0.0.0",
+  "proxy": "https://marisail.com",
+  "homepage": "/test",
+  "type": "module",
+  "scripts": {
+    "conn": "concurrently \"npm run dev\" \"cd node-api && npm run start\"",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-google-maps/api": "^2.20.7",
+    "@auth0/auth0-react": "^2.4.0",
+    "@heroicons/react": "^2.2.0",
+    "@paypal/react-paypal-js": "^8.9.0",
+    "@stripe/react-stripe-js": "^3.9.2",
+    "@stripe/stripe-js": "^7.9.0",
+    "axios": "^1.7.4",
+    "concurrently": "^9.1.2",
+    "date-fns": "^4.1.0",
+    "gtag": "^1.0.1",
+    "prop-types": "^15.8.1",
+    "react": "^18.3.1",
+    "react-day-picker": "^9.6.1",
+    "react-dom": "^18.3.1",
+    "react-dropzone": "^14.3.5",
+    "react-ga4": "^2.1.0",
+    "react-router-dom": "^6.25.1",
+    "react-select": "^5.8.3",
+    "react-select-country-list": "^2.2.3",
+    "react-toastify": "^11.0.5",
+    "rsuite": "^5.75.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.25.9",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.3.4"
+  }
+}

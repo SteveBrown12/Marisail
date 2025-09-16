@@ -1,0 +1,7 @@
+{
+  "name": "rsuite/locales/gu_IN",
+  "private": true,
+  "main": "../../cjs/locales/gu_IN.js",
+  "module": "../../esm/locales/gu_IN.js",
+  "types": "../../esm/locales/gu_IN.d.ts"
+}
