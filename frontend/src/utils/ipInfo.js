@@ -7,6 +7,7 @@ export async function initIPInfo() {
   const cached = localStorage.getItem("ipInfo");
   if (cached) return JSON.parse(cached);
 
+
   try {
     const geoRes = await axios.get(
       `https://api.ipinfo.io/lite/me?token=${IPINFO_KEY}`
