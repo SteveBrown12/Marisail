@@ -1,5 +1,6 @@
 import axios from "../utils/Axios_Config";
 import { useState } from "react";
+import AddressFinder from "../components/AddressFinder";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -73,11 +74,10 @@ const Contact = () => {
       newErrors.privateTrade = "Private Trade is required";
       valid = false;
     }
-    if (!formData.country.trim()) {
-      newErrors.country = "Country is required";
+    if (!formData.address1.trim()) {
+      newErrors.address1 = "Address is required";
       valid = false;
     }
-
 
     setErrors(newErrors);
     return valid;
@@ -345,119 +345,131 @@ const Contact = () => {
           </div>
         </div>
 
-        {/*country inpur, state input, city input, postcode input, address1, address2, address3 input */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              Country
-            </label>
-            <input
-              type="text"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
-            />
-            {errors.country && (
-              <p className="text-red-500 text-sm">{errors.country}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              State
-            </label>
-            <input
-              type="text"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
-            />
-            {errors.state && (
-              <p className="text-red-500 text-sm">{errors.state}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              City
-            </label>
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
-            />
-            {errors.city && (
-              <p className="text-red-500 text-sm">{errors.city}</p>
-            )}
-          </div>
+          {/*country input, state input, city input, postcode input */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-gray-700 font-medium mb-2">
-                Postcode
+                Address
+              </label>
+              <AddressFinder onSelect={(address) => {
+                setFormData({ ...formData, address1: address });
+              }} />
+              {errors.address1 && (
+                <p className="text-red-500 text-sm">{errors.address1}</p>
+              )}
+            </div>
+            {/* <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Country
               </label>
               <input
                 type="text"
-                name="postcode"
-                value={formData.postcode}
+                name="country"
+                value={formData.country}
                 onChange={handleChange}
                 className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
               />
-              {errors.postcode && (
-                <p className="text-red-500 text-sm">{errors.postcode}</p>
+              {errors.country && (
+                <p className="text-red-500 text-sm">{errors.country}</p>
               )}
             </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                State
+              </label>
+              <input
+                type="text"
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
+              />
+              {errors.state && (
+                <p className="text-red-500 text-sm">{errors.state}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                City
+              </label>
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
+              />
+              {errors.city && (
+                <p className="text-red-500 text-sm">{errors.city}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Postcode
+                </label>
+                <input
+                  type="text"
+                  name="postcode"
+                  value={formData.postcode}
+                  onChange={handleChange}
+                  className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
+                />
+                {errors.postcode && (
+                  <p className="text-red-500 text-sm">{errors.postcode}</p>
+                )}
+              </div>
+            </div> */}
           </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              Address 1
-            </label>
-            <input
-              type="text"
-              name="address1"
-              value={formData.address1}
-              onChange={handleChange}
-              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
-            />
-            {errors.address1 && (
-              <p className="text-red-500 text-sm">{errors.address1}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              Address 2
-            </label>
-            <input
-              type="text"
-              name="address2"
-              value={formData.address2}
-              onChange={handleChange}
-              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
-            />
-            {errors.address2 && (
-              <p className="text-red-500 text-sm">{errors.address2}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">
-              Address 3
-            </label>
-            <input
-              type="text"
-              name="address3"
-              value={formData.address3}
-              onChange={handleChange}
-              className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
-            />
-            {errors.address3 && (
-              <p className="text-red-500 text-sm">{errors.address3}</p>
-            )}
-          </div>
-        </div>
+          
+          {/*address1, address2, address3 input */}
+          {/* <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Address 1
+              </label>
+              <input
+                type="text"
+                name="address1"
+                value={formData.address1}
+                onChange={handleChange}
+                className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
+              />
+              {errors.address1 && (
+                <p className="text-red-500 text-sm">{errors.address1}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Address 2
+              </label>
+              <input
+                type="text"
+                name="address2"
+                value={formData.address2}
+                onChange={handleChange}
+                className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
+              />
+              {errors.address2 && (
+                <p className="text-red-500 text-sm">{errors.address2}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Address 3
+              </label>
+              <input
+                type="text"
+                name="address3"
+                value={formData.address3}
+                onChange={handleChange}
+                className="w-full border border-gray-400 rounded-lg p-2 focus:ring focus:ring-blue-300"
+              />
+              {errors.address3 && (
+                <p className="text-red-500 text-sm">{errors.address3}</p>
+              )}
+            </div>
+          </div> */}
 
         {/* Submit */}
         <div className="flex justify-end">
