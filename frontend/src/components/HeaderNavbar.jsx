@@ -4,6 +4,7 @@ import GoogleTranslate from "./GoogleTranslate";
 import ProfileDropdown from "./Profile";
 import PropTypes from "prop-types";
 import { BrandIcon } from "./Header_Components";
+import { initIPInfo } from "../utils/ipInfo";
 
 const menuItems = [
   {
@@ -67,11 +68,15 @@ const HeaderNavbar = ({ navbarRef }) => {
   const [ipInfo, setIpInfo] = useState(null);
 
   useEffect(() => {
-    const ipInfo = JSON.parse(localStorage.getItem("ipInfo"));
-    setIpInfo(ipInfo);
-    if (ipInfo) {
-      console.log(ipInfo.country, ipInfo.language, ipInfo.currency);
+    async function fetchIpInfo() {
+      const data = await initIPInfo();
+      setIpInfo(data);
+      if (data) {
+        console.log(data.country, data.language, data.currency);
+      }
     }
+  
+    fetchIpInfo();
   }, []);
 
   return (

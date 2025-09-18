@@ -76,7 +76,7 @@ export const Berth_Config = {
                 termsAndConditions: { column_Name: "Terms_Conditions", display_Text: "Terms & Conditions", type: "radio", mandatory: true, searchable: true, radio_Options: null },
                 type: { column_Name: "Type", display_Text: "Type", type: "radio", mandatory: true, searchable: true, radio_Options: null },
                 marinaName: { column_Name: "Name", display_Text: "Name", type: "radio", mandatory: true, searchable: true, radio_Options: null },
-                location: { column_Name: "Location", display_Text: "Location", type: "radio", mandatory: true, searchable: true, radio_Options: null },
+                location: { column_Name: "Location", display_Text: "Location", type: "address1", mandatory: true, searchable: true, radio_Options: null },
                 ownership: { column_Name: "Ownership", display_Text: "Ownership", type: "radio", mandatory: true, searchable: true, radio_Options: null },
                 yearEstablished: { column_Name: "Year_Established", display_Text: "Year Established", type: "radio", mandatory: true, searchable: true, radio_Options: null },
                 operatingHours: { column_Name: "Operating_Hours", display_Text: "Operating Hours", type: "radio", mandatory: true, searchable: true, radio_Options: null },
@@ -453,7 +453,7 @@ export const Haulier_Config = {
             columns: {
                 haulierId: { column_Name: 'Haulier_ID', display_Text: 'Haulier ID', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
                 haulierName: { column_Name: 'Haulier_Name', display_Text: 'Name', type: 'radio', mandatory: true, searchable: true, radio_Options: null },
-                haulierAddress: { column_Name: 'Haulier_Address', display_Text: 'Address', type: 'radio', mandatory: true, searchable: true, radio_Options: null },
+                haulierAddress: { column_Name: 'Haulier_Address', display_Text: 'Address', type: 'address1', mandatory: true, searchable: true, radio_Options: null },
                 haulierNumberJobs: { column_Name: 'Haulier_Number_Jobs', display_Text: 'Number Jobs', type: 'number', mandatory: false, searchable: true, radio_Options: null },
                 registeredSince: { column_Name: 'Registered_Since', display_Text: 'Registered Since', type: 'date', mandatory: false, searchable: true, radio_Options: null },
                 numberVehicles: { column_Name: 'Number_Vehicles', display_Text: 'Number Vehicles', type: 'number', mandatory: false, searchable: true, radio_Options: null },
