@@ -4,8 +4,8 @@ const IPINFO_KEY = import.meta.env.VITE_IPINFO_API_KEY;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 export async function initIPInfo() {
   // If already in localStorage, don't fetch again
-  const cached = localStorage.getItem("ipInfo");
-  if (cached) return JSON.parse(cached);
+  // const cached = localStorage.getItem("ipInfo");
+  // if (cached) return JSON.parse(cached);
 
 
   try {
