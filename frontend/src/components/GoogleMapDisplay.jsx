@@ -83,7 +83,10 @@ function GoogleMapDisplay({ position1, position2, position3, handleDistanceChang
                 options={{
                     streetViewControl: false,
                     mapTypeControl: true,
-                    fullscreenControl: true
+                    fullscreenControl: true,
+                    zoomControl: true,
+                    disableDefaultUI: true,
+                    keyboardShortcuts: false,
                 }}
             >
                 {directions && (
@@ -92,7 +95,7 @@ function GoogleMapDisplay({ position1, position2, position3, handleDistanceChang
                 {straightDirections && (
                     <DirectionsRenderer directions={straightDirections} />
                 )}
-                
+
                 {directions && (
                     <OverlayView
                         position={{
