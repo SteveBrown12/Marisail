@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Task",
-  "private": true,
-  "main": "../cjs/react/Task.js",
-  "module": "../esm/react/Task.js",
-  "types": "../esm/react/Task.d.ts"
-}

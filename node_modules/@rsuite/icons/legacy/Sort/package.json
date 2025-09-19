@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Sort",
-  "private": true,
-  "main": "../../cjs/react/legacy/Sort.js",
-  "module": "../../esm/react/legacy/Sort.js",
-  "types": "../../esm/react/legacy/Sort.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Treemap",
-  "private": true,
-  "main": "../cjs/react/Treemap.js",
-  "module": "../esm/react/Treemap.js",
-  "types": "../esm/react/Treemap.d.ts"
-}

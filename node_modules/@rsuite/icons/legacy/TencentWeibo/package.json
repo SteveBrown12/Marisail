@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/TencentWeibo",
-  "private": true,
-  "main": "../../cjs/react/legacy/TencentWeibo.js",
-  "module": "../../esm/react/legacy/TencentWeibo.js",
-  "types": "../../esm/react/legacy/TencentWeibo.d.ts"
-}

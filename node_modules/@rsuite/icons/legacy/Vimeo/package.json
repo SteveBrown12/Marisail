@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Vimeo",
-  "private": true,
-  "main": "../../cjs/react/legacy/Vimeo.js",
-  "module": "../../esm/react/legacy/Vimeo.js",
-  "types": "../../esm/react/legacy/Vimeo.d.ts"
-}

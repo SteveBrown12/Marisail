@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Server",
-  "private": true,
-  "main": "../../cjs/react/legacy/Server.js",
-  "module": "../../esm/react/legacy/Server.js",
-  "types": "../../esm/react/legacy/Server.d.ts"
-}

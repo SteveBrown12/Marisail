@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/MarsDouble",
-  "private": true,
-  "main": "../../cjs/react/legacy/MarsDouble.js",
-  "module": "../../esm/react/legacy/MarsDouble.js",
-  "types": "../../esm/react/legacy/MarsDouble.d.ts"
-}

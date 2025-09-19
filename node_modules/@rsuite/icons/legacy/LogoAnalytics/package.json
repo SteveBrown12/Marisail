@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/LogoAnalytics",
-  "private": true,
-  "main": "../../cjs/react/legacy/LogoAnalytics.js",
-  "module": "../../esm/react/legacy/LogoAnalytics.js",
-  "types": "../../esm/react/legacy/LogoAnalytics.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Folder",
-  "private": true,
-  "main": "../../cjs/react/legacy/Folder.js",
-  "module": "../../esm/react/legacy/Folder.js",
-  "types": "../../esm/react/legacy/Folder.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/LastfmSquare",
-  "private": true,
-  "main": "../../cjs/react/legacy/LastfmSquare.js",
-  "module": "../../esm/react/legacy/LastfmSquare.js",
-  "types": "../../esm/react/legacy/LastfmSquare.d.ts"
-}

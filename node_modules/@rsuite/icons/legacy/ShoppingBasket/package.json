@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ShoppingBasket",
-  "private": true,
-  "main": "../../cjs/react/legacy/ShoppingBasket.js",
-  "module": "../../esm/react/legacy/ShoppingBasket.js",
-  "types": "../../esm/react/legacy/ShoppingBasket.d.ts"
-}

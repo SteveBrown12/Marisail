@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Heart",
-  "private": true,
-  "main": "../../cjs/react/legacy/Heart.js",
-  "module": "../../esm/react/legacy/Heart.js",
-  "types": "../../esm/react/legacy/Heart.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/VerifyRound",
-  "private": true,
-  "main": "../cjs/react/VerifyRound.js",
-  "module": "../esm/react/VerifyRound.js",
-  "types": "../esm/react/VerifyRound.d.ts"
-}

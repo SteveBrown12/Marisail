@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Superscript",
-  "private": true,
-  "main": "../../cjs/react/legacy/Superscript.js",
-  "module": "../../esm/react/legacy/Superscript.js",
-  "types": "../../esm/react/legacy/Superscript.d.ts"
-}

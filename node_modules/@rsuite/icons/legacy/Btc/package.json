@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Btc",
-  "private": true,
-  "main": "../../cjs/react/legacy/Btc.js",
-  "module": "../../esm/react/legacy/Btc.js",
-  "types": "../../esm/react/legacy/Btc.d.ts"
-}

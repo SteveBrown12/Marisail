@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Paperclip",
-  "private": true,
-  "main": "../../cjs/react/legacy/Paperclip.js",
-  "module": "../../esm/react/legacy/Paperclip.js",
-  "types": "../../esm/react/legacy/Paperclip.d.ts"
-}

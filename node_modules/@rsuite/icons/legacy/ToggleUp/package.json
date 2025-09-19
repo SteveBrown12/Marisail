@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ToggleUp",
-  "private": true,
-  "main": "../../cjs/react/legacy/ToggleUp.js",
-  "module": "../../esm/react/legacy/ToggleUp.js",
-  "types": "../../esm/react/legacy/ToggleUp.d.ts"
-}

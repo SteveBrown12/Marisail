@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Eercast",
-  "private": true,
-  "main": "../../cjs/react/legacy/Eercast.js",
-  "module": "../../esm/react/legacy/Eercast.js",
-  "types": "../../esm/react/legacy/Eercast.d.ts"
-}

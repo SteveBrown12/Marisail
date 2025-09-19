@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Twitch",
-  "private": true,
-  "main": "../../cjs/react/legacy/Twitch.js",
-  "module": "../../esm/react/legacy/Twitch.js",
-  "types": "../../esm/react/legacy/Twitch.d.ts"
-}

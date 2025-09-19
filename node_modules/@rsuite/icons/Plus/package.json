@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Plus",
-  "private": true,
-  "main": "../cjs/react/Plus.js",
-  "module": "../esm/react/Plus.js",
-  "types": "../esm/react/Plus.d.ts"
-}

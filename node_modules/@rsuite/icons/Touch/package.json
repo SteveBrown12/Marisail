@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Touch",
-  "private": true,
-  "main": "../cjs/react/Touch.js",
-  "module": "../esm/react/Touch.js",
-  "types": "../esm/react/Touch.d.ts"
-}

@@ -1,10 +1,12 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
+import './GoogleTranslate.css';
 
 type GoogleTranslateProps = {
   className?: string;
   style?: CSSProperties;
   containerId?: string;
   floating?: boolean;
+  compact?: boolean;
 };
 
 declare global {
@@ -31,6 +33,7 @@ export const GoogleTranslate: React.FC<GoogleTranslateProps> = ({
   style,
   containerId = 'google_translate_element',
   floating = true,
+  compact = false,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const initializedRef = useRef<boolean>(false);
@@ -63,6 +66,22 @@ export const GoogleTranslate: React.FC<GoogleTranslateProps> = ({
           containerRef.current || containerId
         );
         initializedRef.current = true;
+        
+        // Apply custom styling after initialization
+        if (compact) {
+          setTimeout(() => {
+            const googTeCombo = document.querySelector('.goog-te-combo');
+            if (googTeCombo) {
+              googTeCombo.style.fontSize = '12px';
+              googTeCombo.style.padding = '4px 8px';
+              googTeCombo.style.border = '1px solid #d1d5db';
+              googTeCombo.style.borderRadius = '6px';
+              googTeCombo.style.backgroundColor = 'white';
+              googTeCombo.style.minWidth = '120px';
+              googTeCombo.style.height = '32px';
+            }
+          }, 100);
+        }
       } catch {
         // no-op
       }
@@ -112,7 +131,7 @@ export const GoogleTranslate: React.FC<GoogleTranslateProps> = ({
     <div
       id={containerId}
       ref={containerRef}
-      className={className}
+      className={`${compact ? 'google-translate-compact' : ''} ${className || ''}`}
       style={{ ...defaultStyle, ...style }}
     />
   );

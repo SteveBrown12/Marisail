@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Export",
-  "private": true,
-  "main": "../cjs/react/Export.js",
-  "module": "../esm/react/Export.js",
-  "types": "../esm/react/Export.d.ts"
-}

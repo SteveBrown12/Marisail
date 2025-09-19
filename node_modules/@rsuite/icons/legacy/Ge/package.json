@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Ge",
-  "private": true,
-  "main": "../../cjs/react/legacy/Ge.js",
-  "module": "../../esm/react/legacy/Ge.js",
-  "types": "../../esm/react/legacy/Ge.d.ts"
-}

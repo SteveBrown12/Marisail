@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/GooglePlusSquare",
-  "private": true,
-  "main": "../../cjs/react/legacy/GooglePlusSquare.js",
-  "module": "../../esm/react/legacy/GooglePlusSquare.js",
-  "types": "../../esm/react/legacy/GooglePlusSquare.d.ts"
-}

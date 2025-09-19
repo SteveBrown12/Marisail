@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/LineChart",
-  "private": true,
-  "main": "../cjs/react/LineChart.js",
-  "module": "../esm/react/LineChart.js",
-  "types": "../esm/react/LineChart.d.ts"
-}

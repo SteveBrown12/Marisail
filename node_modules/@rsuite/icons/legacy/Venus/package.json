@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Venus",
-  "private": true,
-  "main": "../../cjs/react/legacy/Venus.js",
-  "module": "../../esm/react/legacy/Venus.js",
-  "types": "../../esm/react/legacy/Venus.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/SiteParsing",
-  "private": true,
-  "main": "../cjs/react/SiteParsing.js",
-  "module": "../esm/react/SiteParsing.js",
-  "types": "../esm/react/SiteParsing.d.ts"
-}

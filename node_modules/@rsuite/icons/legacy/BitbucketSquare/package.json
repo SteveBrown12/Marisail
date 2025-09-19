@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/BitbucketSquare",
-  "private": true,
-  "main": "../../cjs/react/legacy/BitbucketSquare.js",
-  "module": "../../esm/react/legacy/BitbucketSquare.js",
-  "types": "../../esm/react/legacy/BitbucketSquare.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FacebookSquare",
-  "private": true,
-  "main": "../../cjs/react/legacy/FacebookSquare.js",
-  "module": "../../esm/react/legacy/FacebookSquare.js",
-  "types": "../../esm/react/legacy/FacebookSquare.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Google",
-  "private": true,
-  "main": "../cjs/react/Google.js",
-  "module": "../esm/react/Google.js",
-  "types": "../esm/react/Google.d.ts"
-}

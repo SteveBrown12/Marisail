@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CalendarCheckO",
-  "private": true,
-  "main": "../../cjs/react/legacy/CalendarCheckO.js",
-  "module": "../../esm/react/legacy/CalendarCheckO.js",
-  "types": "../../esm/react/legacy/CalendarCheckO.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PeoplesPlus",
-  "private": true,
-  "main": "../cjs/react/PeoplesPlus.js",
-  "module": "../esm/react/PeoplesPlus.js",
-  "types": "../esm/react/PeoplesPlus.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Image",
-  "private": true,
-  "main": "../../cjs/react/legacy/Image.js",
-  "module": "../../esm/react/legacy/Image.js",
-  "types": "../../esm/react/legacy/Image.d.ts"
-}

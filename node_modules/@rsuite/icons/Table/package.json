@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Table",
-  "private": true,
-  "main": "../cjs/react/Table.js",
-  "module": "../esm/react/Table.js",
-  "types": "../esm/react/Table.d.ts"
-}

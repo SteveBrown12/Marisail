@@ -1,6 +1,0 @@
-export declare function joinName(name: string | string[]): string;
-/**
- * formatErrorMessage('${name} is a required field', {name: 'email'});
- * output: 'email is a required field'
- */
-export default function formatErrorMessage<E>(errorMessage?: string | E, params?: any): string | E;

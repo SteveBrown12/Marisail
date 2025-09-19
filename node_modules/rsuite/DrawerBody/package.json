@@ -1,7 +1,0 @@
-{
-  "name": "rsuite/DrawerBody",
-  "private": true,
-  "main": "../cjs/Drawer/DrawerBody.js",
-  "module": "../esm/Drawer/DrawerBody.js",
-  "types": "../esm/Drawer/DrawerBody.d.ts"
-}

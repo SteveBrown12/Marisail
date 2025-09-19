@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CharacterArea",
-  "private": true,
-  "main": "../../cjs/react/legacy/CharacterArea.js",
-  "module": "../../esm/react/legacy/CharacterArea.js",
-  "types": "../../esm/react/legacy/CharacterArea.d.ts"
-}

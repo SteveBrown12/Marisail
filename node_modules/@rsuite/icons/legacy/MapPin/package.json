@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/MapPin",
-  "private": true,
-  "main": "../../cjs/react/legacy/MapPin.js",
-  "module": "../../esm/react/legacy/MapPin.js",
-  "types": "../../esm/react/legacy/MapPin.d.ts"
-}

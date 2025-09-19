@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/ViewsAuthorize",
-  "private": true,
-  "main": "../cjs/react/ViewsAuthorize.js",
-  "module": "../esm/react/ViewsAuthorize.js",
-  "types": "../esm/react/ViewsAuthorize.d.ts"
-}

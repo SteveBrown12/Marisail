@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CcVisa",
-  "private": true,
-  "main": "../../cjs/react/legacy/CcVisa.js",
-  "module": "../../esm/react/legacy/CcVisa.js",
-  "types": "../../esm/react/legacy/CcVisa.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Columns",
-  "private": true,
-  "main": "../cjs/react/Columns.js",
-  "module": "../esm/react/Columns.js",
-  "types": "../esm/react/Columns.d.ts"
-}

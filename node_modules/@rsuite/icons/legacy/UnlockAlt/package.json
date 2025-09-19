@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/UnlockAlt",
-  "private": true,
-  "main": "../../cjs/react/legacy/UnlockAlt.js",
-  "module": "../../esm/react/legacy/UnlockAlt.js",
-  "types": "../../esm/react/legacy/UnlockAlt.d.ts"
-}

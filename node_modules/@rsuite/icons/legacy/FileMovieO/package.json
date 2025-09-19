@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FileMovieO",
-  "private": true,
-  "main": "../../cjs/react/legacy/FileMovieO.js",
-  "module": "../../esm/react/legacy/FileMovieO.js",
-  "types": "../../esm/react/legacy/FileMovieO.d.ts"
-}

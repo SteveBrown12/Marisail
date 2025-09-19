@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/BarChart",
-  "private": true,
-  "main": "../../cjs/react/legacy/BarChart.js",
-  "module": "../../esm/react/legacy/BarChart.js",
-  "types": "../../esm/react/legacy/BarChart.d.ts"
-}

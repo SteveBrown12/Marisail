@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/ArrowDown",
-  "private": true,
-  "main": "../cjs/react/ArrowDown.js",
-  "module": "../esm/react/ArrowDown.js",
-  "types": "../esm/react/ArrowDown.d.ts"
-}

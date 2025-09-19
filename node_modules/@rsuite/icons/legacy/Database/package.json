@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Database",
-  "private": true,
-  "main": "../../cjs/react/legacy/Database.js",
-  "module": "../../esm/react/legacy/Database.js",
-  "types": "../../esm/react/legacy/Database.d.ts"
-}

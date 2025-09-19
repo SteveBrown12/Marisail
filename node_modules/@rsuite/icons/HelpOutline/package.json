@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/HelpOutline",
-  "private": true,
-  "main": "../cjs/react/HelpOutline.js",
-  "module": "../esm/react/HelpOutline.js",
-  "types": "../esm/react/HelpOutline.d.ts"
-}

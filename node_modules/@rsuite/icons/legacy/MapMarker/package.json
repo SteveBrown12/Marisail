@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/MapMarker",
-  "private": true,
-  "main": "../../cjs/react/legacy/MapMarker.js",
-  "module": "../../esm/react/legacy/MapMarker.js",
-  "types": "../../esm/react/legacy/MapMarker.d.ts"
-}

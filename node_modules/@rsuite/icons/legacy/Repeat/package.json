@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Repeat",
-  "private": true,
-  "main": "../../cjs/react/legacy/Repeat.js",
-  "module": "../../esm/react/legacy/Repeat.js",
-  "types": "../../esm/react/legacy/Repeat.d.ts"
-}

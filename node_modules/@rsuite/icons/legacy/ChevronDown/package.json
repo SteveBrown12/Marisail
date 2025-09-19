@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ChevronDown",
-  "private": true,
-  "main": "../../cjs/react/legacy/ChevronDown.js",
-  "module": "../../esm/react/legacy/ChevronDown.js",
-  "types": "../../esm/react/legacy/ChevronDown.d.ts"
-}

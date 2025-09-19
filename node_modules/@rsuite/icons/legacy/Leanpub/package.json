@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Leanpub",
-  "private": true,
-  "main": "../../cjs/react/legacy/Leanpub.js",
-  "module": "../../esm/react/legacy/Leanpub.js",
-  "types": "../../esm/react/legacy/Leanpub.d.ts"
-}

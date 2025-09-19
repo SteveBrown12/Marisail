@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ArrowCircleRight",
-  "private": true,
-  "main": "../../cjs/react/legacy/ArrowCircleRight.js",
-  "module": "../../esm/react/legacy/ArrowCircleRight.js",
-  "types": "../../esm/react/legacy/ArrowCircleRight.d.ts"
-}

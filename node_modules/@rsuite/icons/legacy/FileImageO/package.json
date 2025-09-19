@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FileImageO",
-  "private": true,
-  "main": "../../cjs/react/legacy/FileImageO.js",
-  "module": "../../esm/react/legacy/FileImageO.js",
-  "types": "../../esm/react/legacy/FileImageO.d.ts"
-}

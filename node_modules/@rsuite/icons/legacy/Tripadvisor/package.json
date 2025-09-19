@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Tripadvisor",
-  "private": true,
-  "main": "../../cjs/react/legacy/Tripadvisor.js",
-  "module": "../../esm/react/legacy/Tripadvisor.js",
-  "types": "../../esm/react/legacy/Tripadvisor.d.ts"
-}

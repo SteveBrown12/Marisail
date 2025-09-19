@@ -1,7 +1,0 @@
-{
-  "name": "rsuite/StatValueUnit",
-  "private": true,
-  "main": "../cjs/Stat/StatValueUnit.js",
-  "module": "../esm/Stat/StatValueUnit.js",
-  "types": "../esm/Stat/StatValueUnit.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/CharacterAuthorize",
-  "private": true,
-  "main": "../cjs/react/CharacterAuthorize.js",
-  "module": "../esm/react/CharacterAuthorize.js",
-  "types": "../esm/react/CharacterAuthorize.d.ts"
-}

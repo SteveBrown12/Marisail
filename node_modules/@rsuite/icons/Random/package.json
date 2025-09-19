@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Random",
-  "private": true,
-  "main": "../cjs/react/Random.js",
-  "module": "../esm/react/Random.js",
-  "types": "../esm/react/Random.d.ts"
-}

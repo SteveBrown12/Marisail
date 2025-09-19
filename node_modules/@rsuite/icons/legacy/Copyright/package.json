@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Copyright",
-  "private": true,
-  "main": "../../cjs/react/legacy/Copyright.js",
-  "module": "../../esm/react/legacy/Copyright.js",
-  "types": "../../esm/react/legacy/Copyright.d.ts"
-}

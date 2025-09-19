@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Site",
-  "private": true,
-  "main": "../cjs/react/Site.js",
-  "module": "../esm/react/Site.js",
-  "types": "../esm/react/Site.d.ts"
-}

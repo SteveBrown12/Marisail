@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ChevronCircleRight",
-  "private": true,
-  "main": "../../cjs/react/legacy/ChevronCircleRight.js",
-  "module": "../../esm/react/legacy/ChevronCircleRight.js",
-  "types": "../../esm/react/legacy/ChevronCircleRight.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ICursor",
-  "private": true,
-  "main": "../../cjs/react/legacy/ICursor.js",
-  "module": "../../esm/react/legacy/ICursor.js",
-  "types": "../../esm/react/legacy/ICursor.d.ts"
-}

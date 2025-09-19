@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Truck",
-  "private": true,
-  "main": "../../cjs/react/legacy/Truck.js",
-  "module": "../../esm/react/legacy/Truck.js",
-  "types": "../../esm/react/legacy/Truck.d.ts"
-}

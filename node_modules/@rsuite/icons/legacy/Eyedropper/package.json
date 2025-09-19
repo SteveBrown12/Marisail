@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Eyedropper",
-  "private": true,
-  "main": "../../cjs/react/legacy/Eyedropper.js",
-  "module": "../../esm/react/legacy/Eyedropper.js",
-  "types": "../../esm/react/legacy/Eyedropper.d.ts"
-}

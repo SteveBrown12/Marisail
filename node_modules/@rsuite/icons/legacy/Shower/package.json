@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Shower",
-  "private": true,
-  "main": "../../cjs/react/legacy/Shower.js",
-  "module": "../../esm/react/legacy/Shower.js",
-  "types": "../../esm/react/legacy/Shower.d.ts"
-}

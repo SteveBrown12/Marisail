@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/SignIn",
-  "private": true,
-  "main": "../../cjs/react/legacy/SignIn.js",
-  "module": "../../esm/react/legacy/SignIn.js",
-  "types": "../../esm/react/legacy/SignIn.d.ts"
-}

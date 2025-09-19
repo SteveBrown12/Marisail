@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Magic",
-  "private": true,
-  "main": "../../cjs/react/legacy/Magic.js",
-  "module": "../../esm/react/legacy/Magic.js",
-  "types": "../../esm/react/legacy/Magic.d.ts"
-}

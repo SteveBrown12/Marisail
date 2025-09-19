@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Skype",
-  "private": true,
-  "main": "../../cjs/react/legacy/Skype.js",
-  "module": "../../esm/react/legacy/Skype.js",
-  "types": "../../esm/react/legacy/Skype.d.ts"
-}

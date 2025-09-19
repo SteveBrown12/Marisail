@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/DataDecrease",
-  "private": true,
-  "main": "../../cjs/react/legacy/DataDecrease.js",
-  "module": "../../esm/react/legacy/DataDecrease.js",
-  "types": "../../esm/react/legacy/DataDecrease.d.ts"
-}

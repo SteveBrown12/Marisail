@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/TreeOpen",
-  "private": true,
-  "main": "../../cjs/react/legacy/TreeOpen.js",
-  "module": "../../esm/react/legacy/TreeOpen.js",
-  "types": "../../esm/react/legacy/TreeOpen.d.ts"
-}

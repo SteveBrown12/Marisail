@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/BalanceScale",
-  "private": true,
-  "main": "../../cjs/react/legacy/BalanceScale.js",
-  "module": "../../esm/react/legacy/BalanceScale.js",
-  "types": "../../esm/react/legacy/BalanceScale.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/FlowStop",
-  "private": true,
-  "main": "../cjs/react/FlowStop.js",
-  "module": "../esm/react/FlowStop.js",
-  "types": "../esm/react/FlowStop.d.ts"
-}

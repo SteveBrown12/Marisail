@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CalendarMinusO",
-  "private": true,
-  "main": "../../cjs/react/legacy/CalendarMinusO.js",
-  "module": "../../esm/react/legacy/CalendarMinusO.js",
-  "types": "../../esm/react/legacy/CalendarMinusO.d.ts"
-}

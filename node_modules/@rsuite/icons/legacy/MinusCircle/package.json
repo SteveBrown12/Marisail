@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/MinusCircle",
-  "private": true,
-  "main": "../../cjs/react/legacy/MinusCircle.js",
-  "module": "../../esm/react/legacy/MinusCircle.js",
-  "types": "../../esm/react/legacy/MinusCircle.d.ts"
-}

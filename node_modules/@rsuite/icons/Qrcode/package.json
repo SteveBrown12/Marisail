@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Qrcode",
-  "private": true,
-  "main": "../cjs/react/Qrcode.js",
-  "module": "../esm/react/Qrcode.js",
-  "types": "../esm/react/Qrcode.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Shield",
-  "private": true,
-  "main": "../../cjs/react/legacy/Shield.js",
-  "module": "../../esm/react/legacy/Shield.js",
-  "types": "../../esm/react/legacy/Shield.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Buysellads",
-  "private": true,
-  "main": "../../cjs/react/legacy/Buysellads.js",
-  "module": "../../esm/react/legacy/Buysellads.js",
-  "types": "../../esm/react/legacy/Buysellads.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/SquareO",
-  "private": true,
-  "main": "../../cjs/react/legacy/SquareO.js",
-  "module": "../../esm/react/legacy/SquareO.js",
-  "types": "../../esm/react/legacy/SquareO.d.ts"
-}

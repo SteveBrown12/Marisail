@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CcDinersClub",
-  "private": true,
-  "main": "../../cjs/react/legacy/CcDinersClub.js",
-  "module": "../../esm/react/legacy/CcDinersClub.js",
-  "types": "../../esm/react/legacy/CcDinersClub.d.ts"
-}

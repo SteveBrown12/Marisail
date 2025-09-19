@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FirstOrder",
-  "private": true,
-  "main": "../../cjs/react/legacy/FirstOrder.js",
-  "module": "../../esm/react/legacy/FirstOrder.js",
-  "types": "../../esm/react/legacy/FirstOrder.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/AreaChart",
-  "private": true,
-  "main": "../../cjs/react/legacy/AreaChart.js",
-  "module": "../../esm/react/legacy/AreaChart.js",
-  "types": "../../esm/react/legacy/AreaChart.d.ts"
-}

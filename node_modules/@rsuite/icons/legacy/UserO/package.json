@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/UserO",
-  "private": true,
-  "main": "../../cjs/react/legacy/UserO.js",
-  "module": "../../esm/react/legacy/UserO.js",
-  "types": "../../esm/react/legacy/UserO.d.ts"
-}

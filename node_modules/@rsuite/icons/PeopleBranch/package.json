@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PeopleBranch",
-  "private": true,
-  "main": "../cjs/react/PeopleBranch.js",
-  "module": "../esm/react/PeopleBranch.js",
-  "types": "../esm/react/PeopleBranch.d.ts"
-}

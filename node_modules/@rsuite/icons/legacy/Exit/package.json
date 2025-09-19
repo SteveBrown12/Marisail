@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Exit",
-  "private": true,
-  "main": "../../cjs/react/legacy/Exit.js",
-  "module": "../../esm/react/legacy/Exit.js",
-  "types": "../../esm/react/legacy/Exit.d.ts"
-}

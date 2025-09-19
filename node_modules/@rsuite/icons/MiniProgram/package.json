@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/MiniProgram",
-  "private": true,
-  "main": "../cjs/react/MiniProgram.js",
-  "module": "../esm/react/MiniProgram.js",
-  "types": "../esm/react/MiniProgram.d.ts"
-}

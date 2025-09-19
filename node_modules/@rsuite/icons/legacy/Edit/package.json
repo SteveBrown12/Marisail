@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Edit",
-  "private": true,
-  "main": "../../cjs/react/legacy/Edit.js",
-  "module": "../../esm/react/legacy/Edit.js",
-  "types": "../../esm/react/legacy/Edit.d.ts"
-}

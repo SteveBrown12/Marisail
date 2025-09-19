@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Lock",
-  "private": true,
-  "main": "../../cjs/react/legacy/Lock.js",
-  "module": "../../esm/react/legacy/Lock.js",
-  "types": "../../esm/react/legacy/Lock.d.ts"
-}

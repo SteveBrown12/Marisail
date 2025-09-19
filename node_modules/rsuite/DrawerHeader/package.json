@@ -1,7 +1,0 @@
-{
-  "name": "rsuite/DrawerHeader",
-  "private": true,
-  "main": "../cjs/Drawer/DrawerHeader.js",
-  "module": "../esm/Drawer/DrawerHeader.js",
-  "types": "../esm/Drawer/DrawerHeader.d.ts"
-}

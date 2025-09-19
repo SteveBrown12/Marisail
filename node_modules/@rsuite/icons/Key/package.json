@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Key",
-  "private": true,
-  "main": "../cjs/react/Key.js",
-  "module": "../esm/react/Key.js",
-  "types": "../esm/react/Key.d.ts"
-}

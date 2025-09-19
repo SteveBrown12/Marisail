@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/HandSpockO",
-  "private": true,
-  "main": "../../cjs/react/legacy/HandSpockO.js",
-  "module": "../../esm/react/legacy/HandSpockO.js",
-  "types": "../../esm/react/legacy/HandSpockO.d.ts"
-}

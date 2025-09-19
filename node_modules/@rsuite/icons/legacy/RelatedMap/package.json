@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/RelatedMap",
-  "private": true,
-  "main": "../../cjs/react/legacy/RelatedMap.js",
-  "module": "../../esm/react/legacy/RelatedMap.js",
-  "types": "../../esm/react/legacy/RelatedMap.d.ts"
-}

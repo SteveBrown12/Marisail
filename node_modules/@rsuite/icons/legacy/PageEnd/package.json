@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/PageEnd",
-  "private": true,
-  "main": "../../cjs/react/legacy/PageEnd.js",
-  "module": "../../esm/react/legacy/PageEnd.js",
-  "types": "../../esm/react/legacy/PageEnd.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Scatter",
-  "private": true,
-  "main": "../cjs/react/Scatter.js",
-  "module": "../esm/react/Scatter.js",
-  "types": "../esm/react/Scatter.d.ts"
-}

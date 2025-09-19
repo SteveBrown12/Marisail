@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Profile",
-  "private": true,
-  "main": "../../cjs/react/legacy/Profile.js",
-  "module": "../../esm/react/legacy/Profile.js",
-  "types": "../../esm/react/legacy/Profile.d.ts"
-}

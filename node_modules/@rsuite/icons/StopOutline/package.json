@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/StopOutline",
-  "private": true,
-  "main": "../cjs/react/StopOutline.js",
-  "module": "../esm/react/StopOutline.js",
-  "types": "../esm/react/StopOutline.d.ts"
-}

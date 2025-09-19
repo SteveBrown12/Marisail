@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/LightbulbO",
-  "private": true,
-  "main": "../../cjs/react/legacy/LightbulbO.js",
-  "module": "../../esm/react/legacy/LightbulbO.js",
-  "types": "../../esm/react/legacy/LightbulbO.d.ts"
-}

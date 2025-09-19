@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Grid",
-  "private": true,
-  "main": "../cjs/react/Grid.js",
-  "module": "../esm/react/Grid.js",
-  "types": "../esm/react/Grid.d.ts"
-}

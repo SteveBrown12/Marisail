@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Model",
-  "private": true,
-  "main": "../cjs/react/Model.js",
-  "module": "../esm/react/Model.js",
-  "types": "../esm/react/Model.d.ts"
-}

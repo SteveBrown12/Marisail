@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Conversion",
-  "private": true,
-  "main": "../cjs/react/Conversion.js",
-  "module": "../esm/react/Conversion.js",
-  "types": "../esm/react/Conversion.d.ts"
-}

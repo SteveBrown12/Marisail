@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/CloudReflash",
-  "private": true,
-  "main": "../cjs/react/CloudReflash.js",
-  "module": "../esm/react/CloudReflash.js",
-  "types": "../esm/react/CloudReflash.d.ts"
-}

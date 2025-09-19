@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/LineChart",
-  "private": true,
-  "main": "../../cjs/react/legacy/LineChart.js",
-  "module": "../../esm/react/legacy/LineChart.js",
-  "types": "../../esm/react/legacy/LineChart.d.ts"
-}

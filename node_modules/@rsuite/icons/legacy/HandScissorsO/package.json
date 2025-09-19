@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/HandScissorsO",
-  "private": true,
-  "main": "../../cjs/react/legacy/HandScissorsO.js",
-  "module": "../../esm/react/legacy/HandScissorsO.js",
-  "types": "../../esm/react/legacy/HandScissorsO.d.ts"
-}

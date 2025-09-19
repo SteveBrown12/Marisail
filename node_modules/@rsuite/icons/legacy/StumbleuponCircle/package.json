@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/StumbleuponCircle",
-  "private": true,
-  "main": "../../cjs/react/legacy/StumbleuponCircle.js",
-  "module": "../../esm/react/legacy/StumbleuponCircle.js",
-  "types": "../../esm/react/legacy/StumbleuponCircle.d.ts"
-}

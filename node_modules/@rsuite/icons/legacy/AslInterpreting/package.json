@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/AslInterpreting",
-  "private": true,
-  "main": "../../cjs/react/legacy/AslInterpreting.js",
-  "module": "../../esm/react/legacy/AslInterpreting.js",
-  "types": "../../esm/react/legacy/AslInterpreting.d.ts"
-}

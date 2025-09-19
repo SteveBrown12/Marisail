@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Bandcamp",
-  "private": true,
-  "main": "../../cjs/react/legacy/Bandcamp.js",
-  "module": "../../esm/react/legacy/Bandcamp.js",
-  "types": "../../esm/react/legacy/Bandcamp.d.ts"
-}

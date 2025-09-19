@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Pagelines",
-  "private": true,
-  "main": "../../cjs/react/legacy/Pagelines.js",
-  "module": "../../esm/react/legacy/Pagelines.js",
-  "types": "../../esm/react/legacy/Pagelines.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/VolumeDown",
-  "private": true,
-  "main": "../../cjs/react/legacy/VolumeDown.js",
-  "module": "../../esm/react/legacy/VolumeDown.js",
-  "types": "../../esm/react/legacy/VolumeDown.d.ts"
-}

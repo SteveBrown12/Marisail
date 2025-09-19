@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Glide",
-  "private": true,
-  "main": "../../cjs/react/legacy/Glide.js",
-  "module": "../../esm/react/legacy/Glide.js",
-  "types": "../../esm/react/legacy/Glide.d.ts"
-}

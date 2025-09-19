@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CcJcb",
-  "private": true,
-  "main": "../../cjs/react/legacy/CcJcb.js",
-  "module": "../../esm/react/legacy/CcJcb.js",
-  "types": "../../esm/react/legacy/CcJcb.d.ts"
-}

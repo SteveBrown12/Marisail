@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Gear",
-  "private": true,
-  "main": "../../cjs/react/legacy/Gear.js",
-  "module": "../../esm/react/legacy/Gear.js",
-  "types": "../../esm/react/legacy/Gear.d.ts"
-}

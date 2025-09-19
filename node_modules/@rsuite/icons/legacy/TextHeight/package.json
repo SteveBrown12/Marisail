@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/TextHeight",
-  "private": true,
-  "main": "../../cjs/react/legacy/TextHeight.js",
-  "module": "../../esm/react/legacy/TextHeight.js",
-  "types": "../../esm/react/legacy/TextHeight.d.ts"
-}

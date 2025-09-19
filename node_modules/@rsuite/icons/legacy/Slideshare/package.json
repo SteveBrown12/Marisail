@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Slideshare",
-  "private": true,
-  "main": "../../cjs/react/legacy/Slideshare.js",
-  "module": "../../esm/react/legacy/Slideshare.js",
-  "types": "../../esm/react/legacy/Slideshare.d.ts"
-}

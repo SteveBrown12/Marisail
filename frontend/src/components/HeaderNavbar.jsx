@@ -4,6 +4,7 @@ import { BrandIcon } from "./Header_Components";
 import GoogleTranslate from "./GoogleTranslate";
 import ProfileDropdown from "./Profile";
 import PropTypes from "prop-types";
+import { initIPInfo } from "../utils/ipInfo";
 
 const menuItems = [
   {
@@ -67,11 +68,15 @@ const HeaderNavbar = ({ navbarRef }) => {
   const [ipInfo, setIpInfo] = useState(null);
 
   useEffect(() => {
-    const ipInfo = JSON.parse(localStorage.getItem("ipInfo"));
-    setIpInfo(ipInfo);
-    if (ipInfo) {
-      console.log(ipInfo.country, ipInfo.language, ipInfo.currency);
+    async function fetchIpInfo() {
+      const data = await initIPInfo();
+      setIpInfo(data);
+      if (data) {
+        console.log(data.country, data.language, data.currency);
+      }
     }
+  
+    fetchIpInfo();
   }, []);
 
   return (
@@ -87,7 +92,7 @@ const HeaderNavbar = ({ navbarRef }) => {
             className="flex items-center space-x-2 no-underline hover:no-underline hover:opacity-80 transition-opacity"
           >
             <BrandIcon />
-            <h1 className="text-lg tracking-wide">Marisail</h1>
+            <h1 className="text-lg tracking-wide notranslate">Marisail</h1>
           </NavLink>
 
           {/* Mobile menu button */}
@@ -149,7 +154,7 @@ const HeaderNavbar = ({ navbarRef }) => {
             ))}
             {/* Language selector */}
             <div className="gt-navbar-select">
-              <GoogleTranslate floating={false} />
+              <GoogleTranslate floating={false} compact={true} />
             </div>
             {/* Profile */}
             <div className="hidden lg:block">
@@ -165,7 +170,7 @@ const HeaderNavbar = ({ navbarRef }) => {
           <nav className="flex flex-col p-4 space-y-4">
             {/* Language selector (mobile) */}
             <div className="gt-navbar-select">
-              <GoogleTranslate floating={false} />
+              <GoogleTranslate floating={false} compact={true} />
             </div>
             {menuItems.map((menu) => (
               <div key={menu.title}>

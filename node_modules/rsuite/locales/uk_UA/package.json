@@ -1,7 +1,0 @@
-{
-  "name": "rsuite/locales/uk_UA",
-  "private": true,
-  "main": "../../cjs/locales/uk_UA.js",
-  "module": "../../esm/locales/uk_UA.js",
-  "types": "../../esm/locales/uk_UA.d.ts"
-}

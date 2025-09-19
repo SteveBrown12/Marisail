@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Android",
-  "private": true,
-  "main": "../../cjs/react/legacy/Android.js",
-  "module": "../../esm/react/legacy/Android.js",
-  "types": "../../esm/react/legacy/Android.d.ts"
-}

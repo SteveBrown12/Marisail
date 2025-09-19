@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FighterJet",
-  "private": true,
-  "main": "../../cjs/react/legacy/FighterJet.js",
-  "module": "../../esm/react/legacy/FighterJet.js",
-  "types": "../../esm/react/legacy/FighterJet.d.ts"
-}

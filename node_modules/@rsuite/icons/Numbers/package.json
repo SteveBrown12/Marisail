@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Numbers",
-  "private": true,
-  "main": "../cjs/react/Numbers.js",
-  "module": "../esm/react/Numbers.js",
-  "types": "../esm/react/Numbers.d.ts"
-}

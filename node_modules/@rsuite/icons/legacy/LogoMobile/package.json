@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/LogoMobile",
-  "private": true,
-  "main": "../../cjs/react/legacy/LogoMobile.js",
-  "module": "../../esm/react/legacy/LogoMobile.js",
-  "types": "../../esm/react/legacy/LogoMobile.d.ts"
-}

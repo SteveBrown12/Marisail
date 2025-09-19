@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Linkedin",
-  "private": true,
-  "main": "../../cjs/react/legacy/Linkedin.js",
-  "module": "../../esm/react/legacy/Linkedin.js",
-  "types": "../../esm/react/legacy/Linkedin.d.ts"
-}

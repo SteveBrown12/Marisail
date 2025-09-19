@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/GgCircle",
-  "private": true,
-  "main": "../../cjs/react/legacy/GgCircle.js",
-  "module": "../../esm/react/legacy/GgCircle.js",
-  "types": "../../esm/react/legacy/GgCircle.d.ts"
-}

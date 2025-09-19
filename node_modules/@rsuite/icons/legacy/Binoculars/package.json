@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Binoculars",
-  "private": true,
-  "main": "../../cjs/react/legacy/Binoculars.js",
-  "module": "../../esm/react/legacy/Binoculars.js",
-  "types": "../../esm/react/legacy/Binoculars.d.ts"
-}

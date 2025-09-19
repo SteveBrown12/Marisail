@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Sellsy",
-  "private": true,
-  "main": "../../cjs/react/legacy/Sellsy.js",
-  "module": "../../esm/react/legacy/Sellsy.js",
-  "types": "../../esm/react/legacy/Sellsy.d.ts"
-}

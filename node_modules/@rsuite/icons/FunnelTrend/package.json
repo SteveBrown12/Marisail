@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/FunnelTrend",
-  "private": true,
-  "main": "../cjs/react/FunnelTrend.js",
-  "module": "../esm/react/FunnelTrend.js",
-  "types": "../esm/react/FunnelTrend.d.ts"
-}

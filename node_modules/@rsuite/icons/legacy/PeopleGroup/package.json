@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/PeopleGroup",
-  "private": true,
-  "main": "../../cjs/react/legacy/PeopleGroup.js",
-  "module": "../../esm/react/legacy/PeopleGroup.js",
-  "types": "../../esm/react/legacy/PeopleGroup.d.ts"
-}

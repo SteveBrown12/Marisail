@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Undo",
-  "private": true,
-  "main": "../../cjs/react/legacy/Undo.js",
-  "module": "../../esm/react/legacy/Undo.js",
-  "types": "../../esm/react/legacy/Undo.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PeoplesMap",
-  "private": true,
-  "main": "../cjs/react/PeoplesMap.js",
-  "module": "../esm/react/PeoplesMap.js",
-  "types": "../esm/react/PeoplesMap.d.ts"
-}

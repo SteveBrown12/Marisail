@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/ImportStorage",
-  "private": true,
-  "main": "../cjs/react/ImportStorage.js",
-  "module": "../esm/react/ImportStorage.js",
-  "types": "../esm/react/ImportStorage.d.ts"
-}

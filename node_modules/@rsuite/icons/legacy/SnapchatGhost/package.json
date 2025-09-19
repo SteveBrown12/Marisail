@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/SnapchatGhost",
-  "private": true,
-  "main": "../../cjs/react/legacy/SnapchatGhost.js",
-  "module": "../../esm/react/legacy/SnapchatGhost.js",
-  "types": "../../esm/react/legacy/SnapchatGhost.d.ts"
-}

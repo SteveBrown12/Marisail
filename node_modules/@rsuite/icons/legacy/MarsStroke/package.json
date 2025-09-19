@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/MarsStroke",
-  "private": true,
-  "main": "../../cjs/react/legacy/MarsStroke.js",
-  "module": "../../esm/react/legacy/MarsStroke.js",
-  "types": "../../esm/react/legacy/MarsStroke.d.ts"
-}

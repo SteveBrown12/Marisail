@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PeoplesSql",
-  "private": true,
-  "main": "../cjs/react/PeoplesSql.js",
-  "module": "../esm/react/PeoplesSql.js",
-  "types": "../esm/react/PeoplesSql.d.ts"
-}

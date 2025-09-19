@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/HandPeaceO",
-  "private": true,
-  "main": "../../cjs/react/legacy/HandPeaceO.js",
-  "module": "../../esm/react/legacy/HandPeaceO.js",
-  "types": "../../esm/react/legacy/HandPeaceO.d.ts"
-}

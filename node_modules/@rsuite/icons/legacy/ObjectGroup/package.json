@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ObjectGroup",
-  "private": true,
-  "main": "../../cjs/react/legacy/ObjectGroup.js",
-  "module": "../../esm/react/legacy/ObjectGroup.js",
-  "types": "../../esm/react/legacy/ObjectGroup.d.ts"
-}

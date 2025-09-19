@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Braille",
-  "private": true,
-  "main": "../../cjs/react/legacy/Braille.js",
-  "module": "../../esm/react/legacy/Braille.js",
-  "types": "../../esm/react/legacy/Braille.d.ts"
-}

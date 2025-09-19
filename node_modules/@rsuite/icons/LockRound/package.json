@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/LockRound",
-  "private": true,
-  "main": "../cjs/react/LockRound.js",
-  "module": "../esm/react/LockRound.js",
-  "types": "../esm/react/LockRound.d.ts"
-}

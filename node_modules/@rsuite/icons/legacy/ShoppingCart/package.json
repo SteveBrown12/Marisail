@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ShoppingCart",
-  "private": true,
-  "main": "../../cjs/react/legacy/ShoppingCart.js",
-  "module": "../../esm/react/legacy/ShoppingCart.js",
-  "types": "../../esm/react/legacy/ShoppingCart.d.ts"
-}

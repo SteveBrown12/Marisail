@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/NewspaperO",
-  "private": true,
-  "main": "../../cjs/react/legacy/NewspaperO.js",
-  "module": "../../esm/react/legacy/NewspaperO.js",
-  "types": "../../esm/react/legacy/NewspaperO.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Inbox",
-  "private": true,
-  "main": "../../cjs/react/legacy/Inbox.js",
-  "module": "../../esm/react/legacy/Inbox.js",
-  "types": "../../esm/react/legacy/Inbox.d.ts"
-}

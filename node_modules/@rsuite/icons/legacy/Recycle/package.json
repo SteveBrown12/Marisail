@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Recycle",
-  "private": true,
-  "main": "../../cjs/react/legacy/Recycle.js",
-  "module": "../../esm/react/legacy/Recycle.js",
-  "types": "../../esm/react/legacy/Recycle.d.ts"
-}

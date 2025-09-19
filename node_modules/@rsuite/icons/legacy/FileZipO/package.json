@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FileZipO",
-  "private": true,
-  "main": "../../cjs/react/legacy/FileZipO.js",
-  "module": "../../esm/react/legacy/FileZipO.js",
-  "types": "../../esm/react/legacy/FileZipO.d.ts"
-}

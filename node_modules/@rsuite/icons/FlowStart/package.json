@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/FlowStart",
-  "private": true,
-  "main": "../cjs/react/FlowStart.js",
-  "module": "../esm/react/FlowStart.js",
-  "types": "../esm/react/FlowStart.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Linode",
-  "private": true,
-  "main": "../../cjs/react/legacy/Linode.js",
-  "module": "../../esm/react/legacy/Linode.js",
-  "types": "../../esm/react/legacy/Linode.d.ts"
-}

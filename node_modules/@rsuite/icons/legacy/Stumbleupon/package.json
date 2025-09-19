@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Stumbleupon",
-  "private": true,
-  "main": "../../cjs/react/legacy/Stumbleupon.js",
-  "module": "../../esm/react/legacy/Stumbleupon.js",
-  "types": "../../esm/react/legacy/Stumbleupon.d.ts"
-}

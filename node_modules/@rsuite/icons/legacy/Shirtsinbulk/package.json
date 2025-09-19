@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Shirtsinbulk",
-  "private": true,
-  "main": "../../cjs/react/legacy/Shirtsinbulk.js",
-  "module": "../../esm/react/legacy/Shirtsinbulk.js",
-  "types": "../../esm/react/legacy/Shirtsinbulk.d.ts"
-}

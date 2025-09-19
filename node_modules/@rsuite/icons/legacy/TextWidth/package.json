@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/TextWidth",
-  "private": true,
-  "main": "../../cjs/react/legacy/TextWidth.js",
-  "module": "../../esm/react/legacy/TextWidth.js",
-  "types": "../../esm/react/legacy/TextWidth.d.ts"
-}

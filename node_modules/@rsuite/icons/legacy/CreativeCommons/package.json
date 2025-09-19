@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CreativeCommons",
-  "private": true,
-  "main": "../../cjs/react/legacy/CreativeCommons.js",
-  "module": "../../esm/react/legacy/CreativeCommons.js",
-  "types": "../../esm/react/legacy/CreativeCommons.d.ts"
-}

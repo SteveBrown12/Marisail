@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/SortUp",
-  "private": true,
-  "main": "../cjs/react/SortUp.js",
-  "module": "../esm/react/SortUp.js",
-  "types": "../esm/react/SortUp.d.ts"
-}

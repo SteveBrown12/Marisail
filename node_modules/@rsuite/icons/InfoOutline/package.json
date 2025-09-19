@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/InfoOutline",
-  "private": true,
-  "main": "../cjs/react/InfoOutline.js",
-  "module": "../esm/react/InfoOutline.js",
-  "types": "../esm/react/InfoOutline.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "rsuite/StatLabel",
-  "private": true,
-  "main": "../cjs/Stat/StatLabel.js",
-  "module": "../esm/Stat/StatLabel.js",
-  "types": "../esm/Stat/StatLabel.d.ts"
-}

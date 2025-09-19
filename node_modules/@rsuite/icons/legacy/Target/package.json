@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Target",
-  "private": true,
-  "main": "../../cjs/react/legacy/Target.js",
-  "module": "../../esm/react/legacy/Target.js",
-  "types": "../../esm/react/legacy/Target.d.ts"
-}

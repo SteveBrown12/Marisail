@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Cny",
-  "private": true,
-  "main": "../../cjs/react/legacy/Cny.js",
-  "module": "../../esm/react/legacy/Cny.js",
-  "types": "../../esm/react/legacy/Cny.d.ts"
-}

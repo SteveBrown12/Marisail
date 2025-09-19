@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Vk",
-  "private": true,
-  "main": "../../cjs/react/legacy/Vk.js",
-  "module": "../../esm/react/legacy/Vk.js",
-  "types": "../../esm/react/legacy/Vk.d.ts"
-}

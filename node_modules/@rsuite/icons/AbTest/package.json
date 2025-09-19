@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/AbTest",
-  "private": true,
-  "main": "../cjs/react/AbTest.js",
-  "module": "../esm/react/AbTest.js",
-  "types": "../esm/react/AbTest.d.ts"
-}

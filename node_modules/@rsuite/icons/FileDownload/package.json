@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/FileDownload",
-  "private": true,
-  "main": "../cjs/react/FileDownload.js",
-  "module": "../esm/react/FileDownload.js",
-  "types": "../esm/react/FileDownload.d.ts"
-}

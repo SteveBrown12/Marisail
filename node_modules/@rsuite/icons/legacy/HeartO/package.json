@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/HeartO",
-  "private": true,
-  "main": "../../cjs/react/legacy/HeartO.js",
-  "module": "../../esm/react/legacy/HeartO.js",
-  "types": "../../esm/react/legacy/HeartO.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FastBackward",
-  "private": true,
-  "main": "../../cjs/react/legacy/FastBackward.js",
-  "module": "../../esm/react/legacy/FastBackward.js",
-  "types": "../../esm/react/legacy/FastBackward.d.ts"
-}

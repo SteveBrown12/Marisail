@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/IdCardO",
-  "private": true,
-  "main": "../../cjs/react/legacy/IdCardO.js",
-  "module": "../../esm/react/legacy/IdCardO.js",
-  "types": "../../esm/react/legacy/IdCardO.d.ts"
-}

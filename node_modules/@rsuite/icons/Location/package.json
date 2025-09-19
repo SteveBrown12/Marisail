@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Location",
-  "private": true,
-  "main": "../cjs/react/Location.js",
-  "module": "../esm/react/Location.js",
-  "types": "../esm/react/Location.d.ts"
-}

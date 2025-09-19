@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/RedditSquare",
-  "private": true,
-  "main": "../../cjs/react/legacy/RedditSquare.js",
-  "module": "../../esm/react/legacy/RedditSquare.js",
-  "types": "../../esm/react/legacy/RedditSquare.d.ts"
-}

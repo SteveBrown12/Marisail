@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Battery0",
-  "private": true,
-  "main": "../../cjs/react/legacy/Battery0.js",
-  "module": "../../esm/react/legacy/Battery0.js",
-  "types": "../../esm/react/legacy/Battery0.d.ts"
-}

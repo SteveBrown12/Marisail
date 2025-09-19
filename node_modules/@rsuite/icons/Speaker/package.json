@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Speaker",
-  "private": true,
-  "main": "../cjs/react/Speaker.js",
-  "module": "../esm/react/Speaker.js",
-  "types": "../esm/react/Speaker.d.ts"
-}

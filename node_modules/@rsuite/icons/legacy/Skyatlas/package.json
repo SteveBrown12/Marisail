@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Skyatlas",
-  "private": true,
-  "main": "../../cjs/react/legacy/Skyatlas.js",
-  "module": "../../esm/react/legacy/Skyatlas.js",
-  "types": "../../esm/react/legacy/Skyatlas.d.ts"
-}

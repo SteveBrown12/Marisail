@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Bullhorn",
-  "private": true,
-  "main": "../../cjs/react/legacy/Bullhorn.js",
-  "module": "../../esm/react/legacy/Bullhorn.js",
-  "types": "../../esm/react/legacy/Bullhorn.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/FolderFill",
-  "private": true,
-  "main": "../cjs/react/FolderFill.js",
-  "module": "../esm/react/FolderFill.js",
-  "types": "../esm/react/FolderFill.d.ts"
-}

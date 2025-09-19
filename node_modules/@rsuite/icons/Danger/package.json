@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Danger",
-  "private": true,
-  "main": "../cjs/react/Danger.js",
-  "module": "../esm/react/Danger.js",
-  "types": "../esm/react/Danger.d.ts"
-}

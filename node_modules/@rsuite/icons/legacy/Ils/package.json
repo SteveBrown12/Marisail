@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Ils",
-  "private": true,
-  "main": "../../cjs/react/legacy/Ils.js",
-  "module": "../../esm/react/legacy/Ils.js",
-  "types": "../../esm/react/legacy/Ils.d.ts"
-}

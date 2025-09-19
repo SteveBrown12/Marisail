@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/TagUnauthorize",
-  "private": true,
-  "main": "../../cjs/react/legacy/TagUnauthorize.js",
-  "module": "../../esm/react/legacy/TagUnauthorize.js",
-  "types": "../../esm/react/legacy/TagUnauthorize.d.ts"
-}

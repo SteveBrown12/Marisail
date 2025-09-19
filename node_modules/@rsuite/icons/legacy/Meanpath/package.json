@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Meanpath",
-  "private": true,
-  "main": "../../cjs/react/legacy/Meanpath.js",
-  "module": "../../esm/react/legacy/Meanpath.js",
-  "types": "../../esm/react/legacy/Meanpath.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Paragraph",
-  "private": true,
-  "main": "../cjs/react/Paragraph.js",
-  "module": "../esm/react/Paragraph.js",
-  "types": "../esm/react/Paragraph.d.ts"
-}

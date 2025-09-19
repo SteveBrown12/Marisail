@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Import",
-  "private": true,
-  "main": "../../cjs/react/legacy/Import.js",
-  "module": "../../esm/react/legacy/Import.js",
-  "types": "../../esm/react/legacy/Import.d.ts"
-}

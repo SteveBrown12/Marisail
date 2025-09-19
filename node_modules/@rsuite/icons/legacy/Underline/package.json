@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Underline",
-  "private": true,
-  "main": "../../cjs/react/legacy/Underline.js",
-  "module": "../../esm/react/legacy/Underline.js",
-  "types": "../../esm/react/legacy/Underline.d.ts"
-}

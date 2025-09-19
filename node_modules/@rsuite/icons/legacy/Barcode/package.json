@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Barcode",
-  "private": true,
-  "main": "../../cjs/react/legacy/Barcode.js",
-  "module": "../../esm/react/legacy/Barcode.js",
-  "types": "../../esm/react/legacy/Barcode.d.ts"
-}

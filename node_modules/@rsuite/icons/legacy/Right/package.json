@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Right",
-  "private": true,
-  "main": "../../cjs/react/legacy/Right.js",
-  "module": "../../esm/react/legacy/Right.js",
-  "types": "../../esm/react/legacy/Right.d.ts"
-}

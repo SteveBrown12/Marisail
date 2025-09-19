@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/WechatCustomerOutline",
-  "private": true,
-  "main": "../cjs/react/WechatCustomerOutline.js",
-  "module": "../esm/react/WechatCustomerOutline.js",
-  "types": "../esm/react/WechatCustomerOutline.d.ts"
-}

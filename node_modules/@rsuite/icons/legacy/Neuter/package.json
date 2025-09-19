@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Neuter",
-  "private": true,
-  "main": "../../cjs/react/legacy/Neuter.js",
-  "module": "../../esm/react/legacy/Neuter.js",
-  "types": "../../esm/react/legacy/Neuter.d.ts"
-}

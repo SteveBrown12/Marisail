@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/MicrophoneSlash",
-  "private": true,
-  "main": "../../cjs/react/legacy/MicrophoneSlash.js",
-  "module": "../../esm/react/legacy/MicrophoneSlash.js",
-  "types": "../../esm/react/legacy/MicrophoneSlash.d.ts"
-}

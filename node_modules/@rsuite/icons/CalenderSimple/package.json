@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/CalenderSimple",
-  "private": true,
-  "main": "../cjs/react/CalenderSimple.js",
-  "module": "../esm/react/CalenderSimple.js",
-  "types": "../esm/react/CalenderSimple.d.ts"
-}

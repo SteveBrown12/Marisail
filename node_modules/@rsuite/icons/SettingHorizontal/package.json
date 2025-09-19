@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/SettingHorizontal",
-  "private": true,
-  "main": "../cjs/react/SettingHorizontal.js",
-  "module": "../esm/react/SettingHorizontal.js",
-  "types": "../esm/react/SettingHorizontal.d.ts"
-}

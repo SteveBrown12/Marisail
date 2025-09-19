@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/AssistiveListeningSystems",
-  "private": true,
-  "main": "../../cjs/react/legacy/AssistiveListeningSystems.js",
-  "module": "../../esm/react/legacy/AssistiveListeningSystems.js",
-  "types": "../../esm/react/legacy/AssistiveListeningSystems.d.ts"
-}

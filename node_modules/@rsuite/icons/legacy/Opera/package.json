@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Opera",
-  "private": true,
-  "main": "../../cjs/react/legacy/Opera.js",
-  "module": "../../esm/react/legacy/Opera.js",
-  "types": "../../esm/react/legacy/Opera.d.ts"
-}

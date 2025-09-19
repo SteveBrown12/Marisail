@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/CheckOutline",
-  "private": true,
-  "main": "../cjs/react/CheckOutline.js",
-  "module": "../esm/react/CheckOutline.js",
-  "types": "../esm/react/CheckOutline.d.ts"
-}

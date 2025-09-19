@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/InfoCircle",
-  "private": true,
-  "main": "../../cjs/react/legacy/InfoCircle.js",
-  "module": "../../esm/react/legacy/InfoCircle.js",
-  "types": "../../esm/react/legacy/InfoCircle.d.ts"
-}

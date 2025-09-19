@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PeopleFliter",
-  "private": true,
-  "main": "../cjs/react/PeopleFliter.js",
-  "module": "../esm/react/PeopleFliter.js",
-  "types": "../esm/react/PeopleFliter.d.ts"
-}

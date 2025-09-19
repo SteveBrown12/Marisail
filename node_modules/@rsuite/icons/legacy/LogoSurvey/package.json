@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/LogoSurvey",
-  "private": true,
-  "main": "../../cjs/react/legacy/LogoSurvey.js",
-  "module": "../../esm/react/legacy/LogoSurvey.js",
-  "types": "../../esm/react/legacy/LogoSurvey.d.ts"
-}

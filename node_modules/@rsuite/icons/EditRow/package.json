@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/EditRow",
-  "private": true,
-  "main": "../cjs/react/EditRow.js",
-  "module": "../esm/react/EditRow.js",
-  "types": "../esm/react/EditRow.d.ts"
-}

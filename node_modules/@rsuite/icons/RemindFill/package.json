@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/RemindFill",
-  "private": true,
-  "main": "../cjs/react/RemindFill.js",
-  "module": "../esm/react/RemindFill.js",
-  "types": "../esm/react/RemindFill.d.ts"
-}

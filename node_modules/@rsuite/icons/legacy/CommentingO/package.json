@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CommentingO",
-  "private": true,
-  "main": "../../cjs/react/legacy/CommentingO.js",
-  "module": "../../esm/react/legacy/CommentingO.js",
-  "types": "../../esm/react/legacy/CommentingO.d.ts"
-}

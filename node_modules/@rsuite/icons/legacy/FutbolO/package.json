@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FutbolO",
-  "private": true,
-  "main": "../../cjs/react/legacy/FutbolO.js",
-  "module": "../../esm/react/legacy/FutbolO.js",
-  "types": "../../esm/react/legacy/FutbolO.d.ts"
-}

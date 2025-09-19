@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/GooglePlusCircle",
-  "private": true,
-  "main": "../../cjs/react/legacy/GooglePlusCircle.js",
-  "module": "../../esm/react/legacy/GooglePlusCircle.js",
-  "types": "../../esm/react/legacy/GooglePlusCircle.d.ts"
-}

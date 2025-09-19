@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Tumblr",
-  "private": true,
-  "main": "../../cjs/react/legacy/Tumblr.js",
-  "module": "../../esm/react/legacy/Tumblr.js",
-  "types": "../../esm/react/legacy/Tumblr.d.ts"
-}

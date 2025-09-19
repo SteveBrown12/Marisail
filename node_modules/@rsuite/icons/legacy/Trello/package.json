@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Trello",
-  "private": true,
-  "main": "../../cjs/react/legacy/Trello.js",
-  "module": "../../esm/react/legacy/Trello.js",
-  "types": "../../esm/react/legacy/Trello.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Bomb",
-  "private": true,
-  "main": "../../cjs/react/legacy/Bomb.js",
-  "module": "../../esm/react/legacy/Bomb.js",
-  "types": "../../esm/react/legacy/Bomb.d.ts"
-}

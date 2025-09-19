@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/WechatTemplate",
-  "private": true,
-  "main": "../cjs/react/WechatTemplate.js",
-  "module": "../esm/react/WechatTemplate.js",
-  "types": "../esm/react/WechatTemplate.d.ts"
-}

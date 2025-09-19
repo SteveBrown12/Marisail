@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PeoplesTime",
-  "private": true,
-  "main": "../cjs/react/PeoplesTime.js",
-  "module": "../esm/react/PeoplesTime.js",
-  "types": "../esm/react/PeoplesTime.d.ts"
-}

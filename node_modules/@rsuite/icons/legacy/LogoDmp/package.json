@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/LogoDmp",
-  "private": true,
-  "main": "../../cjs/react/legacy/LogoDmp.js",
-  "module": "../../esm/react/legacy/LogoDmp.js",
-  "types": "../../esm/react/legacy/LogoDmp.d.ts"
-}

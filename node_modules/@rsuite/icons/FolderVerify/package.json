@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/FolderVerify",
-  "private": true,
-  "main": "../cjs/react/FolderVerify.js",
-  "module": "../esm/react/FolderVerify.js",
-  "types": "../esm/react/FolderVerify.d.ts"
-}

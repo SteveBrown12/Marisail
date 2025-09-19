@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/BranchAuthorize",
-  "private": true,
-  "main": "../cjs/react/BranchAuthorize.js",
-  "module": "../esm/react/BranchAuthorize.js",
-  "types": "../esm/react/BranchAuthorize.d.ts"
-}

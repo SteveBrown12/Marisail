@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Envelope",
-  "private": true,
-  "main": "../../cjs/react/legacy/Envelope.js",
-  "module": "../../esm/react/legacy/Envelope.js",
-  "types": "../../esm/react/legacy/Envelope.d.ts"
-}

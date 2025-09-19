@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Reload",
-  "private": true,
-  "main": "../../cjs/react/legacy/Reload.js",
-  "module": "../../esm/react/legacy/Reload.js",
-  "types": "../../esm/react/legacy/Reload.d.ts"
-}

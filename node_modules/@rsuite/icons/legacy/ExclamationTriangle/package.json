@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/ExclamationTriangle",
-  "private": true,
-  "main": "../../cjs/react/legacy/ExclamationTriangle.js",
-  "module": "../../esm/react/legacy/ExclamationTriangle.js",
-  "types": "../../esm/react/legacy/ExclamationTriangle.d.ts"
-}

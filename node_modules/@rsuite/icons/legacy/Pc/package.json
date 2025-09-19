@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Pc",
-  "private": true,
-  "main": "../../cjs/react/legacy/Pc.js",
-  "module": "../../esm/react/legacy/Pc.js",
-  "types": "../../esm/react/legacy/Pc.d.ts"
-}

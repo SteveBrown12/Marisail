@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CaretDown",
-  "private": true,
-  "main": "../../cjs/react/legacy/CaretDown.js",
-  "module": "../../esm/react/legacy/CaretDown.js",
-  "types": "../../esm/react/legacy/CaretDown.d.ts"
-}

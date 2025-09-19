@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Bug",
-  "private": true,
-  "main": "../../cjs/react/legacy/Bug.js",
-  "module": "../../esm/react/legacy/Bug.js",
-  "types": "../../esm/react/legacy/Bug.d.ts"
-}

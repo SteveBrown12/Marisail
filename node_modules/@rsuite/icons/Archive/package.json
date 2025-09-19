@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Archive",
-  "private": true,
-  "main": "../cjs/react/Archive.js",
-  "module": "../esm/react/Archive.js",
-  "types": "../esm/react/Archive.d.ts"
-}

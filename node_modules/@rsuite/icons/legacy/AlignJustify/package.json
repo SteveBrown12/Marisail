@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/AlignJustify",
-  "private": true,
-  "main": "../../cjs/react/legacy/AlignJustify.js",
-  "module": "../../esm/react/legacy/AlignJustify.js",
-  "types": "../../esm/react/legacy/AlignJustify.d.ts"
-}

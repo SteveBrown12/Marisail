@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Grav",
-  "private": true,
-  "main": "../../cjs/react/legacy/Grav.js",
-  "module": "../../esm/react/legacy/Grav.js",
-  "types": "../../esm/react/legacy/Grav.d.ts"
-}

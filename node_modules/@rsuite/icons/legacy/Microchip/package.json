@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Microchip",
-  "private": true,
-  "main": "../../cjs/react/legacy/Microchip.js",
-  "module": "../../esm/react/legacy/Microchip.js",
-  "types": "../../esm/react/legacy/Microchip.d.ts"
-}

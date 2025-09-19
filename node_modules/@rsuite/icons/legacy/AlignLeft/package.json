@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/AlignLeft",
-  "private": true,
-  "main": "../../cjs/react/legacy/AlignLeft.js",
-  "module": "../../esm/react/legacy/AlignLeft.js",
-  "types": "../../esm/react/legacy/AlignLeft.d.ts"
-}

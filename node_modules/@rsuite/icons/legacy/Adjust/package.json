@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Adjust",
-  "private": true,
-  "main": "../../cjs/react/legacy/Adjust.js",
-  "module": "../../esm/react/legacy/Adjust.js",
-  "types": "../../esm/react/legacy/Adjust.d.ts"
-}

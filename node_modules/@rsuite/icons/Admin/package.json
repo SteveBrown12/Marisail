@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Admin",
-  "private": true,
-  "main": "../cjs/react/Admin.js",
-  "module": "../esm/react/Admin.js",
-  "types": "../esm/react/Admin.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Tty",
-  "private": true,
-  "main": "../../cjs/react/legacy/Tty.js",
-  "module": "../../esm/react/legacy/Tty.js",
-  "types": "../../esm/react/legacy/Tty.d.ts"
-}

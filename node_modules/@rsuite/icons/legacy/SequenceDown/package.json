@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/SequenceDown",
-  "private": true,
-  "main": "../../cjs/react/legacy/SequenceDown.js",
-  "module": "../../esm/react/legacy/SequenceDown.js",
-  "types": "../../esm/react/legacy/SequenceDown.d.ts"
-}

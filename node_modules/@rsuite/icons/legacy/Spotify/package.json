@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Spotify",
-  "private": true,
-  "main": "../../cjs/react/legacy/Spotify.js",
-  "module": "../../esm/react/legacy/Spotify.js",
-  "types": "../../esm/react/legacy/Spotify.d.ts"
-}

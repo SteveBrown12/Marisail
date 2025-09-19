@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/ArrowBack",
-  "private": true,
-  "main": "../cjs/react/ArrowBack.js",
-  "module": "../esm/react/ArrowBack.js",
-  "types": "../esm/react/ArrowBack.d.ts"
-}

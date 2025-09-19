@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Off",
-  "private": true,
-  "main": "../../cjs/react/legacy/Off.js",
-  "module": "../../esm/react/legacy/Off.js",
-  "types": "../../esm/react/legacy/Off.d.ts"
-}

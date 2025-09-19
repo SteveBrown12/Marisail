@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/TagNumber",
-  "private": true,
-  "main": "../cjs/react/TagNumber.js",
-  "module": "../esm/react/TagNumber.js",
-  "types": "../esm/react/TagNumber.d.ts"
-}

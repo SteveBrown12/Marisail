@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/YcSquare",
-  "private": true,
-  "main": "../../cjs/react/legacy/YcSquare.js",
-  "module": "../../esm/react/legacy/YcSquare.js",
-  "types": "../../esm/react/legacy/YcSquare.d.ts"
-}

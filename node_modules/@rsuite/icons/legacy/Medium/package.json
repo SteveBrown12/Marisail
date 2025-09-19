@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Medium",
-  "private": true,
-  "main": "../../cjs/react/legacy/Medium.js",
-  "module": "../../esm/react/legacy/Medium.js",
-  "types": "../../esm/react/legacy/Medium.d.ts"
-}

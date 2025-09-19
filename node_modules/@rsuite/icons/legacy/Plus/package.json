@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Plus",
-  "private": true,
-  "main": "../../cjs/react/legacy/Plus.js",
-  "module": "../../esm/react/legacy/Plus.js",
-  "types": "../../esm/react/legacy/Plus.d.ts"
-}

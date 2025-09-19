@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/ThreeColumns",
-  "private": true,
-  "main": "../cjs/react/ThreeColumns.js",
-  "module": "../esm/react/ThreeColumns.js",
-  "types": "../esm/react/ThreeColumns.d.ts"
-}

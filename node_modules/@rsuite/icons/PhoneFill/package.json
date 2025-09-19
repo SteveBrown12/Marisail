@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PhoneFill",
-  "private": true,
-  "main": "../cjs/react/PhoneFill.js",
-  "module": "../esm/react/PhoneFill.js",
-  "types": "../esm/react/PhoneFill.d.ts"
-}

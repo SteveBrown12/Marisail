@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import AddressFinder from "./AddressFinder";
 
 export default function ContactDialog({ isOpen, onClose, setContactData }) {
   const [formData, setFormData] = useState({
@@ -72,8 +73,8 @@ export default function ContactDialog({ isOpen, onClose, setContactData }) {
       newErrors.privateTrade = "Private Trade is required";
       valid = false;
     }
-    if (!formData.country.trim()) {
-      newErrors.country = "Country is required";
+    if (!formData.address1.trim()) {
+      newErrors.address1 = "Address is required";
       valid = false;
     }
 
@@ -369,9 +370,20 @@ export default function ContactDialog({ isOpen, onClose, setContactData }) {
             </div>
           </div>
 
-          {/*country inpur, state input, city input, postcode input, address1, address2, address3 input */}
+          {/*country input, state input, city input, postcode input */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Address
+              </label>
+              <AddressFinder onSelect={(address) => {
+                setFormData({ ...formData, address1: address });
+              }} />
+              {errors.address1 && (
+                <p className="text-red-500 text-sm">{errors.address1}</p>
+              )}
+            </div>
+            {/* <div>
               <label className="block text-gray-700 font-medium mb-2">
                 Country
               </label>
@@ -432,10 +444,11 @@ export default function ContactDialog({ isOpen, onClose, setContactData }) {
                   <p className="text-red-500 text-sm">{errors.postcode}</p>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          
+          {/*address1, address2, address3 input */}
+          {/* <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-gray-700 font-medium mb-2">
                 Address 1
@@ -481,7 +494,7 @@ export default function ContactDialog({ isOpen, onClose, setContactData }) {
                 <p className="text-red-500 text-sm">{errors.address3}</p>
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Submit */}
           <div className="flex justify-end">

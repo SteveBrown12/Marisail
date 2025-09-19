@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/CheckCircle",
-  "private": true,
-  "main": "../../cjs/react/legacy/CheckCircle.js",
-  "module": "../../esm/react/legacy/CheckCircle.js",
-  "types": "../../esm/react/legacy/CheckCircle.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/SteamSquare",
-  "private": true,
-  "main": "../../cjs/react/legacy/SteamSquare.js",
-  "module": "../../esm/react/legacy/SteamSquare.js",
-  "types": "../../esm/react/legacy/SteamSquare.d.ts"
-}

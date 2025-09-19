@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Wait",
-  "private": true,
-  "main": "../cjs/react/Wait.js",
-  "module": "../esm/react/Wait.js",
-  "types": "../esm/react/Wait.d.ts"
-}

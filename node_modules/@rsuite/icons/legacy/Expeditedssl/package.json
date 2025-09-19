@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Expeditedssl",
-  "private": true,
-  "main": "../../cjs/react/legacy/Expeditedssl.js",
-  "module": "../../esm/react/legacy/Expeditedssl.js",
-  "types": "../../esm/react/legacy/Expeditedssl.d.ts"
-}

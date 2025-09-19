@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/CollaspedFill",
-  "private": true,
-  "main": "../cjs/react/CollaspedFill.js",
-  "module": "../esm/react/CollaspedFill.js",
-  "types": "../esm/react/CollaspedFill.d.ts"
-}

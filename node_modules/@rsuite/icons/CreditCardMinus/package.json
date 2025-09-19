@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/CreditCardMinus",
-  "private": true,
-  "main": "../cjs/react/CreditCardMinus.js",
-  "module": "../esm/react/CreditCardMinus.js",
-  "types": "../esm/react/CreditCardMinus.d.ts"
-}

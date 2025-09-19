@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Detail",
-  "private": true,
-  "main": "../cjs/react/Detail.js",
-  "module": "../esm/react/Detail.js",
-  "types": "../esm/react/Detail.d.ts"
-}

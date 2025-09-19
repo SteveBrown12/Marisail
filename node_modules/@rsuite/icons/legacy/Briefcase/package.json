@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Briefcase",
-  "private": true,
-  "main": "../../cjs/react/legacy/Briefcase.js",
-  "module": "../../esm/react/legacy/Briefcase.js",
-  "types": "../../esm/react/legacy/Briefcase.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Sliders",
-  "private": true,
-  "main": "../../cjs/react/legacy/Sliders.js",
-  "module": "../../esm/react/legacy/Sliders.js",
-  "types": "../../esm/react/legacy/Sliders.d.ts"
-}

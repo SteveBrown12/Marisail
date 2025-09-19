@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/ArrowLeft",
-  "private": true,
-  "main": "../cjs/react/ArrowLeft.js",
-  "module": "../esm/react/ArrowLeft.js",
-  "types": "../esm/react/ArrowLeft.d.ts"
-}

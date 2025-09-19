@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Behance",
-  "private": true,
-  "main": "../../cjs/react/legacy/Behance.js",
-  "module": "../../esm/react/legacy/Behance.js",
-  "types": "../../esm/react/legacy/Behance.d.ts"
-}

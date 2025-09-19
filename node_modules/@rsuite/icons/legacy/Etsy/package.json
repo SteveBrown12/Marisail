@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Etsy",
-  "private": true,
-  "main": "../../cjs/react/legacy/Etsy.js",
-  "module": "../../esm/react/legacy/Etsy.js",
-  "types": "../../esm/react/legacy/Etsy.d.ts"
-}

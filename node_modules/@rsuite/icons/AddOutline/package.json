@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/AddOutline",
-  "private": true,
-  "main": "../cjs/react/AddOutline.js",
-  "module": "../esm/react/AddOutline.js",
-  "types": "../esm/react/AddOutline.d.ts"
-}

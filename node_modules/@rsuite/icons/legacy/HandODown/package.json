@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/HandODown",
-  "private": true,
-  "main": "../../cjs/react/legacy/HandODown.js",
-  "module": "../../esm/react/legacy/HandODown.js",
-  "types": "../../esm/react/legacy/HandODown.d.ts"
-}

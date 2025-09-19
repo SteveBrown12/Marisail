@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Bullseye",
-  "private": true,
-  "main": "../../cjs/react/legacy/Bullseye.js",
-  "module": "../../esm/react/legacy/Bullseye.js",
-  "types": "../../esm/react/legacy/Bullseye.d.ts"
-}

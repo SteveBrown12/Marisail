@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PageTop",
-  "private": true,
-  "main": "../cjs/react/PageTop.js",
-  "module": "../esm/react/PageTop.js",
-  "types": "../esm/react/PageTop.d.ts"
-}

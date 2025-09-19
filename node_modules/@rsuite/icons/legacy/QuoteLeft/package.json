@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/QuoteLeft",
-  "private": true,
-  "main": "../../cjs/react/legacy/QuoteLeft.js",
-  "module": "../../esm/react/legacy/QuoteLeft.js",
-  "types": "../../esm/react/legacy/QuoteLeft.d.ts"
-}

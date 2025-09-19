@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/List",
-  "private": true,
-  "main": "../../cjs/react/legacy/List.js",
-  "module": "../../esm/react/legacy/List.js",
-  "types": "../../esm/react/legacy/List.d.ts"
-}

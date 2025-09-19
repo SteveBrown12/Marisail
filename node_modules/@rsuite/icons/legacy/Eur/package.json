@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Eur",
-  "private": true,
-  "main": "../../cjs/react/legacy/Eur.js",
-  "module": "../../esm/react/legacy/Eur.js",
-  "types": "../../esm/react/legacy/Eur.d.ts"
-}

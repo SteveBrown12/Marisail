@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/VcardO",
-  "private": true,
-  "main": "../../cjs/react/legacy/VcardO.js",
-  "module": "../../esm/react/legacy/VcardO.js",
-  "types": "../../esm/react/legacy/VcardO.d.ts"
-}

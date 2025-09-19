@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/BellSlash",
-  "private": true,
-  "main": "../../cjs/react/legacy/BellSlash.js",
-  "module": "../../esm/react/legacy/BellSlash.js",
-  "types": "../../esm/react/legacy/BellSlash.d.ts"
-}

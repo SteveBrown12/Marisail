@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Ship",
-  "private": true,
-  "main": "../../cjs/react/legacy/Ship.js",
-  "module": "../../esm/react/legacy/Ship.js",
-  "types": "../../esm/react/legacy/Ship.d.ts"
-}

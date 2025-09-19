@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/StackOverflow",
-  "private": true,
-  "main": "../../cjs/react/legacy/StackOverflow.js",
-  "module": "../../esm/react/legacy/StackOverflow.js",
-  "types": "../../esm/react/legacy/StackOverflow.d.ts"
-}

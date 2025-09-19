@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/WindowCloseO",
-  "private": true,
-  "main": "../../cjs/react/legacy/WindowCloseO.js",
-  "module": "../../esm/react/legacy/WindowCloseO.js",
-  "types": "../../esm/react/legacy/WindowCloseO.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "rsuite/StatGroup",
-  "private": true,
-  "main": "../cjs/StatGroup/index.js",
-  "module": "../esm/StatGroup/index.js",
-  "types": "../esm/StatGroup/index.d.ts"
-}

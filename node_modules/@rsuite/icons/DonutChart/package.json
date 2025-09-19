@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/DonutChart",
-  "private": true,
-  "main": "../cjs/react/DonutChart.js",
-  "module": "../esm/react/DonutChart.js",
-  "types": "../esm/react/DonutChart.d.ts"
-}

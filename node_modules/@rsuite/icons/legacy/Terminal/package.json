@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Terminal",
-  "private": true,
-  "main": "../../cjs/react/legacy/Terminal.js",
-  "module": "../../esm/react/legacy/Terminal.js",
-  "types": "../../esm/react/legacy/Terminal.d.ts"
-}

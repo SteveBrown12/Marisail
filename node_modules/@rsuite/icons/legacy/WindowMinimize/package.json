@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/WindowMinimize",
-  "private": true,
-  "main": "../../cjs/react/legacy/WindowMinimize.js",
-  "module": "../../esm/react/legacy/WindowMinimize.js",
-  "types": "../../esm/react/legacy/WindowMinimize.d.ts"
-}

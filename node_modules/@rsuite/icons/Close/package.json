@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Close",
-  "private": true,
-  "main": "../cjs/react/Close.js",
-  "module": "../esm/react/Close.js",
-  "types": "../esm/react/Close.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/TagArea",
-  "private": true,
-  "main": "../../cjs/react/legacy/TagArea.js",
-  "module": "../../esm/react/legacy/TagArea.js",
-  "types": "../../esm/react/legacy/TagArea.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/PlusRound",
-  "private": true,
-  "main": "../cjs/react/PlusRound.js",
-  "module": "../esm/react/PlusRound.js",
-  "types": "../esm/react/PlusRound.d.ts"
-}

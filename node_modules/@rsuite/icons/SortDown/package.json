@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/SortDown",
-  "private": true,
-  "main": "../cjs/react/SortDown.js",
-  "module": "../esm/react/SortDown.js",
-  "types": "../esm/react/SortDown.d.ts"
-}

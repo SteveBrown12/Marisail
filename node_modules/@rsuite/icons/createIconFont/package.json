@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/createIconFont",
-  "private": true,
-  "main": "../cjs/createIconFont.js",
-  "module": "../esm/createIconFont.js",
-  "types": "../esm/createIconFont.d.ts"
-}

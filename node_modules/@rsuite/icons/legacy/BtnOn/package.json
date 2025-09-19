@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/BtnOn",
-  "private": true,
-  "main": "../../cjs/react/legacy/BtnOn.js",
-  "module": "../../esm/react/legacy/BtnOn.js",
-  "types": "../../esm/react/legacy/BtnOn.d.ts"
-}

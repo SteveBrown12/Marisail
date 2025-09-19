@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/FileTextO",
-  "private": true,
-  "main": "../../cjs/react/legacy/FileTextO.js",
-  "module": "../../esm/react/legacy/FileTextO.js",
-  "types": "../../esm/react/legacy/FileTextO.d.ts"
-}

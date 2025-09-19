@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/SendO",
-  "private": true,
-  "main": "../../cjs/react/legacy/SendO.js",
-  "module": "../../esm/react/legacy/SendO.js",
-  "types": "../../esm/react/legacy/SendO.d.ts"
-}

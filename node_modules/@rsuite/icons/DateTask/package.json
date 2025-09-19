@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/DateTask",
-  "private": true,
-  "main": "../cjs/react/DateTask.js",
-  "module": "../esm/react/DateTask.js",
-  "types": "../esm/react/DateTask.d.ts"
-}

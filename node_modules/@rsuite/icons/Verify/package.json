@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/Verify",
-  "private": true,
-  "main": "../cjs/react/Verify.js",
-  "module": "../esm/react/Verify.js",
-  "types": "../esm/react/Verify.d.ts"
-}

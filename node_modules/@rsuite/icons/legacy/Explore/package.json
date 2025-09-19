@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Explore",
-  "private": true,
-  "main": "../../cjs/react/legacy/Explore.js",
-  "module": "../../esm/react/legacy/Explore.js",
-  "types": "../../esm/react/legacy/Explore.d.ts"
-}

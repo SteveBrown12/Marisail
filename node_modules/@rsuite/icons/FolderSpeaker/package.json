@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/FolderSpeaker",
-  "private": true,
-  "main": "../cjs/react/FolderSpeaker.js",
-  "module": "../esm/react/FolderSpeaker.js",
-  "types": "../esm/react/FolderSpeaker.d.ts"
-}

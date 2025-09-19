@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Expand",
-  "private": true,
-  "main": "../../cjs/react/legacy/Expand.js",
-  "module": "../../esm/react/legacy/Expand.js",
-  "types": "../../esm/react/legacy/Expand.d.ts"
-}

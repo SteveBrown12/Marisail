@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Wrench",
-  "private": true,
-  "main": "../../cjs/react/legacy/Wrench.js",
-  "module": "../../esm/react/legacy/Wrench.js",
-  "types": "../../esm/react/legacy/Wrench.d.ts"
-}

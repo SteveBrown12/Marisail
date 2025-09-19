@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Youtube",
-  "private": true,
-  "main": "../../cjs/react/legacy/Youtube.js",
-  "module": "../../esm/react/legacy/Youtube.js",
-  "types": "../../esm/react/legacy/Youtube.d.ts"
-}

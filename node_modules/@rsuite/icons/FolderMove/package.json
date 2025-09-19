@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/FolderMove",
-  "private": true,
-  "main": "../cjs/react/FolderMove.js",
-  "module": "../esm/react/FolderMove.js",
-  "types": "../esm/react/FolderMove.d.ts"
-}

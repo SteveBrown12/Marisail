@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/MoveUp",
-  "private": true,
-  "main": "../cjs/react/MoveUp.js",
-  "module": "../esm/react/MoveUp.js",
-  "types": "../esm/react/MoveUp.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/UserTimes",
-  "private": true,
-  "main": "../../cjs/react/legacy/UserTimes.js",
-  "module": "../../esm/react/legacy/UserTimes.js",
-  "types": "../../esm/react/legacy/UserTimes.d.ts"
-}

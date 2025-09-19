@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Key",
-  "private": true,
-  "main": "../../cjs/react/legacy/Key.js",
-  "module": "../../esm/react/legacy/Key.js",
-  "types": "../../esm/react/legacy/Key.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Slack",
-  "private": true,
-  "main": "../../cjs/react/legacy/Slack.js",
-  "module": "../../esm/react/legacy/Slack.js",
-  "types": "../../esm/react/legacy/Slack.d.ts"
-}

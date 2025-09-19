@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Cogs",
-  "private": true,
-  "main": "../../cjs/react/legacy/Cogs.js",
-  "module": "../../esm/react/legacy/Cogs.js",
-  "types": "../../esm/react/legacy/Cogs.d.ts"
-}

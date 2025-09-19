@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Odnoklassniki",
-  "private": true,
-  "main": "../../cjs/react/legacy/Odnoklassniki.js",
-  "module": "../../esm/react/legacy/Odnoklassniki.js",
-  "types": "../../esm/react/legacy/Odnoklassniki.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/Inr",
-  "private": true,
-  "main": "../../cjs/react/legacy/Inr.js",
-  "module": "../../esm/react/legacy/Inr.js",
-  "types": "../../esm/react/legacy/Inr.d.ts"
-}

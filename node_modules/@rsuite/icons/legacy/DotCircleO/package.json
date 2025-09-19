@@ -1,7 +1,0 @@
-{
-  "name": "@rsuite/icons/legacy/DotCircleO",
-  "private": true,
-  "main": "../../cjs/react/legacy/DotCircleO.js",
-  "module": "../../esm/react/legacy/DotCircleO.js",
-  "types": "../../esm/react/legacy/DotCircleO.d.ts"
-}
