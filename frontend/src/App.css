@@ -3,6 +3,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Profile dropdown fix */
+.profile-dropdown {
+  position: relative;
+  z-index: 9999;
+}
+
+.profile-dropdown .dropdown-menu {
+  position: absolute !important;
+  z-index: 10000 !important;
+}
+
 /* Google Translate UI overrides */
 /* Hide top banner/iframe that Google injects */
 iframe.skiptranslate,
