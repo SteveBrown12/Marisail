@@ -30,8 +30,8 @@ export default function GenericAdvert() {
   const [distance_Key, setDistance_Key] = useState(null);
   const [deliveryDistance_Key, setDeliveryDistance_Key] = useState(null);
 
-  const [distance, setDistance] = useState("");
-  const [deliveryDistance, setDeliveryDistance] = useState("");
+  const [distance, setDistance] = useState("0.00 km");
+  const [deliveryDistance, setDeliveryDistance] = useState("0.00 km");
   const [startPosition, setStartPosition] = useState(null);
   const [secondPosition, setSecondPosition] = useState(null);
   const [endPosition, setEndPosition] = useState(null);
@@ -474,30 +474,16 @@ export default function GenericAdvert() {
                                       case "distance1":
                                         return (
                                           <>
-                                            <TextComponent
-                                              title={display_Label}
-                                              value={distance}
-                                              onChange={(value) => {
-                                                setDistance_Key(field_Key);
-                                                set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: value }));
-                                              }}
-                                            />
-                                            {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                            <div className="py-2 text-[17px] text-gray-900 font-medium">{display_Label}</div>
+                                            <div className="my-2 bg-white px-3">{distance}</div>
                                           </>
                                         );
 
                                       case "distance2":
                                         return (
                                           <>
-                                            <TextComponent
-                                              title={display_Label}
-                                              value={deliveryDistance}
-                                              onChange={(value) => {
-                                                setDeliveryDistance_Key(field_Key);
-                                                set_Form_State((previous_State) => ({ ...previous_State, [field_Key]: value }));
-                                              }}
-                                            />
-                                            {errors[field_Key] && (<div className="text-red-500 text-sm mb-2">{errors[field_Key]}</div>)}
+                                            <div className="py-2 text-[17px] text-gray-900 font-medium">{display_Label}</div>
+                                            <div className="my-2 bg-white px-3">{deliveryDistance}</div>
                                           </>
                                         );
 
