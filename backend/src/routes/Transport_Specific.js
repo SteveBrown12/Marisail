@@ -1,9 +1,14 @@
 
-// include the necessay funtions for the transport 
-
 import { Router } from "express";
 import db_connection from "../config/dbConfig.js";
-import { handle_Error_Response } from "../utils/common_Utils.js"
+import { 
+  handle_Error_Response,
+  validateQuestionData,
+  canHaulierAsk,
+  canCustomerAnswer,
+  logActivity,
+  formatQuestionForResponse
+} from "../utils/common_Utils.js";
 
 const transport_Router = Router();
 
@@ -331,150 +336,203 @@ transport_Router.post("/quotes", async (request, response) => {
         connection.release();
     }
 });
-
 // === QUESTIONS & ANSWERS ROUTES ===
 
+// Haulier asks a question
 transport_Router.post("/questions", async (request, response) => {
-    try {
-        const questionData = {
-            Transport_ID: request.body.Transport_ID,
-            Haulier_ID: request.body.Haulier_ID,
-            Customer_ID: request.body.Customer_ID,
-            Question_Text: request.body.Question_Text
-        };
+  try {
+    const body = request.body || {};
+    const transportId = body.Transport_ID;
+    const haulierId = body.Haulier_ID;
+    const customerId = body.Customer_ID ?? null;
+    const questionText = body.Transport_Provider_Questions ?? body.Question_Text;
 
-        // Validate using utility
-        QuestionUtils.validateQuestionData(questionData);
-        
-        // Check permissions (no auth for now)
-        if (!QuestionUtils.canHaulierAsk(null)) {
-            return handle_Error_Response(response, "Not authorized to ask questions", 403);
-        }
+    console.log('Received question data:', { transportId, haulierId, customerId, questionText });
 
-        // Insert question
-        const [result] = await db_connection.query(`
-            INSERT INTO Questions (Transport_ID, Haulier_ID, Customer_ID, Question_Text, Question_Date)
-            VALUES (?, ?, ?, ?, NOW())
-        `, [
-            questionData.Transport_ID, 
-            questionData.Haulier_ID, 
-            questionData.Customer_ID, 
-            questionData.Question_Text
-        ]);
+    // Validate using utils
+    validateQuestionData({
+      Transport_ID: transportId,
+      Haulier_ID: haulierId,
+      Question_Text: questionText
+    });
 
-        // Log activity
-        QuestionUtils.logActivity('CREATED', {
-            Question_ID: result.insertId,
-            ...questionData
-        });
-        
-        response.status(201).json({
-            ok: true,
-            message: "Question posted successfully",
-            question_id: result.insertId
-        });
-        
-    } catch (error) {
-        handle_Error_Response(response, `Failed to post question: ${error.message}`);
+    if (!canHaulierAsk(null)) {
+      return handle_Error_Response(response, "Not authorized to ask questions", 403);
     }
+
+    // Insert using correct column names from your config
+    const insertSql = `
+      INSERT INTO Questions
+        (Transport_ID, Haulier_ID, Customer_ID, Transport_Provider_Questions, Question_Date)
+      VALUES (?, ?, ?, ?, NOW())
+    `;
+
+    const [result] = await db_connection.query(insertSql, [
+      transportId,
+      haulierId,
+      customerId,
+      questionText
+    ]);
+
+    logActivity("CREATED", {
+      Question_ID: result.insertId,
+      Transport_ID: transportId,
+      Haulier_ID: haulierId
+    });
+
+    return response.status(201).json({
+      ok: true,
+      message: "Question posted successfully",
+      question_id: result.insertId
+    });
+  } catch (error) {
+    console.error('Error posting question:', error);
+    return handle_Error_Response(response, `Failed to post question: ${error.message}`);
+  }
 });
 
 // Customer answers question
 transport_Router.patch("/questions/:questionId/answer", async (request, response) => {
-    try {
-        const { questionId } = request.params;
-        const { Answer_Text } = request.body;
-        
-        if (!Answer_Text || typeof Answer_Text !== 'string' || Answer_Text.trim().length === 0) {
-            return handle_Error_Response(response, "Answer_Text must be a non-empty string", 400);
-        }
-
-        // Check permissions (no auth for now)
-        if (!QuestionUtils.canCustomerAnswer(null)) {
-            return handle_Error_Response(response, "Not authorized to answer questions", 403);
-        }
-
-        // Update question with answer
-        await db_connection.query(`
-            UPDATE Questions 
-            SET Answer_Text = ?, Answer_Date = NOW()
-            WHERE Question_ID = ?
-        `, [Answer_Text, questionId]);
-        
-        // Log activity
-        QuestionUtils.logActivity('ANSWERED', {
-            Question_ID: questionId,
-            Answer_Text
-        });
-        
-        response.json({
-            ok: true,
-            message: "Question answered successfully"
-        });
-        
-    } catch (error) {
-        handle_Error_Response(response, `Failed to answer question: ${error.message}`);
+  try {
+    const { questionId } = request.params;
+    // Accept both field names for flexibility
+    const answerText = (request.body?.Customer_Answers ?? request.body?.Answer_Text ?? "").trim();
+    
+    if (!answerText) {
+      return handle_Error_Response(response, "Customer_Answers must be a non-empty string", 400);
     }
+
+    if (!canCustomerAnswer(null)) {
+      return handle_Error_Response(response, "Not authorized to answer questions", 403);
+    }
+
+    // Use correct column name from your config
+    const updateSql = `
+      UPDATE Questions 
+      SET Customer_Answers = ?, Answer_Date = NOW()
+      WHERE Question_ID = ?
+    `;
+    
+    await db_connection.query(updateSql, [answerText, questionId]);
+
+    logActivity('ANSWERED', {
+      Question_ID: questionId,
+      Customer_Answers: answerText
+    });
+
+    response.json({
+      ok: true,
+      message: "Question answered successfully"
+    });
+  } catch (error) {
+    console.error('Error answering question:', error);
+    handle_Error_Response(response, `Failed to answer question: ${error.message}`);
+  }
 });
 
-// Get all questions for a job with formatted response
+// Get all questions for a job
 transport_Router.get("/jobs/:jobId/questions", async (request, response) => {
-    try {
-        const { jobId } = request.params;
-        
-        const [questions] = await db_connection.query(`
-            SELECT 
-                q.*,
-                h.Haulier_Name
-            FROM Questions q
-            LEFT JOIN Haulier h ON q.Haulier_ID = h.Haulier_ID
-            WHERE q.Transport_ID = ?
-            ORDER BY q.Question_Date DESC
-        `, [jobId]);
-        
-        // Format using utility
-        const formattedQuestions = questions.map(q => QuestionUtils.formatQuestionForResponse(q));
-        
-        response.json({
-            ok: true,
-            data: formattedQuestions,
-            count: formattedQuestions.length
-        });
-        
-    } catch (error) {
-        handle_Error_Response(response, `Failed to fetch questions: ${error.message}`);
-    }
+  try {
+    const { jobId } = request.params;
+    
+    console.log(`Fetching questions for job ${jobId}`);
+    
+    const query = `
+      SELECT 
+        q.Question_ID,
+        q.Transport_ID,
+        q.Haulier_ID,
+        q.Customer_ID,
+        q.Transport_Provider_Questions,
+        q.Customer_Answers,
+        q.Question_Date,
+        q.Answer_Date,
+        h.Haulier_Name
+      FROM Questions q
+      LEFT JOIN Haulier h ON h.Haulier_ID = q.Haulier_ID
+      WHERE q.Transport_ID = ?
+      ORDER BY q.Question_Date DESC
+    `;
+
+    const [questions] = await db_connection.query(query, [jobId]);
+    
+    console.log(`Found ${questions.length} questions for job ${jobId}`);
+
+    // Normalize response for frontend compatibility
+    const formattedQuestions = questions.map(q => ({
+      Question_ID: q.Question_ID,
+      Transport_ID: q.Transport_ID,
+      Haulier_ID: q.Haulier_ID,
+      Customer_ID: q.Customer_ID,
+      // Provide both field names for compatibility
+      Question_Text: q.Transport_Provider_Questions,
+      Transport_Provider_Questions: q.Transport_Provider_Questions,
+      Answer_Text: q.Customer_Answers,
+      Customer_Answers: q.Customer_Answers,
+      Question_Date: q.Question_Date,
+      Answer_Date: q.Answer_Date,
+      Haulier_Name: q.Haulier_Name
+    }));
+
+    response.json({
+      ok: true,
+      data: formattedQuestions,
+      count: formattedQuestions.length
+    });
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    handle_Error_Response(response, `Failed to fetch questions: ${error.message}`);
+  }
 });
 
 // Get questions by haulier
 transport_Router.get("/hauliers/:haulierId/questions", async (request, response) => {
-    try {
-        const { haulierId } = request.params;
-        
-        const [questions] = await db_connection.query(`
-            SELECT 
-                q.*,
-                j.Title as Job_Title
-            FROM Questions q
-            INNER JOIN Job j ON q.Transport_ID = j.Transport_ID
-            WHERE q.Haulier_ID = ?
-            ORDER BY q.Question_Date DESC
-        `, [haulierId]);
-        
-        // Format using utility
-        const formattedQuestions = questions.map(q => QuestionUtils.formatQuestionForResponse(q));
-        
-        response.json({
-            ok: true,
-            data: formattedQuestions,
-            count: formattedQuestions.length
-        });
-        
-    } catch (error) {
-        handle_Error_Response(response, `Failed to fetch haulier questions: ${error.message}`);
-    }
-});
+  try {
+    const { haulierId } = request.params;
+    
+    const query = `
+      SELECT 
+        q.Question_ID,
+        q.Transport_ID,
+        q.Haulier_ID,
+        q.Customer_ID,
+        q.Transport_Provider_Questions,
+        q.Customer_Answers,
+        q.Question_Date,
+        q.Answer_Date,
+        j.Title as Job_Title
+      FROM Questions q
+      INNER JOIN Job j ON q.Transport_ID = j.Transport_ID
+      WHERE q.Haulier_ID = ?
+      ORDER BY q.Question_Date DESC
+    `;
 
+    const [questions] = await db_connection.query(query, [haulierId]);
+
+    const formattedQuestions = questions.map(q => ({
+      Question_ID: q.Question_ID,
+      Transport_ID: q.Transport_ID,
+      Haulier_ID: q.Haulier_ID,
+      Customer_ID: q.Customer_ID,
+      Question_Text: q.Transport_Provider_Questions,
+      Transport_Provider_Questions: q.Transport_Provider_Questions,
+      Answer_Text: q.Customer_Answers,
+      Customer_Answers: q.Customer_Answers,
+      Question_Date: q.Question_Date,
+      Answer_Date: q.Answer_Date,
+      Job_Title: q.Job_Title
+    }));
+
+    response.json({
+      ok: true,
+      data: formattedQuestions,
+      count: formattedQuestions.length
+    });
+  } catch (error) {
+    console.error('Error fetching haulier questions:', error);
+    handle_Error_Response(response, `Failed to fetch haulier questions: ${error.message}`);
+  }
+});
 
 // === JOB COMPLETION & REVIEWS ===
 
@@ -553,8 +611,732 @@ transport_Router.post("/reviews", async (request, response) => {
 });
 
 // === DASHBOARD/STATS ROUTES ===
+// Add these routes to your existing Transport_Specific.js file
+
+// === DASHBOARD ROUTES FOR HAULIER ===
+
+// Haulier Dashboard Overview - Main dashboard stats
+transport_Router.get("/haulier/:haulierId/dashboard", async (request, response) => {
+  try {
+    const { haulierId } = request.params;
+    
+    // Get comprehensive haulier stats
+    const [dashboardStats] = await db_connection.query(`
+      SELECT 
+        -- Basic quote statistics
+        COUNT(DISTINCT q.Quote_ID) as totalQuotes,
+        COUNT(DISTINCT CASE WHEN q.Quote_Status = 'Active' THEN q.Quote_ID END) as activeQuotes,
+        COUNT(DISTINCT CASE WHEN q.Quote_Status = 'Won' OR q.Quote_Status = 'Accepted' THEN q.Quote_ID END) as wonJobs,
+        
+        -- Calculate win rate
+        ROUND(
+          COUNT(DISTINCT CASE WHEN q.Quote_Status = 'Won' OR q.Quote_Status = 'Accepted' THEN q.Quote_ID END) * 100.0 / 
+          NULLIF(COUNT(DISTINCT q.Quote_ID), 0), 
+          1
+        ) as winRate,
+        
+        -- Haulier profile data
+        h.Haulier_Total_Customer_Score as customerRating,
+        h.Verified as verificationStatus,
+        h.Number_Vehicles as totalVehicles,
+        h.Number_Drivers as totalDrivers,
+        
+        -- This month statistics
+        COUNT(DISTINCT CASE 
+          WHEN j.Job_Done_Haulier = 1 
+          AND j.Job_Done_Date_Haulier >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+          AND q.Quote_Status IN ('Won', 'Accepted')
+          THEN q.Quote_ID 
+        END) as thisMonthJobs,
+        
+        -- Earnings calculations (mock - you might need to adjust based on your payment table)
+        SUM(CASE 
+          WHEN q.Quote_Status IN ('Won', 'Accepted') AND j.Job_Done_Haulier = 1 
+          THEN CAST(q.Quote_Value AS DECIMAL) 
+          ELSE 0 
+        END) as totalEarnings,
+        
+        SUM(CASE 
+          WHEN q.Quote_Status IN ('Won', 'Accepted') 
+          AND j.Job_Done_Haulier = 1 
+          AND j.Job_Done_Date_Haulier >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+          THEN CAST(q.Quote_Value AS DECIMAL) 
+          ELSE 0 
+        END) as thisMonthEarnings,
+        
+        -- Compliance status
+        CASE 
+          WHEN c.Safety_Certifications IS NOT NULL 
+          AND c.Permits IS NOT NULL 
+          AND c.Environmental_Regulations IS NOT NULL 
+          THEN 'Complete' 
+          ELSE 'Incomplete' 
+        END as complianceStatus
+        
+      FROM Haulier h
+      LEFT JOIN Transportation_Quotes q ON h.Haulier_ID = q.Haulier_ID
+      LEFT JOIN Job j ON q.Transport_ID = j.Transport_ID
+      LEFT JOIN Compliance c ON h.Haulier_ID = c.Haulier_ID
+      WHERE h.Haulier_ID = ?
+      GROUP BY h.Haulier_ID
+    `, [haulierId]);
+
+    if (dashboardStats.length === 0) {
+      return handle_Error_Response(response, "Haulier not found", 404);
+    }
+
+    response.json({
+      ok: true,
+      data: dashboardStats[0]
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch haulier dashboard: ${error.message}`);
+  }
+});
+
+// Available Jobs for Haulier - Jobs they haven't bid on yet
+transport_Router.get("/haulier/:haulierId/available-jobs", async (request, response) => {
+  try {
+    const { haulierId } = request.params;
+    const { limit = 10, category, maxDistance } = request.query;
+    
+    let categoryFilter = '';
+    let distanceFilter = '';
+    const queryParams = [haulierId];
+    
+    if (category && category !== 'all') {
+      categoryFilter = 'AND j.Category = ?';
+      queryParams.push(category);
+    }
+    
+    // You can add distance filtering if you have location data
+    // if (maxDistance) {
+    //   distanceFilter = 'AND distance_calculation <= ?';
+    //   queryParams.push(maxDistance);
+    // }
+    
+    queryParams.push(parseInt(limit));
+    
+    const [jobs] = await db_connection.query(`
+      SELECT 
+        j.*,
+        tc.Collection_Address,
+        tc.Delivery_Address,
+        tc.Customer_Name,
+        tc.Customer_Company_Name,
+        vd.Item_Number,
+        vd.Total_Number_Items,
+        vd.Vessel_Insurance_Type,
+        
+        -- Competition info
+        COUNT(DISTINCT tq.Quote_ID) as Quote_Count,
+        MIN(CAST(tq.Quote_Value AS DECIMAL)) as Lowest_Current_Quote,
+        MAX(CAST(tq.Quote_Value AS DECIMAL)) as Highest_Current_Quote,
+        
+        -- Estimated value (you might want to add this field to Job table)
+        CASE 
+          WHEN j.Round_Trip_Distance IS NOT NULL THEN j.Round_Trip_Distance * 2.5  -- $2.5 per mile estimate
+          ELSE 1000  -- Default estimate
+        END as Estimated_Value,
+        
+        -- Distance calculation (mock - replace with actual calculation)
+        COALESCE(j.Round_Trip_Distance, 'Unknown') as Distance
+        
+      FROM Job j
+      LEFT JOIN Transportation_Contacts tc ON j.Transport_ID = tc.Transport_ID
+      LEFT JOIN Vessel_Details vd ON j.Transport_ID = vd.Transport_ID
+      LEFT JOIN Transportation_Quotes tq ON j.Transport_ID = tq.Transport_ID AND tq.Quote_Status = 'Active'
+      
+      WHERE j.Job_Done_Haulier = 0  -- Job not completed
+      AND j.Transport_ID NOT IN (
+        SELECT Transport_ID 
+        FROM Transportation_Quotes 
+        WHERE Haulier_ID = ?
+      )  -- Haulier hasn't bid on this job
+      ${categoryFilter}
+      ${distanceFilter}
+      
+      GROUP BY j.Transport_ID
+      ORDER BY j.Posted_Date DESC
+      LIMIT ?
+    `, queryParams);
+    
+    response.json({
+      ok: true,
+      data: jobs,
+      count: jobs.length
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch available jobs: ${error.message}`);
+  }
+});
+
+// Haulier's Recent Activity Feed
+transport_Router.get("/haulier/:haulierId/activity", async (request, response) => {
+  try {
+    const { haulierId } = request.params;
+    const { limit = 10 } = request.query;
+    
+    // Get recent activities - quotes, job completions, questions, etc.
+    const activities = [];
+    
+    // Recent quotes submitted
+    const [recentQuotes] = await db_connection.query(`
+      SELECT 
+        'quote_submitted' as type,
+        CONCAT('You submitted a quote of $', q.Quote_Value, ' for transport job') as message,
+        q.Quote_Date as timestamp,
+        j.Title as job_title,
+        q.Quote_Status as status
+      FROM Transportation_Quotes q
+      INNER JOIN Job j ON q.Transport_ID = j.Transport_ID
+      WHERE q.Haulier_ID = ?
+      ORDER BY q.Quote_Date DESC
+      LIMIT 5
+    `, [haulierId]);
+    
+    // Recent won jobs
+    const [wonJobs] = await db_connection.query(`
+      SELECT 
+        'quote_won' as type,
+        'Your quote was accepted for transport job' as message,
+        q.Quote_Date as timestamp,
+        j.Title as job_title,
+        'Won' as status
+      FROM Transportation_Quotes q
+      INNER JOIN Job j ON q.Transport_ID = j.Transport_ID
+      WHERE q.Haulier_ID = ? 
+      AND q.Quote_Status IN ('Won', 'Accepted')
+      ORDER BY q.Quote_Date DESC
+      LIMIT 3
+    `, [haulierId]);
+    
+    // Recent questions asked
+    const [recentQuestions] = await db_connection.query(`
+      SELECT 
+        'question_asked' as type,
+        'You asked a question about transport job' as message,
+        qu.Question_Date as timestamp,
+        j.Title as job_title,
+        CASE WHEN qu.Customer_Answers IS NOT NULL THEN 'Answered' ELSE 'Pending' END as status
+      FROM Questions qu
+      INNER JOIN Job j ON qu.Transport_ID = j.Transport_ID
+      WHERE qu.Haulier_ID = ?
+      ORDER BY qu.Question_Date DESC
+      LIMIT 3
+    `, [haulierId]);
+    
+    // Recent job completions
+    const [completedJobs] = await db_connection.query(`
+      SELECT 
+        'job_completed' as type,
+        'You completed a transport job successfully' as message,
+        j.Job_Done_Date_Haulier as timestamp,
+        j.Title as job_title,
+        'Completed' as status
+      FROM Job j
+      INNER JOIN Transportation_Quotes q ON j.Transport_ID = q.Transport_ID
+      WHERE q.Haulier_ID = ? 
+      AND j.Job_Done_Haulier = 1
+      AND q.Quote_Status IN ('Won', 'Accepted')
+      ORDER BY j.Job_Done_Date_Haulier DESC
+      LIMIT 3
+    `, [haulierId]);
+    
+    // Combine all activities
+    activities.push(...recentQuotes, ...wonJobs, ...recentQuestions, ...completedJobs);
+    
+    // Sort by timestamp and limit
+    activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    activities.splice(parseInt(limit));
+    
+    // Add unique IDs
+    activities.forEach((activity, index) => {
+      activity.id = index + 1;
+    });
+    
+    response.json({
+      ok: true,
+      data: activities,
+      count: activities.length
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch haulier activity: ${error.message}`);
+  }
+});
+
+// Haulier Performance Analytics
+transport_Router.get("/haulier/:haulierId/performance", async (request, response) => {
+  try {
+    const { haulierId } = request.params;
+    
+    const [performance] = await db_connection.query(`
+      SELECT 
+        -- Quote performance
+        COUNT(DISTINCT q.Quote_ID) as total_quotes_submitted,
+        COUNT(DISTINCT CASE WHEN q.Quote_Status IN ('Won', 'Accepted') THEN q.Quote_ID END) as quotes_won,
+        COUNT(DISTINCT CASE WHEN q.Quote_Status = 'Active' THEN q.Quote_ID END) as quotes_pending,
+        COUNT(DISTINCT CASE WHEN q.Quote_Status = 'Declined' THEN q.Quote_ID END) as quotes_declined,
+        
+        -- Win rate calculation
+        ROUND(
+          COUNT(DISTINCT CASE WHEN q.Quote_Status IN ('Won', 'Accepted') THEN q.Quote_ID END) * 100.0 / 
+          NULLIF(COUNT(DISTINCT q.Quote_ID), 0), 
+          2
+        ) as win_rate_percentage,
+        
+        -- Average quote values
+        AVG(CAST(q.Quote_Value AS DECIMAL)) as average_quote_value,
+        MIN(CAST(q.Quote_Value AS DECIMAL)) as lowest_quote_value,
+        MAX(CAST(q.Quote_Value AS DECIMAL)) as highest_quote_value,
+        
+        -- Customer satisfaction
+        COALESCE(AVG(CAST(r.Customer_Feedback_Score AS DECIMAL)), 0) as average_customer_score,
+        COALESCE(AVG(CAST(r.Rating AS DECIMAL)), 0) as average_rating,
+        COUNT(DISTINCT r.Transport_ID) as total_reviews,
+        
+        -- Recent performance (last 30 days)
+        COUNT(DISTINCT CASE 
+          WHEN q.Quote_Date >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN q.Quote_ID 
+        END) as quotes_last_30_days,
+        
+        COUNT(DISTINCT CASE 
+          WHEN q.Quote_Status IN ('Won', 'Accepted') 
+          AND q.Quote_Date >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+          THEN q.Quote_ID 
+        END) as wins_last_30_days
+        
+      FROM Transportation_Quotes q
+      LEFT JOIN Reviews r ON r.Haulier_ID = q.Haulier_ID AND r.Transport_ID = q.Transport_ID
+      WHERE q.Haulier_ID = ?
+      GROUP BY q.Haulier_ID
+    `, [haulierId]);
+    
+    // Get monthly performance trends (last 6 months)
+    const [trends] = await db_connection.query(`
+      SELECT 
+        DATE_FORMAT(q.Quote_Date, '%Y-%m') as month,
+        COUNT(DISTINCT q.Quote_ID) as quotes_submitted,
+        COUNT(DISTINCT CASE WHEN q.Quote_Status IN ('Won', 'Accepted') THEN q.Quote_ID END) as quotes_won,
+        AVG(CAST(q.Quote_Value AS DECIMAL)) as avg_quote_value
+      FROM Transportation_Quotes q
+      WHERE q.Haulier_ID = ?
+      AND q.Quote_Date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+      GROUP BY DATE_FORMAT(q.Quote_Date, '%Y-%m')
+      ORDER BY month DESC
+    `, [haulierId]);
+    
+    response.json({
+      ok: true,
+      data: {
+        overview: performance[0] || {},
+        trends: trends,
+        generatedAt: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch haulier performance: ${error.message}`);
+  }
+});
+
+// Get Haulier's Current Compliance Status Detail
+transport_Router.get("/haulier/:haulierId/compliance-status", async (request, response) => {
+  try {
+    const { haulierId } = request.params;
+    
+    const [compliance] = await db_connection.query(`
+      SELECT 
+        h.Verified,
+        h.Registered_Since,
+        c.*,
+        -- Check completion status
+        CASE 
+          WHEN c.Safety_Certifications IS NOT NULL 
+          AND c.Environmental_Regulations IS NOT NULL 
+          AND c.Health_Safety IS NOT NULL 
+          AND c.Permits IS NOT NULL 
+          THEN 'Complete'
+          ELSE 'Incomplete'
+        END as overall_status,
+        
+        -- Count completed fields
+        (
+          (CASE WHEN c.Safety_Certifications IS NOT NULL THEN 1 ELSE 0 END) +
+          (CASE WHEN c.Environmental_Regulations IS NOT NULL THEN 1 ELSE 0 END) +
+          (CASE WHEN c.Health_Safety IS NOT NULL THEN 1 ELSE 0 END) +
+          (CASE WHEN c.Permits IS NOT NULL THEN 1 ELSE 0 END) +
+          (CASE WHEN c.Safety_Training IS NOT NULL THEN 1 ELSE 0 END) +
+          (CASE WHEN c.Transport_Regulations IS NOT NULL THEN 1 ELSE 0 END)
+        ) as completed_fields,
+        
+        6 as total_fields
+        
+      FROM Haulier h
+      LEFT JOIN Compliance c ON h.Haulier_ID = c.Haulier_ID
+      WHERE h.Haulier_ID = ?
+    `, [haulierId]);
+    
+    if (compliance.length === 0) {
+      return handle_Error_Response(response, "Haulier not found", 404);
+    }
+    
+    response.json({
+      ok: true,
+      data: compliance[0]
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch compliance status: ${error.message}`);
+  }
+});
+
+// === CUSTOMER DASHBOARD ROUTES ===
+
+// Customer Dashboard Overview
+transport_Router.get("/customer/:customerId/dashboard", async (request, response) => {
+  try {
+    const { customerId } = request.params;
+    
+    const [stats] = await db_connection.query(`
+      SELECT 
+        COUNT(*) as totalJobs,
+        COUNT(CASE WHEN Job_Done_Haulier = 0 THEN 1 END) as activeJobs,
+        COUNT(CASE WHEN Job_Done_Haulier = 1 THEN 1 END) as completedJobs,
+        COUNT(CASE WHEN Posted_Date >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 END) as thisMonthJobs,
+        
+        -- Mock total spent (you'll need to implement payment tracking)
+        SUM(CASE WHEN Job_Done_Haulier = 1 THEN 1000 ELSE 0 END) as totalSpent,
+        SUM(CASE 
+          WHEN Job_Done_Haulier = 1 
+          AND Posted_Date >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+          THEN 750 
+          ELSE 0 
+        END) as thisMonthSpent,
+        
+        -- Count jobs awaiting quotes
+        COUNT(CASE WHEN Number_Quotes = 0 OR Number_Quotes IS NULL THEN 1 END) as pendingQuotes,
+        
+        -- Average response time (mock calculation)
+        '2.4 hours' as averageResponseTime
+        
+      FROM Job 
+      WHERE Customer_ID = ?
+    `, [customerId]);
+    
+    response.json({ ok: true, data: stats[0] });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch customer dashboard: ${error.message}`);
+  }
+});
+
+// Customer's Active Jobs
+transport_Router.get("/customer/:customerId/active-jobs", async (request, response) => {
+  try {
+    const { customerId } = request.params;
+    
+    const [jobs] = await db_connection.query(`
+      SELECT 
+        j.*,
+        tc.Collection_Address,
+        tc.Delivery_Address,
+        CAST(j.Number_Quotes AS UNSIGNED) as Quote_Count,
+        COALESCE(MIN(CAST(q.Quote_Value AS DECIMAL)), 0) as Lowest_Quote,
+        COALESCE(MAX(CAST(q.Quote_Value AS DECIMAL)), 0) as Highest_Quote,
+        
+        CASE 
+          WHEN j.Job_Done_Haulier = 1 THEN 'completed'
+          WHEN j.Number_Quotes > 0 THEN 'awaiting_selection'
+          ELSE 'awaiting_quotes'
+        END as Status
+        
+      FROM Job j
+      LEFT JOIN Transportation_Contacts tc ON j.Transport_ID = tc.Transport_ID
+      LEFT JOIN Transportation_Quotes q ON j.Transport_ID = q.Transport_ID AND q.Quote_Status = 'Active'
+      WHERE j.Customer_ID = ? AND j.Job_Done_Haulier = 0
+      GROUP BY j.Transport_ID
+      ORDER BY j.Posted_Date DESC
+    `, [customerId]);
+    
+    response.json({ ok: true, data: jobs });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch active jobs: ${error.message}`);
+  }
+});
+
+// Customer Activity Feed
+transport_Router.get("/customer/:customerId/activity", async (request, response) => {
+  try {
+    const { customerId } = request.params;
+    
+    // Mock activity data - you can enhance this based on your needs
+    const activities = [
+      {
+        id: 1,
+        type: "quote_received",
+        message: "New quote received for transport job",
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+        job_title: "Recent Transport Job"
+      },
+      {
+        id: 2,
+        type: "job_completed",
+        message: "Transport job completed successfully",
+        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+        job_title: "Previous Transport Job"
+      }
+    ];
+    
+    response.json({ ok: true, data: activities });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch customer activity: ${error.message}`);
+  }
+});
 
 // Get comprehensive dashboard stats
+
+// Get all quotes with comprehensive details (job, haulier, etc.)
+transport_Router.get("/quotes/all", async (request, response) => {
+  try {
+    const { status, haulierId, limit = 50, offset = 0 } = request.query;
+    
+    let whereClause = "";
+    const queryParams = [];
+    
+    // Build dynamic WHERE clause
+    const conditions = [];
+    
+    if (status && status !== "all") {
+      conditions.push("q.Quote_Status = ?");
+      queryParams.push(status);
+    }
+    
+    if (haulierId) {
+      conditions.push("q.Haulier_ID = ?");
+      queryParams.push(haulierId);
+    }
+    
+    if (conditions.length > 0) {
+      whereClause = `WHERE ${conditions.join(" AND ")}`;
+    }
+    
+    const query = `
+      SELECT 
+        q.Quote_ID,
+        q.Transport_ID,
+        q.Haulier_ID,
+        q.Quote_Value,
+        q.Quote_Description,
+        q.Quote_Date,
+        q.Quote_Status,
+        q.Decline_Date,
+        q.Withdraw_Date,
+        
+        -- Job Details
+        j.Title as Job_Title,
+        j.Category as Job_Category,
+        j.Description as Job_Description,
+        j.Deadline_Date,
+        j.Preferred_Date,
+        j.International,
+        j.Ferry_Required,
+        j.Special_Handling,
+        j.Job_Done_Haulier,
+        j.Posted_Date,
+        
+        -- Contact Information
+        tc.Collection_Address,
+        tc.Delivery_Address,
+        tc.Customer_Name,
+        tc.Customer_Company_Name,
+        tc.Collection_Contact,
+        tc.Delivery_Contact,
+        
+        -- Haulier Details
+        h.Haulier_Name,
+        h.Verified as Haulier_Verified,
+        h.Haulier_Total_Customer_Score,
+        h.Vehicle_Type,
+        h.Real_Time_Tracking,
+        h.Electronic_POD,
+        h.Number_Vehicles,
+        h.Number_Drivers,
+        
+        -- Compliance
+        c.Safety_Certifications,
+        c.Environmental_Regulations,
+        c.Health_Safety,
+        c.Permits,
+        
+        -- Competition Analysis
+        (SELECT COUNT(*) FROM Transportation_Quotes 
+         WHERE Transport_ID = q.Transport_ID AND Quote_Status = 'Active') as Total_Competing_Quotes,
+        (SELECT MIN(CAST(Quote_Value AS DECIMAL)) FROM Transportation_Quotes 
+         WHERE Transport_ID = q.Transport_ID AND Quote_Status = 'Active') as Lowest_Competing_Quote,
+        (SELECT MAX(CAST(Quote_Value AS DECIMAL)) FROM Transportation_Quotes 
+         WHERE Transport_ID = q.Transport_ID AND Quote_Status = 'Active') as Highest_Competing_Quote,
+         
+        -- Vessel/Item Details
+        vd.Item_Number,
+        vd.Total_Number_Items,
+        vd.Insurance_Claims as Has_Insurance_Claims,
+        vd.Existing_Damage,
+        vd.Vessel_Insurance_Type,
+        
+        -- Payment Terms
+        tp.Payment_Terms,
+        tp.Currency,
+        tp.Insurance_Coverage,
+        tp.Late_Fees
+        
+      FROM Transportation_Quotes q
+      INNER JOIN Job j ON q.Transport_ID = j.Transport_ID
+      INNER JOIN Haulier h ON q.Haulier_ID = h.Haulier_ID
+      LEFT JOIN Transportation_Contacts tc ON j.Transport_ID = tc.Transport_ID
+      LEFT JOIN Compliance c ON h.Haulier_ID = c.Haulier_ID
+      LEFT JOIN Vessel_Details vd ON j.Transport_ID = vd.Transport_ID
+      LEFT JOIN Transportation_Payment tp ON j.Transport_ID = tp.Transport_ID
+      ${whereClause}
+      ORDER BY q.Quote_Date DESC
+      LIMIT ? OFFSET ?
+    `;
+    
+    queryParams.push(parseInt(limit), parseInt(offset));
+    
+    const [quotes] = await db_connection.query(query, queryParams);
+    
+    // Get total count for pagination
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM Transportation_Quotes q
+      INNER JOIN Job j ON q.Transport_ID = j.Transport_ID
+      INNER JOIN Haulier h ON q.Haulier_ID = h.Haulier_ID
+      ${whereClause}
+    `;
+    
+    const [countResult] = await db_connection.query(countQuery, queryParams.slice(0, -2));
+    const totalCount = countResult[0].total;
+    
+    // Calculate additional metrics
+    const metrics = {
+      totalQuotes: totalCount,
+      averageQuoteValue: quotes.length > 0 ? 
+        quotes.reduce((sum, q) => sum + parseFloat(q.Quote_Value || 0), 0) / quotes.length : 0,
+      statusBreakdown: {}
+    };
+    
+    // Calculate status breakdown
+    const statusQuery = `
+      SELECT Quote_Status, COUNT(*) as count
+      FROM Transportation_Quotes q
+      INNER JOIN Job j ON q.Transport_ID = j.Transport_ID
+      ${whereClause.replace(/q\.Quote_Status = \?/, '1=1')}
+      GROUP BY Quote_Status
+    `;
+    
+    const statusParams = queryParams.slice(0, -2).filter((_, index) => 
+      !whereClause.includes('q.Quote_Status = ?') || index !== 0
+    );
+    
+    const [statusResults] = await db_connection.query(statusQuery, statusParams);
+    statusResults.forEach(row => {
+      metrics.statusBreakdown[row.Quote_Status || 'Pending'] = row.count;
+    });
+
+    response.json({
+      ok: true,
+      data: quotes,
+      totalCount,
+      currentPage: Math.floor(offset / limit) + 1,
+      totalPages: Math.ceil(totalCount / limit),
+      metrics,
+      hasMore: offset + limit < totalCount
+    });
+
+  } catch (error) {
+    console.error('Error fetching all quotes:', error);
+    handle_Error_Response(response, `Failed to fetch quotes: ${error.message}`);
+  }
+});
+
+// Get quote statistics and analytics
+transport_Router.get("/quotes/analytics", async (request, response) => {
+  try {
+    const analyticsQuery = `
+      SELECT 
+        COUNT(*) as total_quotes,
+        COUNT(CASE WHEN Quote_Status = 'Active' THEN 1 END) as active_quotes,
+        COUNT(CASE WHEN Quote_Status = 'Accepted' THEN 1 END) as accepted_quotes,
+        COUNT(CASE WHEN Quote_Status = 'Declined' THEN 1 END) as declined_quotes,
+        COUNT(CASE WHEN Quote_Status = 'Withdrawn' THEN 1 END) as withdrawn_quotes,
+        
+        AVG(CAST(Quote_Value AS DECIMAL)) as average_quote_value,
+        MIN(CAST(Quote_Value AS DECIMAL)) as min_quote_value,
+        MAX(CAST(Quote_Value AS DECIMAL)) as max_quote_value,
+        
+        COUNT(CASE WHEN Quote_Date >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 END) as quotes_this_week,
+        COUNT(CASE WHEN Quote_Date >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 END) as quotes_this_month,
+        
+        -- Average quotes per job
+        COUNT(*) / COUNT(DISTINCT Transport_ID) as avg_quotes_per_job,
+        
+        -- Most active haulier
+        (SELECT h.Haulier_Name FROM Transportation_Quotes tq 
+         JOIN Haulier h ON tq.Haulier_ID = h.Haulier_ID 
+         GROUP BY tq.Haulier_ID 
+         ORDER BY COUNT(*) DESC LIMIT 1) as most_active_haulier
+         
+      FROM Transportation_Quotes q
+      JOIN Job j ON q.Transport_ID = j.Transport_ID
+    `;
+
+    const [analytics] = await db_connection.query(analyticsQuery);
+    
+    // Get quotes by category
+    const categoryQuery = `
+      SELECT 
+        j.Category,
+        COUNT(*) as quote_count,
+        AVG(CAST(q.Quote_Value AS DECIMAL)) as avg_value,
+        MIN(CAST(q.Quote_Value AS DECIMAL)) as min_value,
+        MAX(CAST(q.Quote_Value AS DECIMAL)) as max_value
+      FROM Transportation_Quotes q
+      JOIN Job j ON q.Transport_ID = j.Transport_ID
+      WHERE j.Category IS NOT NULL AND j.Category != ''
+      GROUP BY j.Category
+      ORDER BY quote_count DESC
+    `;
+    
+    const [categoryStats] = await db_connection.query(categoryQuery);
+    
+    // Get recent quote trends (last 30 days)
+    const trendQuery = `
+      SELECT 
+        DATE(Quote_Date) as quote_date,
+        COUNT(*) as daily_quotes,
+        AVG(CAST(Quote_Value AS DECIMAL)) as daily_avg_value
+      FROM Transportation_Quotes
+      WHERE Quote_Date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+      GROUP BY DATE(Quote_Date)
+      ORDER BY quote_date DESC
+    `;
+    
+    const [trends] = await db_connection.query(trendQuery);
+
+    response.json({
+      ok: true,
+      data: {
+        overview: analytics[0],
+        categoryBreakdown: categoryStats,
+        trends: trends,
+        generatedAt: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching quote analytics:', error);
+    handle_Error_Response(response, `Failed to fetch quote analytics: ${error.message}`);
+  }
+});
+
 transport_Router.get("/stats", async (request, response) => {
     try {
         const [stats] = await db_connection.query(`
@@ -641,6 +1423,62 @@ transport_Router.patch("/quotes/:transportId/:haulierId/status", async (request,
     } catch (error) {
         handle_Error_Response(response, `Failed to update quote status: ${error.message}`);
     }
+});
+// Add this to Transport_Specific.js - Enhanced quotes endpoint with more details
+transport_Router.get("/jobs/:jobId/quotes/detailed", async (request, response) => {
+  try {
+    const { jobId } = request.params;
+    
+    // Get comprehensive quotes with competition analysis
+    const [quotes] = await db_connection.query(`
+      SELECT 
+        q.*,
+        h.Haulier_Name,
+        h.Verified as Haulier_Verified,
+        h.Haulier_Total_Customer_Score,
+        h.Vehicle_Type,
+        h.Real_Time_Tracking,
+        h.Electronic_POD,
+        h.Number_Vehicles,
+        h.Number_Drivers,
+        c.Safety_Certifications,
+        c.Environmental_Regulations,
+        c.Health_Safety,
+        c.Permits,
+        
+        -- Competition Analysis
+        (SELECT COUNT(*) FROM Transportation_Quotes 
+         WHERE Transport_ID = ? AND Quote_Status = 'Active') as Total_Quotes,
+        (SELECT MIN(CAST(Quote_Value AS DECIMAL)) FROM Transportation_Quotes 
+         WHERE Transport_ID = ? AND Quote_Status = 'Active') as Lowest_Quote,
+        (SELECT MAX(CAST(Quote_Value AS DECIMAL)) FROM Transportation_Quotes 
+         WHERE Transport_ID = ? AND Quote_Status = 'Active') as Highest_Quote,
+        (SELECT AVG(CAST(Quote_Value AS DECIMAL)) FROM Transportation_Quotes 
+         WHERE Transport_ID = ? AND Quote_Status = 'Active') as Average_Quote,
+         
+        -- Ranking within competition
+        RANK() OVER (PARTITION BY q.Transport_ID ORDER BY CAST(q.Quote_Value AS DECIMAL) ASC) as Price_Rank,
+        
+        -- Days since quoted
+        DATEDIFF(NOW(), q.Quote_Date) as Days_Since_Quote
+        
+      FROM Transportation_Quotes q
+      INNER JOIN Haulier h ON q.Haulier_ID = h.Haulier_ID
+      LEFT JOIN Compliance c ON h.Haulier_ID = c.Haulier_ID
+      WHERE q.Transport_ID = ?
+      ORDER BY CAST(q.Quote_Value AS DECIMAL) ASC
+    `, [jobId, jobId, jobId, jobId, jobId]);
+
+    response.json({
+      ok: true,
+      data: quotes,
+      count: quotes.length
+    });
+
+  } catch (error) {
+    console.error('Error fetching detailed quotes:', error);
+    handle_Error_Response(response, `Failed to fetch detailed quotes: ${error.message}`);
+  }
 });
 
 export default transport_Router;

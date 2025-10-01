@@ -20,7 +20,11 @@ import GenericServices from "./pages/Generic_Services";
 import BecomeSponsor from "./pages/Become_Sponsor";
 import Contact from "./pages/Contact";
 import { LoadScript } from "@react-google-maps/api";
-
+import TransportFind from "./pages/Transport_Find";
+import TransportAdvert from "./pages/Transport_Advert";
+import TransportDetail from "./pages/Transport_Details";
+import CustomerDashboard from "./pages/Customer_Dashboard.jsx";
+import HaulierDashboard from "./pages/Haulier_Dashboard.jsx";
 const libraries = ["places"];
 
 // import { HeaderNavbar } from "./components/Header_Components";
@@ -63,8 +67,12 @@ function App() {
             <Route path="/" element={<Home />} >
               <Route index element={<Landing />} />
 
-              <Route path="/advert/:serviceName" element={<GenericAdvert />} />
-              <Route path="/find/:serviceName" element={<GenericSearch />} />
+                 <Route path="/advert/:serviceName" element={<GenericAdvert />} />
+          <Route path="/find/:serviceName" element={<GenericSearch />} />
+          <Route path="/detail/:serviceName/:id" element={<GenericDetail />} />
+         <Route path="/find/transport" element={<TransportFind />} />
+        <Route path="/advert/transport" element={<TransportAdvert />} />
+        <Route path="/detail/transport/:id" element={<TransportDetail />} />
 
               <Route path="/engines" element={<RequireAuth><GenericAdvert type="advert" /></RequireAuth>} />
               <Route path="/advert-engines" element={<RequireAuth><GenericSearch type="search" /></RequireAuth>} />
@@ -75,6 +83,8 @@ function App() {
               <Route path="/view-charter" element={<RequireAuth><Services type="myCharter" /></RequireAuth>} />
               <Route path="/view-trailer" element={<RequireAuth><Services type="myTrailer" /></RequireAuth>} />
               <Route path="/become-sponsor" element={<RequireAuth><Services type="Sponsor" /></RequireAuth>} />
+              <Route path="/services/customerDashboard" element={<CustomerDashboard />}/>
+                    <Route path="/services/haulierDashboard" element={<HaulierDashboard />}/>
               <Route path="/contact" element={<Contact />} />
 
               <Route path="/detail/:serviceName/:id" element={<GenericDetail />} />

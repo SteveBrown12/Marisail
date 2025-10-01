@@ -161,7 +161,7 @@ const menuItems = [
   {
     title: "transportation",
     links: [
-      { to: "/find/transport", label: "find a transportation" },
+      { to: "/find/transport", label: "find a transportation job" },
       { to: "/advert/transport", label: "advertise a transportation" },
     ],
   },
@@ -186,7 +186,8 @@ const menuItems = [
       { to: "/services/charters", label: "My Charters" },
       { to: "/services/trailers", label: "My Trailers" },
       { to: "/services/berths", label: "My Berths" },
-      { to: "/services/transports", label: "My Transport" },
+      { to: "/services/customerDashboard", label: " Customer Transport Dashboard" },
+      { to: "/services/haulierDashboard", label: " Haulier Transport Dashboard" },
       { to: "/services/sponsor", label: "Become Sponsor" },
     ],
   },

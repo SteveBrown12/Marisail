@@ -371,42 +371,46 @@ export const calculate_Price_Label = async (details) => {
     if(connection) connection.release();
   }
 }
+// =====================
+// Question Utilities (named exports, ESM safe)
+// =====================
 
-const QuestionUtils = {
-  validateQuestionData(data) {
-    if (!data.Transport_ID) throw new Error('Transport_ID is required');
-    if (!data.Haulier_ID) throw new Error('Haulier_ID is required');
-    if (!data.Question_Text || typeof data.Question_Text !== 'string' || data.Question_Text.trim().length === 0) {
-      throw new Error('Question_Text must be a non-empty string');
-    }
-    return true;
-  },
-
-  formatQuestionForResponse(record) {
-    return {
-      id: record.Question_ID,
-      transportId: record.Transport_ID,
-      haulierId: record.Haulier_ID,
-      questionText: record.Question_Text,
-      answerText: record.Answer_Text || null,
-      questionDate: record.Question_Date,
-      answerDate: record.Answer_Date || null
-    };
-  },
-
-  canHaulierAsk(user) {
-    // no auth implemented yet
-    return true;
-  },
-
-  canCustomerAnswer(user) {
-    // no auth implemented yet
-    return true;
-  },
-
-  logActivity(action, record) {
-    console.log(`[Question ${action}]`, record);
+export function validateQuestionData(data) {
+  if (!data || typeof data !== 'object') throw new Error('Invalid payload');
+  if (!data.Transport_ID) throw new Error('Transport_ID is required');
+  if (!data.Haulier_ID) throw new Error('Haulier_ID is required');
+  if (!data.Question_Text || typeof data.Question_Text !== 'string' || !data.Question_Text.trim()) {
+    throw new Error('Question_Text must be a non-empty string');
   }
-};
+  return true;
+}
 
-export default QuestionUtils;
+export function formatQuestionForResponse(record) {
+  if (!record) return null;
+  return {
+    id: record.Question_ID,
+    transportId: record.Transport_ID,
+    haulierId: record.Haulier_ID,
+    // tolerate both DB and alias fields
+    questionText: record.Question_Text ?? record.Transport_Provider_Questions ?? null,
+    answerText: record.Answer_Text ?? record.Customer_Answers ?? null,
+    questionDate: record.Question_Date ?? null,
+    answerDate: record.Answer_Date ?? null
+  };
+}
+
+export function canHaulierAsk(_user) {
+  // no auth implemented yet
+  return true;
+}
+
+export function canCustomerAnswer(_user) {
+  // no auth implemented yet
+  return true;
+}
+
+export function logActivity(action, record) {
+  try {
+    console.log(`[Question ${action}]`, record);
+  } catch (_) {}
+}
