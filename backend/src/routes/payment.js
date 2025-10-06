@@ -143,6 +143,7 @@ router.post('/create-payment-intent', async (req, res) => {
       automatic_payment_methods: {
         enabled: true,
       },
+      payment_method_types: ['card', 'apple_pay', 'google_pay', 'alipay', 'wechat_pay', 'klarna', 'razorpay', 'flutterwave'],
     });
 
     console.log('Payment intent created successfully:', {
@@ -160,6 +161,370 @@ router.post('/create-payment-intent', async (req, res) => {
     console.error('Error creating payment intent:', error);
     res.status(500).json({ 
       error: 'Failed to create payment intent',
+      details: error.message,
+      type: error.type
+    });
+  }
+});
+
+// Create Apple Pay payment intent
+router.post('/create-apple-pay-intent', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ 
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.' 
+    });
+  }
+
+  try {
+    const { amount, currency = 'usd', metadata = {} } = req.body;
+    
+    console.log('Creating Apple Pay payment intent with:', { amount, currency, metadata });
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        ...metadata,
+        payment_method: 'apple_pay'
+      },
+      payment_method_types: ['apple_pay'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never'
+      },
+    });
+
+    console.log('Apple Pay payment intent created successfully:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
+  } catch (error) {
+    console.error('Error creating Apple Pay payment intent:', error);
+    res.status(500).json({ 
+      error: 'Failed to create Apple Pay payment intent',
+      details: error.message,
+      type: error.type
+    });
+  }
+});
+
+// Create Google Pay payment intent
+router.post('/create-google-pay-intent', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ 
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.' 
+    });
+  }
+
+  try {
+    const { amount, currency = 'usd', metadata = {} } = req.body;
+    
+    console.log('Creating Google Pay payment intent with:', { amount, currency, metadata });
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        ...metadata,
+        payment_method: 'google_pay'
+      },
+      payment_method_types: ['google_pay'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never'
+      },
+    });
+
+    console.log('Google Pay payment intent created successfully:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
+  } catch (error) {
+    console.error('Error creating Google Pay payment intent:', error);
+    res.status(500).json({ 
+      error: 'Failed to create Google Pay payment intent',
+      details: error.message,
+      type: error.type
+    });
+  }
+});
+
+// Create Alipay payment intent
+router.post('/create-alipay-intent', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ 
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.' 
+    });
+  }
+
+  try {
+    const { amount, currency = 'usd', metadata = {} } = req.body;
+    
+    console.log('Creating Alipay payment intent with:', { amount, currency, metadata });
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        ...metadata,
+        payment_method: 'alipay'
+      },
+      payment_method_types: ['alipay'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'always'
+      },
+    });
+
+    console.log('Alipay payment intent created successfully:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
+  } catch (error) {
+    console.error('Error creating Alipay payment intent:', error);
+    res.status(500).json({ 
+      error: 'Failed to create Alipay payment intent',
+      details: error.message,
+      type: error.type
+    });
+  }
+});
+
+// Create WeChat Pay payment intent
+router.post('/create-wechat-pay-intent', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ 
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.' 
+    });
+  }
+
+  try {
+    const { amount, currency = 'usd', metadata = {} } = req.body;
+    
+    console.log('Creating WeChat Pay payment intent with:', { amount, currency, metadata });
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        ...metadata,
+        payment_method: 'wechat_pay'
+      },
+      payment_method_types: ['wechat_pay'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'always'
+      },
+    });
+
+    console.log('WeChat Pay payment intent created successfully:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
+  } catch (error) {
+    console.error('Error creating WeChat Pay payment intent:', error);
+    res.status(500).json({ 
+      error: 'Failed to create WeChat Pay payment intent',
+      details: error.message,
+      type: error.type
+    });
+  }
+});
+
+// Create Klarna payment intent
+router.post('/create-klarna-intent', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ 
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.' 
+    });
+  }
+
+  try {
+    const { amount, currency = 'usd', metadata = {} } = req.body;
+    
+    console.log('Creating Klarna payment intent with:', { amount, currency, metadata });
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        ...metadata,
+        payment_method: 'klarna'
+      },
+      payment_method_types: ['klarna'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'always'
+      },
+    });
+
+    console.log('Klarna payment intent created successfully:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
+  } catch (error) {
+    console.error('Error creating Klarna payment intent:', error);
+    res.status(500).json({ 
+      error: 'Failed to create Klarna payment intent',
+      details: error.message,
+      type: error.type
+    });
+  }
+});
+
+// Create Razorpay payment intent
+router.post('/create-razorpay-intent', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ 
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.' 
+    });
+  }
+
+  try {
+    const { amount, currency = 'usd', metadata = {} } = req.body;
+    
+    console.log('Creating Razorpay payment intent with:', { amount, currency, metadata });
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        ...metadata,
+        payment_method: 'razorpay'
+      },
+      payment_method_types: ['razorpay'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'always'
+      },
+    });
+
+    console.log('Razorpay payment intent created successfully:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
+  } catch (error) {
+    console.error('Error creating Razorpay payment intent:', error);
+    res.status(500).json({ 
+      error: 'Failed to create Razorpay payment intent',
+      details: error.message,
+      type: error.type
+    });
+  }
+});
+
+// Create Flutterwave payment intent
+router.post('/create-flutterwave-intent', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ 
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.' 
+    });
+  }
+
+  try {
+    const { amount, currency = 'usd', metadata = {} } = req.body;
+    
+    console.log('Creating Flutterwave payment intent with:', { amount, currency, metadata });
+
+    if (!amount) {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        ...metadata,
+        payment_method: 'flutterwave'
+      },
+      payment_method_types: ['flutterwave'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'always'
+      },
+    });
+
+    console.log('Flutterwave payment intent created successfully:', {
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    });
+  } catch (error) {
+    console.error('Error creating Flutterwave payment intent:', error);
+    res.status(500).json({ 
+      error: 'Failed to create Flutterwave payment intent',
       details: error.message,
       type: error.type
     });
