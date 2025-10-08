@@ -33,7 +33,7 @@ export default function HaulierDashboard() {
   const [submittingQuote, setSubmittingQuote] = useState(false);
 
   // Mock haulier ID - in real app, get from auth context
-  const haulierId = 1;
+  const haulierId = 123;
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -664,7 +664,9 @@ export default function HaulierDashboard() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Haulier Dashboard</h1>
+       
           <p className="text-gray-600 mt-1">Track your jobs, quotes, and performance</p>
+          
         </div>
         <div className="flex gap-3">
           <button 

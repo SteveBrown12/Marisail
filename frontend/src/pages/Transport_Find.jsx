@@ -31,23 +31,28 @@ export default function TransportFind() {
   
   const normalizeFacets = (facets) => {
     if (!Array.isArray(facets)) return [];
-    return facets.map((option) => {
-      if (option === null || option === undefined) {
-        return { value: option, label: String(option) };
-      }
-      if (typeof option === "string" || typeof option === "number" || typeof option === "boolean") {
-        return { value: option, label: String(option) };
-      }
-      const valueCandidates = ["value", "id", "key", "code", "name"];
-      const labelCandidates = ["label", "name", "text", "display", "value"];
-      const value = valueCandidates.map((key) => option[key]).find((val) => val !== undefined);
-      const label = labelCandidates.map((key) => option[key]).find((val) => val !== undefined);
-      return {
-        ...option,
-        value: value !== undefined ? value : option,
-        label: label !== undefined ? String(label) : String(value !== undefined ? value : JSON.stringify(option)),
-      };
-    });
+    return facets
+      .filter((option) => {
+        // Filter out "0" values, null, undefined, and empty strings
+        if (option === "0" || option === 0 || option === null || option === undefined || option === "") {
+          return false;
+        }
+        return true;
+      })
+      .map((option) => {
+        if (typeof option === "string" || typeof option === "number" || typeof option === "boolean") {
+          return { value: option, label: String(option) };
+        }
+        const valueCandidates = ["value", "id", "key", "code", "name"];
+        const labelCandidates = ["label", "name", "text", "display", "value"];
+        const value = valueCandidates.map((key) => option[key]).find((val) => val !== undefined);
+        const label = labelCandidates.map((key) => option[key]).find((val) => val !== undefined);
+        return {
+          ...option,
+          value: value !== undefined ? value : option,
+          label: label !== undefined ? String(label) : String(value !== undefined ? value : JSON.stringify(option)),
+        };
+      });
   };
 
   const uiKeyToField = (uiKey) => {
@@ -283,24 +288,40 @@ export default function TransportFind() {
     }
   };
 
-  // Job Card with click navigation
+  // Job Card with click navigation and conditional styling
   const TransportJobCard = ({ job }) => {
     const handleCardClick = () => {
       navigate(`/detail/transport/${job.Transport_ID}`);
     };
 
+    // Check if job is completed - adjust field name based on your data structure
+    const isCompleted = job.Status === "Completed" || job.Job_Status === "Completed" || job.completed === true;
+
     return (
       <div 
         onClick={handleCardClick}
-        className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg hover:border-blue-200 transition-all duration-200"
+        className={`cursor-pointer rounded-xl shadow-sm border p-6 hover:shadow-lg transition-all duration-200 ${
+          isCompleted 
+            ? "bg-green-50 border-green-200 hover:border-green-300" 
+            : "bg-white border-gray-100 hover:border-blue-200"
+        }`}
       >
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded">
+          <span className={`text-xs inline-block px-2 py-1 rounded ${
+            isCompleted 
+              ? "bg-green-100 text-green-700" 
+              : "bg-blue-50 text-blue-700"
+          }`}>
             {job.Category || "Transport"}
           </span>
           {job.International === "Yes" && (
             <span className="text-xs inline-block bg-amber-50 text-amber-700 px-2 py-1 rounded">
               International
+            </span>
+          )}
+          {isCompleted && (
+            <span className="text-xs inline-block bg-green-100 text-green-700 px-2 py-1 rounded font-medium">
+              ✓ Completed
             </span>
           )}
         </div>
@@ -323,6 +344,10 @@ export default function TransportFind() {
             <span className="truncate">To: {job.Delivery_Address || "Not specified"}</span>
           </div>
           <div className="flex items-center gap-1">
+            <span>📏</span>
+            <span>Distance: {job.Distance ? `${job.Distance} km` : job.Total_Distance ? `${job.Total_Distance} km` : "Not specified"}</span>
+          </div>
+          <div className="flex items-center gap-1">
             <span>📅</span>
             <span>Deadline: {job.Deadline_Date ? new Date(job.Deadline_Date).toLocaleDateString() : "Not set"}</span>
           </div>
@@ -332,7 +357,9 @@ export default function TransportFind() {
           </div>
         </div>
 
-        <div className="mt-3 text-xs text-blue-600 font-medium">
+        <div className={`mt-3 text-xs font-medium ${
+          isCompleted ? "text-green-600" : "text-blue-600"
+        }`}>
           Click to view details →
         </div>
       </div>

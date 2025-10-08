@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Loader } from "../components/Common_Utils";
+import { distanceCalculator } from "../utils/DistanceCalculatorService";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
@@ -13,6 +14,10 @@ export default function TransportDetail() {
   const [questions, setQuestions] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [error, setError] = useState("");
+  
+  // Distance calculation states
+  const [distanceData, setDistanceData] = useState(null);
+  const [calculatingDistance, setCalculatingDistance] = useState(false);
 
   // Quote form states
   const [haulierId, setHaulierId] = useState("");
@@ -29,7 +34,7 @@ export default function TransportDetail() {
   const [answerText, setAnswerText] = useState({});
   const [submittingAnswer, setSubmittingAnswer] = useState({});
 
-  // NEW: Review form state
+  // Review form state
   const [reviewData, setReviewData] = useState({
     haulierId: "",
     customerId: "",
@@ -38,9 +43,48 @@ export default function TransportDetail() {
     rating: ""
   });
 
-  // NEW: Loading states for reviews and job completion
+  // Loading states for reviews and job completion
   const [postingReview, setPostingReview] = useState(false);
   const [markingJobDone, setMarkingJobDone] = useState(false);
+
+  const calculateJobDistance = async (jobData) => {
+    if (!jobData.Collection_Address || !jobData.Delivery_Address) {
+      console.log('Missing addresses for distance calculation');
+      return;
+    }
+    
+    try {
+      setCalculatingDistance(true);
+      console.log('Calculating distance for:', jobData.Collection_Address, '→', jobData.Delivery_Address);
+      
+      const result = await distanceCalculator.calculateDistanceFromAddresses(
+        jobData.Collection_Address,
+        jobData.Delivery_Address
+      );
+      
+      if (result.success) {
+        setDistanceData(result);
+        
+        // Optionally save to backend
+        try {
+          await axios.patch(`${API_BASE}/transport/jobs/${id}/update-distance`, {
+            collectionDeliveryDistance: result.distance.text,
+            roundTripDistance: `${(result.distance.value * 2 / 1000).toFixed(2)} km`,
+            totalDistance: result.distance.text
+          });
+          console.log('Distance data saved to backend');
+        } catch (saveError) {
+          console.warn('Failed to save distance to backend:', saveError);
+        }
+      } else {
+        console.error('Distance calculation failed:', result.error);
+      }
+    } catch (error) {
+      console.error('Distance calculation error:', error);
+    } finally {
+      setCalculatingDistance(false);
+    }
+  };
 
   const fetchDetails = useCallback(async () => {
     try {
@@ -56,7 +100,7 @@ export default function TransportDetail() {
       }
       const data = res.data.data;
       
-      // Comprehensive job data compilation
+      // Comprehensive job data compilation (keeping your existing logic)
       const jobCore = {
         Transport_ID: data.Job?.Transport_ID ?? id,
         Title: data.Job?.Title || data.Job?.Item_Title || "Transport Job",
@@ -114,15 +158,22 @@ export default function TransportDetail() {
         Late_Fees: data.Transportation_Payment?.Late_Fees || "",
         Payment_Methods: data.Transportation_Payment?.Payment_Methods || "",
       };
+      
       setJob(jobCore);
 
+      // Calculate distance if addresses are available
+      if (jobCore.Collection_Address && jobCore.Delivery_Address) {
+        calculateJobDistance(jobCore);
+      }
+
+      // Load other data (keeping your existing logic)
       const initialQuotes = Array.isArray(data.Transportation_Quotes_List) ? data.Transportation_Quotes_List : [];
       const initialQuestions = Array.isArray(data.Questions_List) ? data.Questions_List : [];
       
       setQuotes(initialQuotes);
       setQuestions(initialQuestions);
 
-      // NEW: Load reviews only if job is completed
+      // Load reviews only if job is completed
       if (jobCore.Job_Done_Haulier === "1" || jobCore.Job_Done_Haulier === 1) {
         await loadReviews();
       }
@@ -149,7 +200,7 @@ export default function TransportDetail() {
     }
   }, [id]);
 
-  // NEW: Load reviews for this job (only when job is done)
+  // Load reviews for this job (only when job is done)
   const loadReviews = useCallback(async () => {
     if (!id) return;
     try {
@@ -189,6 +240,7 @@ export default function TransportDetail() {
     if (id) fetchDetails();
   }, [id, fetchDetails]);
 
+  // All your existing handlers (keeping them as they are)
   const handleSubmitQuote = async (e) => {
     e.preventDefault();
     if (!haulierId || !quoteValue) {
@@ -294,7 +346,6 @@ export default function TransportDetail() {
     }
   };
 
-  // NEW: Submit review handler
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!reviewData.haulierId || !reviewData.feedbackScore || !reviewData.rating) {
@@ -307,7 +358,7 @@ export default function TransportDetail() {
       const res = await axios.post(`${API_BASE}/transport/reviews`, {
         Transport_ID: id,
         Haulier_ID: reviewData.haulierId,
-        Customer_ID: reviewData.customerId || '1', // Default customer if not provided
+        Customer_ID: reviewData.customerId || '1',
         Customer_Feedback_Notes: reviewData.feedbackNotes,
         Customer_Feedback_Score: reviewData.feedbackScore,
         Rating: reviewData.rating
@@ -322,8 +373,8 @@ export default function TransportDetail() {
           feedbackScore: "",
           rating: ""
         });
-        await loadReviews(); // Refresh reviews
-        fetchDetails(); // Refresh all data
+        await loadReviews();
+        fetchDetails();
       } else {
         alert(res.data?.message || 'Failed to submit review');
       }
@@ -335,7 +386,6 @@ export default function TransportDetail() {
     }
   };
 
-  // NEW: Mark job as done handler
   const handleMarkJobDone = async () => {
     if (!job) return;
     
@@ -357,7 +407,7 @@ export default function TransportDetail() {
 
       if (res.data?.ok) {
         alert('Job marked as completed successfully with automatic timestamp!');
-        fetchDetails(); // Refresh to show updated status and reviews section
+        fetchDetails();
       } else {
         alert(res.data?.message || 'Failed to mark job as complete');
       }
@@ -384,12 +434,12 @@ export default function TransportDetail() {
     return value || "Not specified";
   };
 
-  // Format rating as stars
   const formatStars = (rating) => {
     const stars = "⭐".repeat(parseInt(rating) || 0);
     return stars || "No rating";
   };
 
+  // Enhanced Quote Card Component
   const QuoteCard = ({ quote, isLowest, isHighest, rank }) => (
     <div className={`p-4 rounded-lg border-2 ${
       isLowest ? 'border-green-400 bg-green-50' : 
@@ -482,7 +532,7 @@ export default function TransportDetail() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
-      {/* Job Header */}
+      {/* Job Header with Distance Information */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-1">
@@ -498,6 +548,11 @@ export default function TransportDetail() {
               {job.Ferry_Required === "Yes" && (
                 <span className="text-xs inline-block bg-purple-50 text-purple-700 px-2 py-1 rounded">
                   🚢 Ferry Required
+                </span>
+              )}
+              {distanceData && (
+                <span className="text-xs inline-block bg-green-50 text-green-700 px-2 py-1 rounded">
+                  📍 Distance: {distanceData.distance.text}
                 </span>
               )}
               {isJobCompleted && (
@@ -530,6 +585,27 @@ export default function TransportDetail() {
               <span className="text-gray-600">Quotes:</span>
               <strong className="ml-2">{quotes.length}</strong>
             </div>
+            {/* Distance Information Display */}
+            {calculatingDistance && (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                <span className="text-blue-600 text-sm">Calculating distance...</span>
+              </div>
+            )}
+            {distanceData && !calculatingDistance && (
+              <>
+                <div className="flex items-center">
+                  <span className="w-5 h-5 mr-2">📏</span>
+                  <span className="text-gray-600">Distance:</span>
+                  <strong className="ml-2 text-green-600">{distanceData.distance.text}</strong>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-5 h-5 mr-2">⏱️</span>
+                  <span className="text-gray-600">Duration:</span>
+                  <strong className="ml-2 text-green-600">{distanceData.duration.text}</strong>
+                </div>
+              </>
+            )}
             {isJobCompleted && (
               <div className="flex items-center">
                 <span className="w-5 h-5 mr-2">⭐</span>
@@ -1080,3 +1156,6 @@ export default function TransportDetail() {
     </div>
   );
 }
+
+
+

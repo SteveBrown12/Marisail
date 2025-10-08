@@ -1481,4 +1481,129 @@ transport_Router.get("/jobs/:jobId/quotes/detailed", async (request, response) =
   }
 });
 
+// Add these routes to Transport_Specific.js
+
+// Calculate distance between two points
+transport_Router.post("/calculate-distance", async (request, response) => {
+  try {
+    const { origin, destination, waypoints } = request.body;
+    
+    if (!origin || !destination) {
+      return handle_Error_Response(response, "Origin and destination are required", 400);
+    }
+
+    // Here you can integrate with Google Distance Matrix API
+    // or use the frontend calculation and store results
+    
+    // For now, we'll create a simple endpoint that can receive calculated distances
+    response.json({
+      ok: true,
+      message: "Distance calculation endpoint ready",
+      data: {
+        origin,
+        destination,
+        waypoints,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Distance calculation failed: ${error.message}`);
+  }
+});
+
+// Add these routes to your Transport_Specific.js file
+
+// Calculate distance between two points
+transport_Router.post("/calculate-distance", async (request, response) => {
+  try {
+    const { origin, destination, waypoints } = request.body;
+    
+    if (!origin || !destination) {
+      return handle_Error_Response(response, "Origin and destination are required", 400);
+    }
+
+    // Log the calculation request
+    console.log('Distance calculation requested:', { origin, destination, waypoints });
+    
+    response.json({
+      ok: true,
+      message: "Distance calculation endpoint ready",
+      data: {
+        origin,
+        destination,
+        waypoints,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Distance calculation failed: ${error.message}`);
+  }
+});
+
+// Save calculated distance to job
+transport_Router.patch("/jobs/:jobId/update-distance", async (request, response) => {
+  try {
+    const { jobId } = request.params;
+    const { collectionDeliveryDistance, roundTripDistance, totalDistance } = request.body;
+
+    await db_connection.query(`
+      UPDATE Job 
+      SET 
+        Collection_Delivery_Distance = ?,
+        Round_Trip_Distance = ?,
+        Total_Distance = ?
+      WHERE Transport_ID = ?
+    `, [collectionDeliveryDistance, roundTripDistance, totalDistance, jobId]);
+
+    console.log(`Distance updated for job ${jobId}:`, {
+      collectionDeliveryDistance,
+      roundTripDistance,
+      totalDistance
+    });
+
+    response.json({
+      ok: true,
+      message: "Distance updated successfully"
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to update distance: ${error.message}`);
+  }
+});
+
+// Get job with distance information
+transport_Router.get("/jobs/:jobId/with-distance", async (request, response) => {
+  try {
+    const { jobId } = request.params;
+    
+    // Get job details with addresses and any existing distance data
+    const [jobResult] = await db_connection.query(`
+      SELECT 
+        j.*,
+        tc.Collection_Address,
+        tc.Delivery_Address,
+        tc.Collection_Contact,
+        tc.Delivery_Contact
+      FROM Job j
+      LEFT JOIN Transportation_Contacts tc ON j.Transport_ID = tc.Transport_ID
+      WHERE j.Transport_ID = ?
+    `, [jobId]);
+
+    if (!jobResult) {
+      return handle_Error_Response(response, "Job not found", 404);
+    }
+
+    response.json({
+      ok: true,
+      data: {
+        job: jobResult,
+        hasAddresses: !!(jobResult.Collection_Address && jobResult.Delivery_Address),
+        calculateDistance: true
+      }
+    });
+  } catch (error) {
+    handle_Error_Response(response, `Failed to fetch job with distance: ${error.message}`);
+  }
+});
+
+
 export default transport_Router;
