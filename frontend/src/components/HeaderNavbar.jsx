@@ -154,7 +154,7 @@ const HeaderNavbar = ({ navbarRef }) => {
               </div>
             ))}
             {/* Language selector */}
-            <div className="gt-navbar-select">
+            <div className="gt-navbar-select flex items-center">
               <GoogleTranslate floating={false} compact={true} />
             </div>
             {/* Profile */}
@@ -169,8 +169,8 @@ const HeaderNavbar = ({ navbarRef }) => {
       {mobileOpen && (
         <div className="lg:hidden bg-white border-t shadow-md">
           <nav className="flex flex-col p-4 space-y-4">
-            {/* Language selector (mobile) */}
-            <div className="gt-navbar-select">
+            {/* Language selector (mobile) - Exact same as desktop */}
+            <div className="gt-navbar-select flex items-center mb-4">
               <GoogleTranslate floating={false} compact={true} />
             </div>
             {menuItems.map((menu) => (

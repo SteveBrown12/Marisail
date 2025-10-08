@@ -3,9 +3,16 @@
   display: none !important;
 }
 
+body {
+  top: 0px !important;
+}
+
 .goog-te-gadget {
   font-family: inherit !important;
   font-size: 12px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .goog-te-combo {
@@ -18,6 +25,16 @@
   height: 32px !important;
   color: #374151 !important;
   font-family: inherit !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%236B7280%22%20d%3D%22M287%20197.3L159.9%2069.8c-4.8-4.8-12.5-4.8-17.3%200L5.4%20197.3c-4.8%204.8-4.8%2012.5%200%2017.3s12.5%204.8%2017.3%200L146%2095.3l123.3%20123.3c4.8%204.8%2012.5%204.8%2017.3%200s4.8-12.5%200-17.3z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
 }
 
 .goog-te-combo:hover {
@@ -103,4 +120,116 @@
   padding: 2px 6px !important;
   height: 28px !important;
   min-width: 100px !important;
+  background-position: right 6px center;
+  background-size: 10px;
+}
+
+/* Ensure Google Translate container is always visible */
+#google_translate_element {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#google_translate_element .goog-te-gadget {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#google_translate_element .goog-te-combo {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Navbar specific styling */
+.gt-navbar-select {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.gt-navbar-select #google_translate_element {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.gt-navbar-select .goog-te-gadget {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.gt-navbar-select .goog-te-combo {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Force visibility for all Google Translate elements */
+.goog-te-gadget,
+.goog-te-gadget-simple,
+.goog-te-combo,
+.goog-te-menu-value,
+.goog-te-menu-value span {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure the select element is always visible */
+.goog-te-combo {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Mobile specific styling - Exact same as desktop */
+@media (max-width: 768px) {
+  .gt-navbar-select {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .gt-navbar-select .goog-te-combo {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1001 !important;
+  }
+  
+  .gt-navbar-select .goog-te-gadget {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .gt-navbar-select #google_translate_element {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Additional mobile visibility fixes */
+@media (max-width: 1024px) {
+  .gt-navbar-select {
+    display: flex !important;
+    align-items: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1000 !important;
+  }
+  
+  .gt-navbar-select .goog-te-combo {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1001 !important;
+  }
 }

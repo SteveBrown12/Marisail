@@ -2,6 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreditCardIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
+import ApplePayButton from './ApplePayButton';
+import GooglePayButton from './GooglePayButton';
+import AlipayButton from './AlipayButton';
+import WeChatPayButton from './WeChatPayButton';
+import KlarnaButton from './KlarnaButton';
+import RazorpayButton from './RazorpayButton';
+import FlutterwaveButton from './FlutterwaveButton';
 
 const PaymentButton = ({ 
   amount, 
@@ -9,7 +16,14 @@ const PaymentButton = ({
   className = '', 
   children, 
   disabled = false,
-  variant = 'primary' // 'primary', 'secondary', 'outline'
+  variant = 'primary', // 'primary', 'secondary', 'outline'
+  showApplePay = true, // Show Apple Pay button if available
+  showGooglePay = true, // Show Google Pay button if available
+  showAlipay = true, // Show Alipay button if available
+  showWeChatPay = true, // Show WeChat Pay button if available
+  showKlarna = true, // Show Klarna button if available
+  showRazorpay = true, // Show Razorpay button if available
+  showFlutterwave = true // Show Flutterwave button if available
 }) => {
   const navigate = useNavigate();
 
@@ -45,14 +59,107 @@ const PaymentButton = ({
   };
 
   return (
-    <button
-      onClick={handlePaymentClick}
-      disabled={disabled || !amount || amount <= 0}
-      className={`${getButtonClasses()} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-    >
-      <CreditCardIcon className="w-4 h-4 mr-2" />
-      {children || `Pay $${amount?.toFixed(2)}`}
-    </button>
+    <div className="flex flex-col space-y-2">
+      {showApplePay && (
+        <ApplePayButton
+          amount={amount}
+          onSuccess={() => {
+            toast.success('Payment successful!');
+          }}
+          onError={(error) => {
+            toast.error(error);
+          }}
+          disabled={disabled}
+          className={className}
+        />
+      )}
+      {showGooglePay && (
+        <GooglePayButton
+          amount={amount}
+          onSuccess={() => {
+            toast.success('Payment successful!');
+          }}
+          onError={(error) => {
+            toast.error(error);
+          }}
+          disabled={disabled}
+          className={className}
+        />
+      )}
+      {showAlipay && (
+        <AlipayButton
+          amount={amount}
+          onSuccess={() => {
+            toast.success('Payment successful!');
+          }}
+          onError={(error) => {
+            toast.error(error);
+          }}
+          disabled={disabled}
+          className={className}
+        />
+      )}
+      {showWeChatPay && (
+        <WeChatPayButton
+          amount={amount}
+          onSuccess={() => {
+            toast.success('Payment successful!');
+          }}
+          onError={(error) => {
+            toast.error(error);
+          }}
+          disabled={disabled}
+          className={className}
+        />
+      )}
+      {showKlarna && (
+        <KlarnaButton
+          amount={amount}
+          onSuccess={() => {
+            toast.success('Payment successful!');
+          }}
+          onError={(error) => {
+            toast.error(error);
+          }}
+          disabled={disabled}
+          className={className}
+        />
+      )}
+      {showRazorpay && (
+        <RazorpayButton
+          amount={amount}
+          onSuccess={() => {
+            toast.success('Payment successful!');
+          }}
+          onError={(error) => {
+            toast.error(error);
+          }}
+          disabled={disabled}
+          className={className}
+        />
+      )}
+      {showFlutterwave && (
+        <FlutterwaveButton
+          amount={amount}
+          onSuccess={() => {
+            toast.success('Payment successful!');
+          }}
+          onError={(error) => {
+            toast.error(error);
+          }}
+          disabled={disabled}
+          className={className}
+        />
+      )}
+      <button
+        onClick={handlePaymentClick}
+        disabled={disabled || !amount || amount <= 0}
+        className={`${getButtonClasses()} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        <CreditCardIcon className="w-4 h-4 mr-2" />
+        {children || `Pay $${amount?.toFixed(2)}`}
+      </button>
+    </div>
   );
 };
 
