@@ -1,0 +1,235 @@
+/* Google Translate Custom Styling */
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+}
+
+.goog-te-gadget {
+  font-family: inherit !important;
+  font-size: 12px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.goog-te-combo {
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  background-color: white !important;
+  min-width: 120px !important;
+  height: 32px !important;
+  color: #374151 !important;
+  font-family: inherit !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%236B7280%22%20d%3D%22M287%20197.3L159.9%2069.8c-4.8-4.8-12.5-4.8-17.3%200L5.4%20197.3c-4.8%204.8-4.8%2012.5%200%2017.3s12.5%204.8%2017.3%200L146%2095.3l123.3%20123.3c4.8%204.8%2012.5%204.8%2017.3%200s4.8-12.5%200-17.3z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+}
+
+.goog-te-combo:hover {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 1px #3b82f6 !important;
+}
+
+.goog-te-combo:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Country flags for language options */
+.goog-te-combo option {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjRkZGRkZGIi8+CjxyZWN0IHdpZHRoPSIyNCIgaGVpZ2h0PSI5IiBmaWxsPSIjMDAwMDAwIi8+CjxyZWN0IHdpZHRoPSIyNCIgaGVpZ2h0PSI5IiB5PSI5IiBmaWxsPSIjRkYwMDAwIi8+Cjwvc3ZnPgo=');
+  background-repeat: no-repeat;
+  background-position: 4px center;
+  padding-left: 28px;
+}
+
+/* Specific flag styles for common languages */
+.goog-te-combo option[value="en"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjMDAyMzk1Ii8+CjxwYXRoIGQ9Ik0wIDBoMjR2MThIMHoiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTAgMGgxLjJ2MThIMHoiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTAgMGgyNHYxLjJIMHoiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTAgMTYuOGgyNHYxLjJIMHoiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTAgMGgyNHYzLjZIMHoiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTAgMTQuNGgyNHYzLjZIMHoiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTAgMGg0LjJ2MThIMHoiIGZpbGw9IiNGRkZGRkYiLz4KPHBhdGggZD0iTTE5LjggMGgyNHYxOEgxOS44eiIgZmlsbD0iI0ZGRkZGRiIvPgo8L3N2Zz4K');
+}
+
+.goog-te-combo option[value="es"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjQ0MxMDAwIi8+CjxyZWN0IHdpZHRoPSIyNCIgaGVpZ2h0PSI0LjUiIGZpbGw9IiNGRkZGRkYiLz4KPHJlY3QgeT0iMTMuNSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjQuNSIgZmlsbD0iI0ZGRkZGRiIvPgo8L3N2Zz4K');
+}
+
+.goog-te-combo option[value="fr"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjMDAyMzk1Ii8+CjxyZWN0IHg9IjgiIHdpZHRoPSI4IiBoZWlnaHQ9IjE4IiBmaWxsPSIjRkZGRkZGIi8+CjxyZWN0IHg9IjE2IiB3aWR0aD0iOCIgaGVpZ2h0PSIxOCIgZmlsbD0iI0NDMTAwMCIvPgo8L3N2Zz4K');
+}
+
+.goog-te-combo option[value="de"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjYiIGZpbGw9IiMwMDAwMDAiLz4KPHJlY3QgeT0iNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjYiIGZpbGw9IiNGRkAwMDAiLz4KPHJlY3QgeT0iMTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSI2IiBmaWxsPSIjRkZEMDAwIi8+Cjwvc3ZnPgo=');
+}
+
+.goog-te-combo option[value="it"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjMDA5MDAwIi8+CjxyZWN0IHg9IjgiIHdpZHRoPSI4IiBoZWlnaHQ9IjE4IiBmaWxsPSIjRkZGRkZGIi8+CjxyZWN0IHg9IjE2IiB3aWR0aD0iOCIgaGVpZ2h0PSIxOCIgZmlsbD0iI0NDMTAwMCIvPgo8L3N2Zz4K');
+}
+
+.goog-te-combo option[value="pt"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjMDA5MDAwIi8+CjxyZWN0IHg9IjEyIiB3aWR0aD0iMTIiIGhlaWdodD0iMTgiIGZpbGw9IiNGRkZGRkYiLz4KPHJlY3QgeD0iMTIiIHdpZHRoPSIxMiIgaGVpZ2h0PSIxOCIgZmlsbD0iI0NDMTAwMCIvPgo8L3N2Zz4K');
+}
+
+.goog-te-combo option[value="ru"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjYiIGZpbGw9IiNGRkZGRkYiLz4KPHJlY3QgeT0iNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjYiIGZpbGw9IiMwMDUyQjQiLz4KPHJlY3QgeT0iMTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSI2IiBmaWxsPSIjRkYwMDAwIi8+Cjwvc3ZnPgo=');
+}
+
+.goog-te-combo option[value="ja"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOSIgcj0iNCIgZmlsbD0iI0NDMTAwMCIvPgo8L3N2Zz4K');
+}
+
+.goog-te-combo option[value="ko"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOSIgcj0iNCIgZmlsbD0iIzAwMDAwMCIvPgo8L3N2Zz4K');
+}
+
+.goog-te-combo option[value="zh"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE4IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iOSIgcj0iNCIgZmlsbD0iI0NDMTAwMCIvPgo8L3N2Zz4K');
+}
+
+.goog-te-combo option[value="ar"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjYiIGZpbGw9IiNGRkZGRkYiLz4KPHJlY3QgeT0iNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjYiIGZpbGw9IiMwMDAwMDAiLz4KPHJlY3QgeT0iMTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSI2IiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo=');
+}
+
+.goog-te-combo option[value="hi"] {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjYiIGZpbGw9IiNGRkZGRkYiLz4KPHJlY3QgeT0iNiIgd2lkdGg9IjI0IiBoZWlnaHQ9IjYiIGZpbGw9IiNGRkAwMDAiLz4KPHJlY3QgeT0iMTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSI2IiBmaWxsPSIjMDA5MDAwIi8+Cjwvc3ZnPgo=');
+}
+
+/* Hide the Google Translate branding */
+.goog-te-gadget-simple .goog-te-menu-value span:first-child {
+  display: none;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value span:last-child {
+  display: none;
+}
+
+/* Compact mode styling */
+.google-translate-compact .goog-te-combo {
+  font-size: 11px !important;
+  padding: 2px 6px !important;
+  height: 28px !important;
+  min-width: 100px !important;
+  background-position: right 6px center;
+  background-size: 10px;
+}
+
+/* Ensure Google Translate container is always visible */
+#google_translate_element {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#google_translate_element .goog-te-gadget {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#google_translate_element .goog-te-combo {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Navbar specific styling */
+.gt-navbar-select {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.gt-navbar-select #google_translate_element {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.gt-navbar-select .goog-te-gadget {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.gt-navbar-select .goog-te-combo {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Force visibility for all Google Translate elements */
+.goog-te-gadget,
+.goog-te-gadget-simple,
+.goog-te-combo,
+.goog-te-menu-value,
+.goog-te-menu-value span {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure the select element is always visible */
+.goog-te-combo {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Mobile specific styling - Exact same as desktop */
+@media (max-width: 768px) {
+  .gt-navbar-select {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .gt-navbar-select .goog-te-combo {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1001 !important;
+  }
+  
+  .gt-navbar-select .goog-te-gadget {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .gt-navbar-select #google_translate_element {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Additional mobile visibility fixes */
+@media (max-width: 1024px) {
+  .gt-navbar-select {
+    display: flex !important;
+    align-items: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1000 !important;
+  }
+  
+  .gt-navbar-select .goog-te-combo {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1001 !important;
+  }
+}

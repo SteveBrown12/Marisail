@@ -9,12 +9,7 @@ const ProfileDropdown = () => {
   // Debug logging
   useEffect(() => {
     console.log('ProfileDropdown - Auth state:', { isAuthenticated, user, isLoading });
-    console.log('ProfileDropdown - Component mounted');
   }, [isAuthenticated, user, isLoading]);
-
-  useEffect(() => {
-    console.log('ProfileDropdown - Open state changed:', open);
-  }, [open]);
 
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
@@ -22,7 +17,6 @@ const ProfileDropdown = () => {
   };
 
   const handleLogin = () => {
-    console.log('Login button clicked');
     loginWithRedirect();
     setOpen(false);
   };
@@ -49,13 +43,10 @@ const ProfileDropdown = () => {
   }
 
   return (
-    <div className="relative profile-dropdown" style={{ zIndex: 100000 }}>
+    <div className="relative profile-dropdown">
       {/* Avatar button */}
       <button
-        onClick={() => {
-          console.log('Profile button clicked, current open state:', open);
-          setOpen(!open);
-        }}
+        onClick={() => setOpen(!open)}
         className="flex items-center gap-2 focus:outline-none cursor-pointer hover:opacity-80 transition-opacity"
       >
         {isAuthenticated && user ? (
@@ -74,10 +65,9 @@ const ProfileDropdown = () => {
       </button>
 
       {/* Dropdown menu */}
-      {(open || true) && (
+      {open && (
         <div
           className="dropdown-menu absolute right-0 mt-2 w-56 bg-white shadow-xl rounded-md overflow-hidden border border-gray-200"
-          style={{ zIndex: 100001, position: 'absolute', top: '100%', right: 0 }}
         >
           {isAuthenticated && user ? (
             <>
@@ -110,7 +100,7 @@ const ProfileDropdown = () => {
                 onClick={handleLogin}
                 className="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
               >
-                Login / Sign Up
+                Sign in / Sign Up
               </button>
             </div>
           )}

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { BrandIcon } from "./Header_Components";
 import GoogleTranslate from "./GoogleTranslate";
 import ProfileDropdown from "./Profile";
 import PropTypes from "prop-types";
-import { BrandIcon } from "./Header_Components";
 import { initIPInfo } from "../utils/ipInfo";
 
 const menuItems = [
@@ -57,8 +57,9 @@ const menuItems = [
       { to: "/view-charter", label: "My Charters" },
       { to: "/view-trailer", label: "My Trailers" },
       { to: "/view-berth", label: "My Berths" },
-      { to: "/view-transport", label: "My Transport" },
       { to: "/become-sponsor", label: "Become Sponsor" },
+       { to: "/services/customerDashboard", label: " Customer Transport Dashboard" },
+      { to: "/services/haulierDashboard", label: " Haulier Transport Dashboard" },
     ],
   },
 ];
@@ -92,7 +93,7 @@ const HeaderNavbar = ({ navbarRef }) => {
             className="flex items-center space-x-2 no-underline hover:no-underline hover:opacity-80 transition-opacity"
           >
             <BrandIcon />
-            <h1 className="text-lg tracking-wide">Marisail</h1>
+            <h1 className="text-lg tracking-wide notranslate">Marisail</h1>
           </NavLink>
 
           {/* Mobile menu button */}
@@ -153,8 +154,8 @@ const HeaderNavbar = ({ navbarRef }) => {
               </div>
             ))}
             {/* Language selector */}
-            <div className="gt-navbar-select">
-              <GoogleTranslate floating={false} />
+            <div className="gt-navbar-select flex items-center">
+              <GoogleTranslate floating={false} compact={true} />
             </div>
             {/* Profile */}
             <div className="hidden lg:block">
@@ -168,9 +169,9 @@ const HeaderNavbar = ({ navbarRef }) => {
       {mobileOpen && (
         <div className="lg:hidden bg-white border-t shadow-md">
           <nav className="flex flex-col p-4 space-y-4">
-            {/* Language selector (mobile) */}
-            <div className="gt-navbar-select">
-              <GoogleTranslate floating={false} />
+            {/* Language selector (mobile) - Exact same as desktop */}
+            <div className="gt-navbar-select flex items-center mb-4">
+              <GoogleTranslate floating={false} compact={true} />
             </div>
             {menuItems.map((menu) => (
               <div key={menu.title}>
