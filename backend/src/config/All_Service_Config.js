@@ -552,7 +552,7 @@ export const Transport_Config = {
                 customerID: { column_Name: 'Customer_ID', display_Text: 'Customer ID', type: 'number', mandatory: false, searchable: true, radio_Options: null },
                 customerName: { column_Name: 'Customer_Name', display_Text: 'Customer Name', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
                 customerCompanyName: { column_Name: 'Customer_Company_Name', display_Text: 'Customer Company Name', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
-                collectionContact: { column_Name: 'Collection_Contact', display_Text: 'Collection Contact', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
+                collectionContact: { column_Name: 'Collection_Contact', display_Text: 'Collection Contact', type: 'dialog', mandatory: false, searchable: true, radio_Options: null },
                 collectionMobile: { column_Name: 'Collection_Mobile', display_Text: 'Collection Mobile', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
                 deliveryContact: { column_Name: 'Delivery_Contact', display_Text: 'Delivery Contact', type: 'radio', mandatory: false, searchable: true, radio_Options: null },
                 collectionAddress: { column_Name: 'Collection_Address', display_Text: 'Collection Address', type: 'address2', mandatory: false, searchable: true, radio_Options: null },

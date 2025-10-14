@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Loader } from "../components/Common_Utils";
-import { DropdownWithCheckBoxes, InputComponent, DatePickerField, DateTimePickerField, AddressFinderComponent, TextComponent } from "../components/Generic_Components";
+import { DropdownWithCheckBoxes, InputComponent, DatePickerField, DateTimePickerField, AddressFinderComponent } from "../components/Generic_Components";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import FormUtilities from "../utils/Form_Utilities";
@@ -196,7 +196,6 @@ export default function GenericAdvert() {
   // Requirement #8 - Submit Buttons Actually Updates Db Properly.
 
   const handle_Submit = async (event) => {
-    console.log("-------------", form_State);
     if (event) event.preventDefault();
     if (!validate_Form()) return window.scrollTo({ top: 0, behavior: "smooth" });
     set_Loading(true);
