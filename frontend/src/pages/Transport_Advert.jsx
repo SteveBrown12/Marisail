@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Loader } from "../components/Common_Utils";
-import { 
-  DropdownWithCheckBoxes, 
-  InputComponent, 
-  DatePickerField, 
-  DateTimePickerField, 
-  RangeInput 
+import {
+  DropdownWithCheckBoxes,
+  InputComponent,
+  DatePickerField,
+  DateTimePickerField,
+  RangeInput, AddressFinderComponent
 } from "../components/Generic_Components";
 import axios from "axios";
 import FormUtilities from "../utils/Form_Utilities";
+import GoogleMapDisplay from "../components/GoogleMapDisplay";
+import ContactDialog from "../components/ContactDialog.jsx";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
@@ -48,7 +50,7 @@ export default function TransportAdvert() {
   const [createdAt] = useState(() => {
     const d = new Date();
     const pad = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   });
 
   const [loading, setLoading] = useState(true);
@@ -60,18 +62,51 @@ export default function TransportAdvert() {
   const [filtersData, setFiltersData] = useState({});
   const [openDropdown, setOpenDropdown] = useState(null);
 
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [contactData, setContactData] = useState(null);
+  const [contact_Key, setContact_Key] = useState(null);
+  const [distance_Key, setDistance_Key] = useState(null);
+  const [deliveryDistance_Key, setDeliveryDistance_Key] = useState(null);
+
+  const [distance, setDistance] = useState("0.00 km");
+  const [deliveryDistance, setDeliveryDistance] = useState("0.00 km");
+  const [startPosition, setStartPosition] = useState(null);
+  const [secondPosition, setSecondPosition] = useState(null);
+  const [endPosition, setEndPosition] = useState(null);
+
+  useEffect(() => {
+    setFormState((previous_State) => ({ ...previous_State, [contact_Key]: contactData }));
+  }, [contactData]);
+
+  const handleDistanceChange = (distanceValue) => {
+    setDistance(distanceValue);
+    setFormState((prev) => ({
+      ...prev,
+      [distance_Key]: distanceValue,
+    }));
+  };
+
+  const handleDeliveryDistanceChange = (distanceValue) => {
+    setDeliveryDistance(distanceValue);
+    setFormState((prev) => ({
+      ...prev,
+      [deliveryDistance_Key]: distanceValue,
+    }));
+  };
+
   // Fields to hide for advert (post-job or analytics)
   const IRRELEVANT_FIELDS = new Set([
-    'Job_Done_Haulier','Job_Done_Date_Haulier','Job_Done_Customer',
-    'Number_Jobs','Haulier_Total_Customer_Score','Decline_Date','Withdraw_Date','Quote_Status',
-    'Customer_Feedback_Notes','Customer_Feedback_Score','Rating','Reviews','Total_Reviews',
-    'Active_Quotes','Avg_Rating','Response_Time'
+    'Job_Done_Haulier', 'Job_Done_Date_Haulier', 'Job_Done_Customer',
+    'Number_Jobs', 'Haulier_Total_Customer_Score', 'Decline_Date', 'Withdraw_Date', 'Quote_Status',
+    'Customer_Feedback_Notes', 'Customer_Feedback_Score', 'Rating', 'Reviews', 'Total_Reviews',
+    'Active_Quotes', 'Avg_Rating', 'Response_Time'
   ]);
 
   // Auto-detect Yes/No fields by name
   const YES_NO_FIELDS = new Set([
-    'Verified','International','Real_Time_Tracking','Electronic_POD','Delivery_Confirmation',
-    'Insurance','Cancellation_Policy_Required','Hazardous_Materials','Compliance_Required'
+    'Verified', 'International', 'Real_Time_Tracking', 'Electronic_POD', 'Delivery_Confirmation',
+    'Insurance', 'Cancellation_Policy_Required', 'Hazardous_Materials', 'Compliance_Required'
   ]);
 
   const UI_KEY_SEP = "||";
@@ -184,7 +219,7 @@ export default function TransportAdvert() {
 
     // Yes/No radios by name or two-option radios
     const isYesNoByName = YES_NO_FIELDS.has(fieldKey);
-    const isYesNoByOptions = Array.isArray(fieldConfig.radio_Options) && fieldConfig.radio_Options.length === 2 && fieldConfig.radio_Options.every(o => (typeof o === 'string' ? ['yes','no'].includes(o.toLowerCase()) : ['yes','no'].includes(String(o.value).toLowerCase())));
+    const isYesNoByOptions = Array.isArray(fieldConfig.radio_Options) && fieldConfig.radio_Options.length === 2 && fieldConfig.radio_Options.every(o => (typeof o === 'string' ? ['yes', 'no'].includes(o.toLowerCase()) : ['yes', 'no'].includes(String(o.value).toLowerCase())));
 
     if (isYesNoByName || isYesNoByOptions) {
       return (
@@ -201,6 +236,137 @@ export default function TransportAdvert() {
     }
 
     switch (fieldConfig.type) {
+      case "dialog":
+        return (
+          <div key={fieldKey} className="mb-6">
+            <div
+              className="dropdown w-[90%]"
+              onMouseEnter={() => setIsContactOpen(true)}
+              onMouseLeave={() => setIsContactOpen(false)}
+            >
+              {/* Toggle Button */}
+              <button
+                type="button"
+                aria-expanded={isContactOpen}
+                className="w-full flex justify-between items-center py-2 text-[17px] text-gray-900 font-medium transition"
+              >
+                <span className="truncate">
+                  {fieldConfig.display_Text}
+                  {fieldConfig.mandatory && <span className="text-red-500 ml-1">*</span>}
+                </span>
+                <svg
+                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isContactOpen ? "rotate-180" : ""
+                    }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {isContactOpen && (
+                <div
+                  className="w-full mt-2 bg-white p-3"
+                  style={{
+                    maxHeight: "280px",
+                    overflowY: "auto",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#ccc transparent",
+                  }}
+                >
+                  {/* Add contact Button */}
+                  <button
+                    type="button"
+                    onClick={() => { setContactDialogOpen(true); setContact_Key(fieldKey); }}
+                    className="w-full mb-3 rounded-lg px-4 py-2 text-sm font-medium bg-blue-600 text-white border border-transparent shadow-md hover:bg-blue-700 hover:shadow-lg  focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition duration-200 ease-in-out transform hover:scale-105" >
+                    {contactData ? ("Update Contact") : ("Add Contact")}
+                  </button>
+                  {/* contactData*/}
+                  {contactData && (<span className="block">{contactData}</span>)}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      case "distance1":
+        return (
+          <div key={fieldKey} className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {fieldConfig.display_Text}{fieldConfig.mandatory && <span className="text-red-500 ml-1">*</span>}
+            </label>            
+            <div className="my-2 bg-white px-3">{distance}</div>
+            {err && <p className="text-red-500 text-sm mt-1">{err}</p>}
+          </div>  
+        );
+
+      case "distance2":
+        return (
+          <div key={fieldKey} className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {fieldConfig.display_Text}{fieldConfig.mandatory && <span className="text-red-500 ml-1">*</span>}
+            </label>            
+            <div className="my-2 bg-white px-3">{deliveryDistance}</div>
+            {err && <p className="text-red-500 text-sm mt-1">{err}</p>}
+          </div>         
+        );
+      
+      case 'address1':
+        return (
+          <>
+            <AddressFinderComponent
+              title={fieldConfig.display_Text}
+              mandatory={fieldConfig.mandatory}
+              onSelect={(value) => {
+                setStartPosition({
+                  lat: value.geometry.location.lat(),
+                  lng: value.geometry.location.lng(),
+                });
+                setFormState((previous_State) => ({ ...previous_State, [fieldKey]: value.formatted_address }));
+              }}
+            />
+            {errors[fieldKey] && (<div className="text-red-500 text-sm mb-2">{errors[fieldKey]}</div>)}
+          </>
+        );
+
+      case 'address2':
+        return (
+          <>
+            <AddressFinderComponent
+              title={fieldConfig.display_Text}
+              mandatory={fieldConfig.mandatory}
+              onSelect={(value) => {
+                setSecondPosition({
+                  lat: value.geometry.location.lat(),
+                  lng: value.geometry.location.lng(),
+                });
+                setFormState((previous_State) => ({ ...previous_State, [fieldKey]: value.formatted_address }));
+              }}
+            />
+            {errors[fieldKey] && (<div className="text-red-500 text-sm mb-2">{errors[fieldKey]}</div>)}
+          </>
+        );
+
+      case 'address3':
+        return (
+          <>
+            <AddressFinderComponent
+              title={fieldConfig.display_Text}
+              mandatory={fieldConfig.mandatory}
+              onSelect={(value) => {
+                setEndPosition({
+                  lat: value.geometry.location.lat(),
+                  lng: value.geometry.location.lng(),
+                });
+                setFormState((previous_State) => ({ ...previous_State, [fieldKey]: value.formatted_address }));
+              }}
+            />
+            {errors[fieldKey] && (<div className="text-red-500 text-sm mb-2">{errors[fieldKey]}</div>)}
+          </>
+        );
+      
       case 'date':
         return (
           <div key={fieldKey} className="mb-6">
@@ -309,7 +475,7 @@ export default function TransportAdvert() {
             <div key={table.table_Name || idx} className="bg-white rounded-xl shadow-lg p-8">
               <div className="border-b border-gray-200 pb-4 mb-6">
                 <h2 className="text-2xl font-semibold text-gray-900">
-                  {table.section_Heading || table.table_Name?.replace(/_/g,' ') || `Section ${idx+1}`}
+                  {table.section_Heading || table.table_Name?.replace(/_/g, ' ') || `Section ${idx + 1}`}
                 </h2>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -318,6 +484,7 @@ export default function TransportAdvert() {
             </div>
           ))}
 
+        {startPosition && endPosition && <GoogleMapDisplay position1={startPosition} position2={secondPosition} position3={endPosition} handleDistanceChange={handleDistanceChange} handleDeliveryDistanceChange={handleDeliveryDistanceChange} />}
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <button type="button" className="px-8 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50" onClick={() => window.history.back()}>
@@ -329,7 +496,7 @@ export default function TransportAdvert() {
             </div>
           </div>
         </form>
-      </div>
-    </div>
+        <ContactDialog isOpen={contactDialogOpen} onClose={() => setContactDialogOpen(false)} setContactData={setContactData} />
+      </div></div>
   );
 }
