@@ -24,13 +24,38 @@ const AddressFinder = ({ onSelect }) => {
                     return new Promise((resolve) => {
                         geocoder.geocode({ placeId: place.place_id }, (geoResults, geoStatus) => {
                             let postalCode = "";
+                            let streetNumber = "";
+                            let route = "";
+                            let locality = "";
+                            let administrativeArea = "";
+                            let country = "";
+                            let isStreetLevel = false;
+
                             if (geoStatus === "OK" && geoResults[0]) {
                                 const components = geoResults[0].address_components;
-                                postalCode =
-                                    components.find((c) => c.types.includes("postal_code"))?.long_name ||
-                                    "";
+
+                                // Extract all address components
+                                streetNumber = components.find((c) => c.types.includes("street_number"))?.long_name || "";
+                                route = components.find((c) => c.types.includes("route"))?.long_name || "";
+                                locality = components.find((c) => c.types.includes("locality"))?.long_name || "";
+                                administrativeArea = components.find((c) => c.types.includes("administrative_area_level_1"))?.short_name || "";
+                                country = components.find((c) => c.types.includes("country"))?.short_name || "";
+                                postalCode = components.find((c) => c.types.includes("postal_code"))?.long_name || "";
+
+                                // Check if this is truly street-level (has both street number and route)
+                                isStreetLevel = !!(streetNumber && route);
                             }
-                            resolve({ ...place, postalCode });
+
+                            resolve({
+                                ...place,
+                                postalCode,
+                                streetNumber,
+                                route,
+                                locality,
+                                administrativeArea,
+                                country,
+                                isStreetLevel
+                            });
                         });
                     });
                 });
@@ -94,10 +119,37 @@ const AddressFinder = ({ onSelect }) => {
                             <li
                                 key={index}
                                 onClick={() => handleSelect(place)}
-                                className="p-2 cursor-pointer hover:bg-gray-100"
+                                className="p-2 cursor-pointer hover:bg-gray-100 border-b last:border-b-0"
                             >
-                                {place.formatted_address}{" "}
-                                {place.postalCode && `(${place.postalCode})`}
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-900">
+                                            {place.formatted_address}
+                                        </div>
+                                        <div className="text-xs text-gray-600 mt-1">
+                                            {place.isStreetLevel && (
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-green-800 mr-2">
+                                                    Street Level
+                                                </span>
+                                            )}
+                                            {place.streetNumber && (
+                                                <span className="mr-2">
+                                                    <strong>Number:</strong> {place.streetNumber}
+                                                </span>
+                                            )}
+                                            {place.route && (
+                                                <span className="mr-2">
+                                                    <strong>Street:</strong> {place.route}
+                                                </span>
+                                            )}
+                                            {place.postalCode && (
+                                                <span className="mr-2">
+                                                    <strong>Postal:</strong> {place.postalCode}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
                             </li>
                         ))}
                     </ul>
