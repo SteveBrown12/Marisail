@@ -2,6 +2,7 @@ import express from 'express';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import paypal from '@paypal/checkout-server-sdk';
+import exchangeRateService from '../services/exchangeRateService.js';
 
 dotenv.config();
 
@@ -62,6 +63,49 @@ router.get('/config', (req, res) => {
   });
 });
 
+// Get currency metadata and rounding info
+router.get('/currency/:code', (req, res) => {
+  const { code } = req.params;
+  const metadata = exchangeRateService.getCurrencyMetadata(code.toUpperCase());
+
+  // Example rounding for a £10 equivalent amount
+  const exampleAmount = 10.56;
+  const roundedAmount = exchangeRateService.roundForPayment(exampleAmount, code.toUpperCase());
+  const stripeAmount = exchangeRateService.prepareAmountForStripe(roundedAmount, code.toUpperCase());
+
+  res.json({
+    currency: code.toUpperCase(),
+    metadata,
+    example: {
+      originalAmount: exampleAmount,
+      roundedAmount: roundedAmount,
+      stripeAmount: stripeAmount,
+      description: `For ${code.toUpperCase()}, ${exampleAmount} rounds to ${roundedAmount} (Stripe: ${stripeAmount})`
+    }
+  });
+});
+
+// Round amount for specific currency (utility endpoint)
+router.post('/round-amount', (req, res) => {
+  const { amount, currency = 'USD' } = req.body;
+
+  if (amount === undefined || amount === null) {
+    return res.status(400).json({ error: 'Amount is required' });
+  }
+
+  const roundedAmount = exchangeRateService.roundForPayment(amount, currency.toUpperCase());
+  const stripeAmount = exchangeRateService.prepareAmountForStripe(roundedAmount, currency.toUpperCase());
+  const metadata = exchangeRateService.getCurrencyMetadata(currency.toUpperCase());
+
+  res.json({
+    currency: currency.toUpperCase(),
+    originalAmount: amount,
+    roundedAmount: roundedAmount,
+    stripeAmount: stripeAmount,
+    metadata: metadata
+  });
+});
+
 // PayPal: create order
 router.post('/paypal/create-order', async (req, res) => {
   if (!paypalClient) {
@@ -74,6 +118,9 @@ router.post('/paypal/create-order', async (req, res) => {
       return res.status(400).json({ error: 'Amount is required' });
     }
 
+    // Apply smart rounding based on currency
+    const roundedAmount = exchangeRateService.roundForPayment(amount, currency);
+
     const request = new paypal.orders.OrdersCreateRequest();
     request.prefer('return=representation');
     request.requestBody({
@@ -82,7 +129,7 @@ router.post('/paypal/create-order', async (req, res) => {
         {
           amount: {
             currency_code: currency,
-            value: amount.toFixed(2),
+            value: roundedAmount.toFixed(2),
           },
           description: description || 'Payment',
         },
@@ -90,7 +137,12 @@ router.post('/paypal/create-order', async (req, res) => {
     });
 
     const order = await paypalClient.execute(request);
-    return res.json({ id: order.result.id, status: order.result.status });
+    return res.json({
+      id: order.result.id,
+      status: order.result.status,
+      amount: roundedAmount,
+      originalAmount: amount
+    });
   } catch (error) {
     console.error('PayPal create order error:', error);
     return res.status(500).json({ error: 'Failed to create PayPal order', details: error.message });
@@ -122,24 +174,32 @@ router.post('/paypal/capture-order', async (req, res) => {
 // Create payment intent
 router.post('/create-payment-intent', async (req, res) => {
   if (!stripe) {
-    return res.status(503).json({ 
-      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.' 
+    return res.status(503).json({
+      error: 'Payment service is not configured. Please set STRIPE_SECRET_KEY in environment variables.'
     });
   }
 
   try {
     const { amount, currency = 'usd', metadata = {} } = req.body;
-    
+
     console.log('Creating payment intent with:', { amount, currency, metadata });
 
     if (!amount) {
       return res.status(400).json({ error: 'Amount is required' });
     }
 
+    // Apply smart rounding based on currency
+    const roundedAmount = exchangeRateService.roundForPayment(amount, currency);
+    const stripeAmount = exchangeRateService.prepareAmountForStripe(roundedAmount, currency);
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
+      amount: stripeAmount,
       currency,
-      metadata,
+      metadata: {
+        ...metadata,
+        originalAmount: amount,
+        roundedAmount: roundedAmount
+      },
       automatic_payment_methods: {
         enabled: true,
       },
@@ -150,16 +210,19 @@ router.post('/create-payment-intent', async (req, res) => {
       id: paymentIntent.id,
       status: paymentIntent.status,
       amount: paymentIntent.amount,
+      roundedAmount: roundedAmount,
       clientSecret: paymentIntent.client_secret ? 'Present' : 'Missing'
     });
 
     res.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
+      amount: roundedAmount,
+      originalAmount: amount
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to create payment intent',
       details: error.message,
       type: error.type
