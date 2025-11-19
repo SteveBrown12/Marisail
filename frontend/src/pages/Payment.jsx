@@ -14,9 +14,32 @@ import WeChatPayButton from '../components/WeChatPayButton';
 import KlarnaButton from '../components/KlarnaButton';
 import RazorpayButton from '../components/RazorpayButton';
 import FlutterwaveButton from '../components/FlutterwaveButton';
+import { initIPInfo } from '../utils/ipInfo';
 
 // Payment gateway configurations
 const PAYMENT_GATEWAYS = [
+  {
+    id: 'stripe',
+    name: 'Credit Card',
+    description: 'Visa, Mastercard, Amex',
+    icon: '💳',
+    color: 'from-indigo-500 to-indigo-600',
+    borderColor: 'border-indigo-200',
+    textColor: 'text-indigo-700',
+    available: true,
+    provider: 'stripe'
+  },
+  {
+    id: 'paypal',
+    name: 'PayPal',
+    description: 'PayPal Account',
+    icon: '💰',
+    color: 'from-blue-400 to-blue-500',
+    borderColor: 'border-blue-200',
+    textColor: 'text-blue-700',
+    available: true,
+    provider: 'paypal'
+  },
   {
     id: 'apple_pay',
     name: 'Apple Pay',
@@ -25,27 +48,41 @@ const PAYMENT_GATEWAYS = [
     color: 'from-gray-800 to-gray-900',
     borderColor: 'border-gray-200',
     textColor: 'text-gray-700',
-    available: true
+    available: true,
+    provider: 'stripe'
   },
   {
     id: 'google_pay',
     name: 'Google Pay',
-    description: 'Google Account',
+    description: 'Google Wallet',
     icon: '🔵',
     color: 'from-blue-500 to-blue-600',
     borderColor: 'border-blue-200',
     textColor: 'text-blue-700',
-    available: true
+    available: true,
+    provider: 'stripe'
+  },
+  {
+    id: 'razorpay',
+    name: 'Razorpay',
+    description: 'UPI, Cards, Netbanking',
+    icon: '🇮🇳',
+    color: 'from-blue-600 to-blue-700',
+    borderColor: 'border-blue-200',
+    textColor: 'text-blue-700',
+    available: true,
+    provider: 'razorpay'
   },
   {
     id: 'alipay',
     name: 'Alipay',
-    description: 'Alipay Account',
-    icon: '🅰️',
+    description: 'Chinese Market',
+    icon: '🇨🇳',
     color: 'from-blue-400 to-blue-500',
     borderColor: 'border-blue-200',
     textColor: 'text-blue-700',
-    available: true
+    available: true,
+    provider: 'stripe'
   },
   {
     id: 'wechat_pay',
@@ -55,27 +92,8 @@ const PAYMENT_GATEWAYS = [
     color: 'from-green-500 to-green-600',
     borderColor: 'border-green-200',
     textColor: 'text-green-700',
-    available: true
-  },
-  {
-    id: 'klarna',
-    name: 'Klarna',
-    description: 'Buy Now, Pay Later',
-    icon: '🛒',
-    color: 'from-pink-500 to-pink-600',
-    borderColor: 'border-pink-200',
-    textColor: 'text-pink-700',
-    available: true
-  },
-  {
-    id: 'razorpay',
-    name: 'Razorpay',
-    description: 'Multiple Methods',
-    icon: '💳',
-    color: 'from-blue-600 to-blue-700',
-    borderColor: 'border-blue-200',
-    textColor: 'text-blue-700',
-    available: true
+    available: true,
+    provider: 'stripe'
   },
   {
     id: 'flutterwave',
@@ -85,31 +103,23 @@ const PAYMENT_GATEWAYS = [
     color: 'from-orange-500 to-orange-600',
     borderColor: 'border-orange-200',
     textColor: 'text-orange-700',
-    available: true
+    available: true,
+    provider: 'flutterwave'
   },
   {
-    id: 'stripe',
-    name: 'Credit Card',
-    description: 'Visa, Mastercard',
-    icon: '💳',
-    color: 'from-indigo-500 to-indigo-600',
-    borderColor: 'border-indigo-200',
-    textColor: 'text-indigo-700',
-    available: true
-  },
-  {
-    id: 'paypal',
-    name: 'PayPal',
-    description: 'PayPal Account',
-    icon: '🔵',
-    color: 'from-blue-400 to-blue-500',
-    borderColor: 'border-blue-200',
-    textColor: 'text-blue-700',
-    available: true
+    id: 'klarna',
+    name: 'Klarna',
+    description: 'Buy Now, Pay Later',
+    icon: '🛍️',
+    color: 'from-pink-500 to-pink-600',
+    borderColor: 'border-pink-200',
+    textColor: 'text-pink-700',
+    available: true,
+    provider: 'stripe'
   }
 ];
 
-const PaymentForm = ({ amount, gateway, onSuccess, onError }) => {
+const PaymentForm = ({ amount, gateway, onSuccess, onError, currency = 'USD' }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -131,10 +141,10 @@ const PaymentForm = ({ amount, gateway, onSuccess, onError }) => {
     try {
       if (gateway === 'stripe') {
         // Create payment intent
-        console.log('Creating payment intent for amount:', amount);
+        console.log('Creating payment intent for amount:', amount, 'currency:', currency);
         const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/payment/create-payment-intent`, {
           amount,
-          currency: 'usd',
+          currency: currency.toLowerCase(),
           metadata: {
             userId: localStorage.getItem('userId') || 'anonymous',
             timestamp: new Date().toISOString(),
@@ -198,16 +208,64 @@ const PaymentForm = ({ amount, gateway, onSuccess, onError }) => {
     },
   };
 
-  // Render payment buttons for digital wallets and redirect-based payments
-  if (['apple_pay', 'google_pay', 'alipay', 'wechat_pay', 'klarna', 'razorpay', 'flutterwave'].includes(gateway)) {
+  // Render payment buttons for Razorpay and Flutterwave (separate gateways)
+  if (['razorpay', 'flutterwave'].includes(gateway)) {
+    const PaymentButtonComponent = {
+      razorpay: RazorpayButton,
+      flutterwave: FlutterwaveButton
+    }[gateway];
+
+    if (PaymentButtonComponent) {
+      return (
+        <div className="space-y-6">
+          <div className="text-center py-6">
+            <div className="text-gray-600 mb-4">
+              <div className="text-4xl mb-2">
+                {PAYMENT_GATEWAYS.find(g => g.id === gateway)?.icon}
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {PAYMENT_GATEWAYS.find(g => g.id === gateway)?.name}
+              </h3>
+              <p className="text-gray-600">
+                {PAYMENT_GATEWAYS.find(g => g.id === gateway)?.description}
+              </p>
+            </div>
+
+            <PaymentButtonComponent
+              amount={amount}
+              currency={userCurrency}
+              onSuccess={() => {
+                onSuccess?.({ id: `payment_${Date.now()}` });
+                toast.success('Payment successful!');
+              }}
+              onError={(error) => {
+                setError(error);
+                onError?.(error);
+                toast.error(error);
+              }}
+              disabled={loading}
+              className="w-full"
+            />
+
+            {error && (
+              <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md mt-4">
+                {error}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+  }
+
+  // Render payment buttons for digital wallets via Stripe
+  if (['apple_pay', 'google_pay', 'alipay', 'wechat_pay', 'klarna'].includes(gateway)) {
     const PaymentButtonComponent = {
       apple_pay: ApplePayButton,
       google_pay: GooglePayButton,
       alipay: AlipayButton,
       wechat_pay: WeChatPayButton,
       klarna: KlarnaButton,
-      razorpay: RazorpayButton,
-      flutterwave: FlutterwaveButton
     }[gateway];
 
     if (PaymentButtonComponent) {
@@ -307,6 +365,75 @@ const Payment = () => {
   const [gateway, setGateway] = useState(null);
   const [paypalConfig, setPaypalConfig] = useState(null);
   const [stripePromise, setStripePromise] = useState(null);
+  const [userCurrency, setUserCurrency] = useState('USD');
+  const [userCountry, setUserCountry] = useState('US');
+  const [currencySymbol, setCurrencySymbol] = useState('$');
+
+  // Helper function to determine recommended payment gateway based on location
+  const getRecommendedGateway = () => {
+    // African countries - recommend Flutterwave
+    const africanCountries = ['NG', 'GH', 'KE', 'ZA', 'UG', 'TZ', 'RW', 'SL', 'GM'];
+    if (africanCountries.includes(userCountry)) {
+      return 'flutterwave';
+    }
+
+    // India - recommend Razorpay
+    if (userCountry === 'IN' || userCurrency === 'INR') {
+      return 'razorpay';
+    }
+
+    // China - recommend Alipay/WeChat Pay
+    if (userCountry === 'CN' || userCurrency === 'CNY') {
+      return 'alipay';
+    }
+
+    // Default to Stripe for other countries
+    return 'stripe';
+  };
+
+  // Detect user's location and currency
+  useEffect(() => {
+    const detectLocationAndCurrency = async () => {
+      try {
+        // Try to get from localStorage first
+        const cachedIpInfo = localStorage.getItem('ipInfo');
+        let ipInfo;
+
+        if (cachedIpInfo) {
+          ipInfo = JSON.parse(cachedIpInfo);
+        } else {
+          // Fetch new ipInfo
+          ipInfo = await initIPInfo();
+        }
+
+        if (ipInfo) {
+          setUserCurrency(ipInfo.currency || 'USD');
+          setUserCountry(ipInfo.countryCode || 'US');
+          setCurrencySymbol(ipInfo.currencySymbol || '$');
+
+          console.log('💰 Detected user location:', {
+            country: ipInfo.country,
+            countryCode: ipInfo.countryCode,
+            currency: ipInfo.currency,
+            symbol: ipInfo.currencySymbol
+          });
+
+          // Show toast notification about detected currency
+          toast.info(`Payment currency set to ${ipInfo.currency} based on your location (${ipInfo.country})`, {
+            autoClose: 3000
+          });
+        }
+      } catch (error) {
+        console.error('Failed to detect location/currency:', error);
+        // Fallback to USD
+        setUserCurrency('USD');
+        setUserCountry('US');
+        setCurrencySymbol('$');
+      }
+    };
+
+    detectLocationAndCurrency();
+  }, []);
 
   // Initialize Stripe for all payment methods (they all use Stripe)
   useEffect(() => {
@@ -352,7 +479,7 @@ const Payment = () => {
     trackPayment({
       paymentMethod: gateway,
       amount: amount,
-      currency: 'USD',
+      currency: userCurrency,
       paymentId: paymentIntent.id,
       userId: localStorage.getItem('userId') || 'anonymous',
       success: true
@@ -417,6 +544,18 @@ const Payment = () => {
           <p className="text-gray-600">
             {paymentType ? `Payment for ${paymentType}` : 'Choose your preferred payment method'}
           </p>
+
+          {/* Location/Currency indicator */}
+          {userCountry !== 'US' && (
+            <div className="mt-3 inline-flex items-center space-x-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-2">
+              <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm text-blue-800">
+                Payment currency: <strong>{userCurrency}</strong> ({userCountry})
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -424,7 +563,12 @@ const Payment = () => {
           <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
             <div className="flex justify-between items-center">
               <span className="text-lg font-medium text-gray-900">Total Amount:</span>
-              <span className="text-2xl font-bold text-blue-600">${amount.toFixed(2)}</span>
+              <div className="flex flex-col items-end">
+                <span className="text-2xl font-bold text-blue-600">
+                  {currencySymbol}{amount.toFixed(2)}
+                </span>
+                <span className="text-sm text-gray-600">{userCurrency}</span>
+              </div>
             </div>
           </div>
 
@@ -437,33 +581,45 @@ const Payment = () => {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {PAYMENT_GATEWAYS.map((gatewayOption) => (
-                  <button
-                    key={gatewayOption.id}
-                    onClick={() => setGateway(gatewayOption.id)}
-                    className={`
-                      group relative p-6 rounded-xl border-2 transition-all duration-300 
-                      ${gatewayOption.borderColor} hover:border-gray-400
-                      bg-white hover:shadow-xl hover:-translate-y-1
-                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                    `}
-                  >
-                    <div className="text-center space-y-3">
-                      <div className="text-4xl group-hover:scale-110 transition-transform duration-300">
-                        {gatewayOption.icon}
+                {PAYMENT_GATEWAYS.map((gatewayOption) => {
+                  const isRecommended = getRecommendedGateway() === gatewayOption.id;
+
+                  return (
+                    <button
+                      key={gatewayOption.id}
+                      onClick={() => setGateway(gatewayOption.id)}
+                      className={`
+                        group relative p-6 rounded-xl border-2 transition-all duration-300
+                        ${isRecommended ? 'border-green-400 ring-2 ring-green-200' : gatewayOption.borderColor}
+                        hover:border-gray-400
+                        bg-white hover:shadow-xl hover:-translate-y-1
+                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                      `}
+                    >
+                      {/* Recommended badge */}
+                      {isRecommended && (
+                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                          ✓ Recommended
+                        </div>
+                      )}
+
+                      <div className="text-center space-y-3">
+                        <div className="text-4xl group-hover:scale-110 transition-transform duration-300">
+                          {gatewayOption.icon}
+                        </div>
+                        <div className="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
+                          {gatewayOption.name}
+                        </div>
+                        <div className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
+                          {gatewayOption.description}
+                        </div>
                       </div>
-                      <div className="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
-                        {gatewayOption.name}
-                      </div>
-                      <div className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
-                        {gatewayOption.description}
-                      </div>
-                    </div>
-                    
-                    {/* Hover effect overlay */}
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-transparent to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </button>
-                ))}
+
+                      {/* Hover effect overlay */}
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-transparent to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  );
+                })}
               </div>
               
               {/* Security notice */}
@@ -507,13 +663,25 @@ const Payment = () => {
           {/* Payment Form */}
           {gateway && (
             <div className="p-6">
-              {/* Digital Wallet and Redirect-based Payments */}
-              {['apple_pay', 'google_pay', 'alipay', 'wechat_pay', 'klarna', 'razorpay', 'flutterwave'].includes(gateway) && (
+              {/* Razorpay and Flutterwave (separate gateways, don't need Stripe) */}
+              {['razorpay', 'flutterwave'].includes(gateway) && (
+                <PaymentForm
+                  amount={amount}
+                  gateway={gateway}
+                  currency={userCurrency}
+                  onSuccess={handlePaymentSuccess}
+                  onError={handlePaymentError}
+                />
+              )}
+
+              {/* Digital Wallet Payments via Stripe */}
+              {['apple_pay', 'google_pay', 'alipay', 'wechat_pay', 'klarna'].includes(gateway) && (
                 stripePromise ? (
                   <Elements stripe={stripePromise}>
                     <PaymentForm
                       amount={amount}
                       gateway={gateway}
+                      currency={userCurrency}
                       onSuccess={handlePaymentSuccess}
                       onError={handlePaymentError}
                     />
@@ -545,6 +713,7 @@ const Payment = () => {
                     <PaymentForm
                       amount={amount}
                       gateway={gateway}
+                      currency={userCurrency}
                       onSuccess={handlePaymentSuccess}
                       onError={handlePaymentError}
                     />
@@ -572,12 +741,12 @@ const Payment = () => {
               {/* PayPal Payment */}
               {gateway === 'paypal' && (
                 paypalConfig?.enabled && paypalConfig?.clientId ? (
-                  <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: 'USD', intent: 'capture' }}>
+                  <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: userCurrency, intent: 'capture' }}>
                     <PayPalButtons
                       style={{ layout: 'vertical' }}
                       createOrder={async () => {
                         try {
-                          const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/payment/paypal/create-order`, { amount, currency: 'USD', description: paymentType || 'Payment' });
+                          const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/payment/paypal/create-order`, { amount, currency: userCurrency, description: paymentType || 'Payment' });
                           return data.id;
                         } catch (e) {
                           toast.error('Failed to create PayPal order');
@@ -643,44 +812,21 @@ const Payment = () => {
         {/* Payment Methods Summary */}
         {!gateway && (
           <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h4 className="text-lg font-semibold text-blue-900 mb-3 text-center">Available Payment Methods</h4>
+            <h4 className="text-lg font-semibold text-blue-900 mb-3 text-center">9 Payment Methods Available</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">🍎</span>
-                <span className="text-blue-800"><strong>Apple Pay:</strong> Touch ID / Face ID</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">🔵</span>
-                <span className="text-blue-800"><strong>Google Pay:</strong> Google Account</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">🅰️</span>
-                <span className="text-blue-800"><strong>Alipay:</strong> Chinese Market</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">💬</span>
-                <span className="text-blue-800"><strong>WeChat Pay:</strong> WeChat Users</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">🛒</span>
-                <span className="text-blue-800"><strong>Klarna:</strong> Buy Now, Pay Later</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">💳</span>
-                <span className="text-blue-800"><strong>Razorpay:</strong> Indian Market</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">🌍</span>
-                <span className="text-blue-800"><strong>Flutterwave:</strong> African Market</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">💳</span>
-                <span className="text-blue-800"><strong>Credit Card:</strong> Visa, Mastercard</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">🔵</span>
-                <span className="text-blue-800"><strong>PayPal:</strong> PayPal Account</span>
-              </div>
+              {PAYMENT_GATEWAYS.map((gateway) => (
+                <div key={gateway.id} className="flex items-center space-x-2">
+                  <span className="text-lg">{gateway.icon}</span>
+                  <span className="text-blue-800">
+                    <strong>{gateway.name}:</strong> {gateway.description}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-blue-700">
+                Powered by <strong>Stripe</strong>, <strong>PayPal</strong>, <strong>Razorpay</strong>, and <strong>Flutterwave</strong>
+              </p>
             </div>
           </div>
         )}

@@ -1,96 +1,127 @@
 import React, { useState, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
+import { useFlutterwave, closePaymentModal } from 'react-flutterwave';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-const FlutterwaveButton = ({ 
-  amount, 
-  onSuccess, 
-  onError, 
+const FlutterwaveButton = ({
+  amount,
+  currency = 'USD',
+  onSuccess,
+  onError,
   disabled = false,
   className = '',
   style = {}
 }) => {
-  const [stripe, setStripe] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [config, setConfig] = useState(null);
+  const [flwConfig, setFlwConfig] = useState(null);
 
   useEffect(() => {
-    const initializeStripe = async () => {
+    // Load payment configuration
+    const loadConfig = async () => {
       try {
-        const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-        if (!publishableKey) {
-          console.error('Stripe publishable key not found');
-          return;
-        }
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/payment/config`);
+        setConfig(data);
 
-        const stripeInstance = await loadStripe(publishableKey);
-        setStripe(stripeInstance);
+        if (data.flutterwave?.enabled && data.flutterwave?.publicKey) {
+          setFlwConfig({
+            public_key: data.flutterwave.publicKey,
+            tx_ref: `flw_tx_${Date.now()}`,
+            amount: amount,
+            currency: currency.toUpperCase(),
+            payment_options: 'card,mobilemoney,ussd',
+            customer: {
+              email: localStorage.getItem('userEmail') || 'customer@example.com',
+              phone_number: localStorage.getItem('userPhone') || '',
+              name: localStorage.getItem('userName') || 'Customer',
+            },
+            customizations: {
+              title: 'Marisail Payment',
+              description: 'Payment for services',
+              logo: '',
+            },
+          });
+        }
       } catch (err) {
-        console.error('Error initializing Stripe:', err);
-        setError('Failed to initialize payment system');
+        console.error('Failed to load payment config:', err);
       }
     };
 
-    initializeStripe();
-  }, []);
+    loadConfig();
+  }, [amount, currency]);
 
-  const handleFlutterwaveClick = async () => {
-    if (!stripe || loading || disabled) {
+  const handleFlutterwave = useFlutterwave(flwConfig || {});
+
+  const handlePayment = () => {
+    if (!config?.flutterwave?.enabled) {
+      toast.error('Flutterwave is not configured. Please contact support.');
+      return;
+    }
+
+    if (!flwConfig) {
+      toast.error('Payment configuration is not ready. Please try again.');
       return;
     }
 
     setLoading(true);
-    setError(null);
 
-    try {
-      // Create Flutterwave payment intent
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/payment/create-flutterwave-intent`, {
-        amount,
-        currency: 'usd',
-        metadata: {
-          userId: localStorage.getItem('userId') || 'anonymous',
-          paymentType: 'flutterwave',
-          timestamp: new Date().toISOString(),
+    handleFlutterwave({
+      callback: async (response) => {
+        console.log('Flutterwave payment response:', response);
+        closePaymentModal();
+
+        if (response.status === 'successful') {
+          try {
+            // Verify payment on backend
+            const verifyResponse = await axios.post(
+              `${import.meta.env.VITE_BACKEND_URL}/payment/flutterwave/verify-payment`,
+              {
+                transaction_id: response.transaction_id,
+              }
+            );
+
+            if (verifyResponse.data.success) {
+              toast.success('Payment successful!');
+              onSuccess?.({
+                id: response.transaction_id,
+                flw_ref: response.flw_ref,
+              });
+            } else {
+              throw new Error('Payment verification failed');
+            }
+          } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Payment verification failed';
+            toast.error(errorMessage);
+            onError?.(errorMessage);
+          }
+        } else {
+          const errorMessage = response.status === 'cancelled'
+            ? 'Payment was cancelled'
+            : 'Payment failed';
+          toast.error(errorMessage);
+          onError?.(errorMessage);
         }
-      });
-
-      // Create Flutterwave session
-      const { error: flutterwaveError } = await stripe.confirmFlutterwavePayment(
-        data.clientSecret,
-        {
-          return_url: `${window.location.origin}/payment-success`,
-        }
-      );
-
-      if (flutterwaveError) {
-        throw new Error(flutterwaveError.message);
-      }
-
-      // Note: For Flutterwave, the payment confirmation happens after redirect
-      // The success callback will be handled on the return URL
-      toast.info('Redirecting to Flutterwave...');
-      
-    } catch (err) {
-      const errorMessage = err.response?.data?.error || err.message || 'Payment failed. Please try again.';
-      setError(errorMessage);
-      onError?.(errorMessage);
-      toast.error(errorMessage);
-      setLoading(false);
-    }
+        setLoading(false);
+      },
+      onClose: () => {
+        setLoading(false);
+        toast.info('Payment window closed');
+      },
+    });
   };
 
   return (
     <button
-      onClick={handleFlutterwaveClick}
-      disabled={disabled || loading}
+      onClick={handlePayment}
+      disabled={disabled || loading || !config?.flutterwave?.enabled || !flwConfig}
       className={`
-        inline-flex items-center justify-center px-4 py-2 
-        border border-transparent text-sm font-medium rounded-md 
-        transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
-        ${disabled || loading 
-          ? 'opacity-50 cursor-not-allowed' 
-          : 'hover:opacity-90'
+        inline-flex items-center justify-center px-6 py-3
+        border border-transparent text-base font-medium rounded-lg
+        transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500
+        shadow-md hover:shadow-lg
+        ${disabled || loading || !config?.flutterwave?.enabled || !flwConfig
+          ? 'opacity-50 cursor-not-allowed'
+          : 'hover:opacity-90 transform hover:-translate-y-0.5'
         }
         ${className}
       `}
@@ -102,20 +133,24 @@ const FlutterwaveButton = ({
     >
       {loading ? (
         <div className="flex items-center">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-          Redirecting...
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+          Processing...
+        </div>
+      ) : !config ? (
+        <div className="flex items-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+          Loading...
         </div>
       ) : (
         <div className="flex items-center">
-          <svg 
-            className="w-5 h-5 mr-2" 
-            viewBox="0 0 24 24" 
+          <svg
+            className="w-6 h-6 mr-2"
+            viewBox="0 0 24 24"
             fill="currentColor"
           >
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-            <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-4.41 0-8-3.59-8-8V8.5l8-4.5 8 4.5V12c0 4.41-3.59 8-8 8z"/>
           </svg>
-          Pay with Flutterwave
+          Pay with Flutterwave - {currency} {amount}
         </div>
       )}
     </button>

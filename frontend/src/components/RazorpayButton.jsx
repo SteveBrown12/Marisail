@@ -1,42 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-const RazorpayButton = ({ 
-  amount, 
-  onSuccess, 
-  onError, 
+const RazorpayButton = ({
+  amount,
+  currency = 'INR',
+  onSuccess,
+  onError,
   disabled = false,
   className = '',
   style = {}
 }) => {
-  const [stripe, setStripe] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [config, setConfig] = useState(null);
 
   useEffect(() => {
-    const initializeStripe = async () => {
-      try {
-        const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-        if (!publishableKey) {
-          console.error('Stripe publishable key not found');
-          return;
-        }
+    // Load Razorpay script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => setRazorpayLoaded(true);
+    script.onerror = () => {
+      console.error('Failed to load Razorpay script');
+      setError('Failed to load payment system');
+    };
+    document.body.appendChild(script);
 
-        const stripeInstance = await loadStripe(publishableKey);
-        setStripe(stripeInstance);
+    // Load payment configuration
+    const loadConfig = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/payment/config`);
+        setConfig(data);
       } catch (err) {
-        console.error('Error initializing Stripe:', err);
-        setError('Failed to initialize payment system');
+        console.error('Failed to load payment config:', err);
       }
     };
 
-    initializeStripe();
+    loadConfig();
+
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
   }, []);
 
-  const handleRazorpayClick = async () => {
-    if (!stripe || loading || disabled) {
+  const handleRazorpayPayment = async () => {
+    if (!razorpayLoaded || loading || disabled) {
+      toast.error('Payment system is still loading. Please wait...');
+      return;
+    }
+
+    if (!config?.razorpay?.enabled) {
+      toast.error('Razorpay is not configured. Please contact support.');
       return;
     }
 
@@ -44,33 +62,75 @@ const RazorpayButton = ({
     setError(null);
 
     try {
-      // Create Razorpay payment intent
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/payment/create-razorpay-intent`, {
-        amount,
-        currency: 'usd',
-        metadata: {
-          userId: localStorage.getItem('userId') || 'anonymous',
-          paymentType: 'razorpay',
-          timestamp: new Date().toISOString(),
-        }
-      });
-
-      // Create Razorpay session
-      const { error: razorpayError } = await stripe.confirmRazorpayPayment(
-        data.clientSecret,
+      // Create Razorpay order on backend
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/payment/razorpay/create-order`,
         {
-          return_url: `${window.location.origin}/payment-success`,
+          amount,
+          currency: currency.toUpperCase(),
+          metadata: {
+            userId: localStorage.getItem('userId') || 'anonymous',
+            paymentType: 'razorpay',
+            timestamp: new Date().toISOString(),
+          }
         }
       );
 
-      if (razorpayError) {
-        throw new Error(razorpayError.message);
-      }
+      const options = {
+        key: config.razorpay.keyId,
+        amount: data.amount * 100, // Amount in smallest currency unit
+        currency: data.currency,
+        name: 'Marisail',
+        description: 'Payment for services',
+        order_id: data.orderId,
+        handler: async function (response) {
+          try {
+            // Verify payment on backend
+            const verifyResponse = await axios.post(
+              `${import.meta.env.VITE_BACKEND_URL}/payment/razorpay/verify-payment`,
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }
+            );
 
-      // Note: For Razorpay, the payment confirmation happens after redirect
-      // The success callback will be handled on the return URL
-      toast.info('Redirecting to Razorpay...');
-      
+            if (verifyResponse.data.success) {
+              toast.success('Payment successful!');
+              onSuccess?.({
+                id: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+              });
+            } else {
+              throw new Error('Payment verification failed');
+            }
+          } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Payment verification failed';
+            toast.error(errorMessage);
+            onError?.(errorMessage);
+          } finally {
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: localStorage.getItem('userName') || '',
+          email: localStorage.getItem('userEmail') || '',
+          contact: localStorage.getItem('userPhone') || '',
+        },
+        theme: {
+          color: '#3395ff',
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+            toast.info('Payment cancelled');
+          }
+        }
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.message || 'Payment failed. Please try again.';
       setError(errorMessage);
@@ -82,15 +142,16 @@ const RazorpayButton = ({
 
   return (
     <button
-      onClick={handleRazorpayClick}
-      disabled={disabled || loading}
+      onClick={handleRazorpayPayment}
+      disabled={disabled || loading || !razorpayLoaded || !config?.razorpay?.enabled}
       className={`
-        inline-flex items-center justify-center px-4 py-2 
-        border border-transparent text-sm font-medium rounded-md 
-        transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
-        ${disabled || loading 
-          ? 'opacity-50 cursor-not-allowed' 
-          : 'hover:opacity-90'
+        inline-flex items-center justify-center px-6 py-3
+        border border-transparent text-base font-medium rounded-lg
+        transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+        shadow-md hover:shadow-lg
+        ${disabled || loading || !razorpayLoaded || !config?.razorpay?.enabled
+          ? 'opacity-50 cursor-not-allowed'
+          : 'hover:opacity-90 transform hover:-translate-y-0.5'
         }
         ${className}
       `}
@@ -102,20 +163,24 @@ const RazorpayButton = ({
     >
       {loading ? (
         <div className="flex items-center">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-          Redirecting...
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+          Processing...
+        </div>
+      ) : !razorpayLoaded ? (
+        <div className="flex items-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+          Loading...
         </div>
       ) : (
         <div className="flex items-center">
-          <svg 
-            className="w-5 h-5 mr-2" 
-            viewBox="0 0 24 24" 
+          <svg
+            className="w-6 h-6 mr-2"
+            viewBox="0 0 24 24"
             fill="currentColor"
           >
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-            <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+            <path d="M22.436 0l-11.436 7.713-4.273-3.242-4.727 3.542 9 10.987 16-19z"/>
           </svg>
-          Pay with Razorpay
+          Pay with Razorpay - {currency} {amount}
         </div>
       )}
     </button>

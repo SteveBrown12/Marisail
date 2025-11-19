@@ -12,10 +12,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-google-maps/api": "^2.20.7",
     "@auth0/auth0-react": "^2.4.0",
     "@heroicons/react": "^2.2.0",
     "@paypal/react-paypal-js": "^8.9.0",
+    "@react-google-maps/api": "^2.20.7",
     "@stripe/react-stripe-js": "^3.9.2",
     "@stripe/stripe-js": "^7.9.0",
     "axios": "^1.7.4",
@@ -27,6 +27,7 @@
     "react-day-picker": "^9.6.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.3.5",
+    "react-flutterwave": "^1.0.4",
     "react-ga4": "^2.1.0",
     "react-router-dom": "^6.25.1",
     "react-select": "^5.8.3",
