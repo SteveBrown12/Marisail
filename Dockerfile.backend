@@ -1,0 +1,28 @@
+# Before Directory Restructure-----------------------
+# FROM node:20-alpine
+
+# WORKDIR /app
+
+# COPY . .  
+
+# RUN npm install
+
+# EXPOSE 3006
+
+# CMD ["npm", "run", "start", "--", "--host"]
+
+# After Directory Restructure-----------------------
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+# Install dependencies
+COPY backend/package*.json ./
+RUN npm install
+
+# Copy backend source
+COPY backend/ ./
+
+EXPOSE 3006
+
+CMD ["npm", "run", "start", "--", "--host"]
